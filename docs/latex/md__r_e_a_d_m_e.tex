@@ -1,0 +1,42 @@
+\chapter{✈️ Project Overview }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{✈️ Project Overview@{✈️ Project Overview}}
+\label{md__r_e_a_d_m_e_autotoc_md0}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md0}%
+
+
+This system facilitates secure, state-\/driven communication using a custom-\/defined network protocol. The Flight Tower manages airspace safety via a robust state machine, while the Pilot application reports telemetry and requests vital flight documentation. \hypertarget{md__r_e_a_d_m_e_autotoc_md1}{}\doxysection{\texorpdfstring{Key Features}{Key Features}}\label{md__r_e_a_d_m_e_autotoc_md1}
+
+\begin{DoxyItemize}
+\item Custom Packet Protocol:\+ Implements a strict Head \texorpdfstring{$\vert$}{|} Body \texorpdfstring{$\vert$}{|} Tail structure with bit-\/field headers.
+\item State-\/\+Driven Logic:\+ Server functionality is restricted based on operational states (e.\+g., Idle, Active, Emergency).
+\item Large Data Transfer:\+ Reliable TCP-\/based transfer of a 1MB+ Flight Manual.
+\item Black Box Logging:\+ Automated persistent logging of all TX/\+\+RX network traffic for safety audits.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{\texorpdfstring{🛠️ Tech Stack}{🛠️ Tech Stack}}\label{md__r_e_a_d_m_e_autotoc_md2}
+
+\begin{DoxyItemize}
+\item Language:\+ Python 3.\+x
+\item Networking:\+ TCP/\+\+IP (Sockets)
+\item Documentation:\+ Doxygen
+\item Project Management:\+ MS Teams \& Git\+Hub 👥
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysection{\texorpdfstring{📈 Development Methodology}{📈 Development Methodology}}\label{md__r_e_a_d_m_e_autotoc_md3}
+We employ an Agile-\/\+SCRUM methodology with two-\/week sprints.
+\begin{DoxyItemize}
+\item Parallel Development:\+ Simultaneous work on Client and Server components.
+\item Quality Gate:\+ Strict Git\+Hub Pull Request (PR) rules requiring peer review for all merges to ensure code coverage and data integrity.
+\item TDD:\+ Targeting 75\%-\/80\% code coverage to ensure all functional requirements are verified.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysection{\texorpdfstring{🚦\+Server State Machine}{🚦\+Server State Machine}}\label{md__r_e_a_d_m_e_autotoc_md4}
+The Flight Tower operates through the following transitions
+\begin{DoxyItemize}
+\item IDLE:\+ Waiting for Pilot authentication.
+\item PREFLIGHT:\+ Validated pilot; preparing for taxi/\+takeoff.
+\item ACTIVE:\+ Monitoring live telemetry and traffic.
+\item DATA\+\_\+\+TRANSFER:\+ Dedicated state for 1MB manual transmission.
+\item EMERGENCY:\+ High-\/priority state triggered by "{}\+Mayday"{} commands.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysection{\texorpdfstring{📦 Data Packet Definition}{📦 Data Packet Definition}}\label{md__r_e_a_d_m_e_autotoc_md5}
+
+\begin{DoxyItemize}
+\item All packets follow the mandatory structure
+\item Header:\+ 4-\/bit Source/\+\+Destination addresses and Packet Type.
+\item Body:\+ Dynamically allocated payload containing telemetry or file fragments.
+\item Tail:\+ 16-\/bit CRC for error detection and data integrity. 
+\end{DoxyItemize}
