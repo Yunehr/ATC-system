@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC System Project: ✈️ Project Overview</title>
+<title>ATC project: ✈️ Project Overview</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">ATC System Project<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">ATC project
    </div>
   </td>
  </tr>
@@ -96,7 +96,7 @@ $(function(){initNavTree('md__r_e_a_d_m_e.html','',''); });
 <h1 class="doxsection"><a class="anchor" id="autotoc_md1"></a>
 Key Features</h1>
 <ul>
-<li>Custom Packet Protocol: Implements a strict Head | Body | Tail structure with bit-field headers.</li>
+<li>Custom <a class="el" href="class_packet.html">Packet</a> Protocol: Implements a strict Head | Body | Tail structure with bit-field headers.</li>
 <li>State-Driven Logic: Server functionality is restricted based on operational states (e.g., Idle, Active, Emergency).</li>
 <li>Large Data Transfer: Reliable TCP-based transfer of a 1MB+ Flight Manual.</li>
 <li>Black Box Logging: Automated persistent logging of all TX/RX network traffic for safety audits.</li>
@@ -129,7 +129,7 @@ Key Features</h1>
 📦 Data Packet Definition</h1>
 <ul>
 <li>All packets follow the mandatory structure</li>
-<li>Header: 4-bit Source/Destination addresses and Packet Type.</li>
+<li>Header: 4-bit Source/Destination addresses and <a class="el" href="class_packet.html">Packet</a> Type.</li>
 <li>Body: Dynamically allocated payload containing telemetry or file fragments.</li>
 <li>Tail: 16-bit CRC for error detection and data integrity. </li>
 </ul>

@@ -24,20 +24,38 @@
 */
 var NAVTREE =
 [
-  [ "ATC System Project", "index.html", [
+  [ "ATC project", "index.html", [
     [ "✈️ Project Overview", "md__r_e_a_d_m_e.html", [
       [ "Key Features", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
       [ "🛠️ Tech Stack", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
       [ "📈 Development Methodology", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
       [ "🚦Server State Machine", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
       [ "📦 Data Packet Definition", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
+    ] ],
+    [ "Classes", "annotated.html", [
+      [ "Class List", "annotated.html", "annotated_dup" ],
+      [ "Class Index", "classes.html", null ],
+      [ "Class Members", "functions.html", [
+        [ "All", "functions.html", null ],
+        [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ]
+      ] ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ]
+      ] ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"_client_engine_8cpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

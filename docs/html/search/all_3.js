@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['machine_0',['🚦Server State Machine',['../md__r_e_a_d_m_e.html#autotoc_md4',1,'']]],
-  ['methodology_1',['📈 Development Methodology',['../md__r_e_a_d_m_e.html#autotoc_md3',1,'']]]
+  ['error_5fmsg_0',['ERROR_MSG',['../class_packet.html#af7f61786057f92d9cecc27015bdcfe78a3a077c3a17e1aed1313386f24c19f190',1,'Packet']]]
 ];
