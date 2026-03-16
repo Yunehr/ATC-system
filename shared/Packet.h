@@ -1,3 +1,4 @@
+#pragma once
 //sebastian solorzano -- atc tower pr4j -- packet and networks 
 //would it be easier to simply treat this as a header library? I'm not sure
 //anyways. definition/implementation of the packets being used
