@@ -37,9 +37,9 @@ Requires gcc to compile
 
 ### Compile Executables
 ```
-g++ server/main.cpp server/ServerEngine.cpp server/WeatherService.cpp shared/Packet.h shared/PacketTransport.cpp -o build/server.exe -lws2_3
+g++ server/main.cpp server/ServerEngine.cpp server/WeatherService.cpp shared/Packet.h shared/PacketTransport.cpp -o build/server.exe -lws2_32
 
-g++ client/main.cpp client/ClientEngine.cpp shared/PacketTransport.cpp shared/Packet.h -o build/client.exe -lws2_32                                                  
+g++ client/main.cpp client/ClientEngine.cpp shared/PacketTransport.cpp shared/Packet.h -o build/client.exe -lws2_32                                                
 ```
 > **Note:** You will get the warning `warning: #pragma once in main file` Please test to see if the solution runs after you get this warning. 
 ### Running solution
