@@ -98,7 +98,7 @@ std::string ClientEngine::requestWeather(const std::string& location) {
 
     // Receive response packet
     char buffer[MAX_PKTSIZE];
-    int received = recv(sock, buffer, sizeof(buffer), MSG_WAITALL);
+    int received = recv(sock, buffer, sizeof(buffer), 0);
     if (received == SOCKET_ERROR || received == 0) { 
         //std::cout << "Failed to receive packet\n";
         return "Failed to receive response";
