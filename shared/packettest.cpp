@@ -1,6 +1,8 @@
 //sebastian solorzano -- atc tower pr4j -- packet test
 // testing / usage for the packet, basically 
 
+//how to run: g++ packettest.cpp Packet.h Request.h -o <name>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "Packet.h"
