@@ -10,7 +10,10 @@
 //                V
 typedef enum reqtyp{
     weather,
-    telemetry
+    telemetry,
+    //put them here otherwise they'll iterate from 100
+
+    TEST = 100 //need a character that would be visible when %s'd
 }REQTYPE;
 
 //okay so to my chagrin I did end up having to make a class, but honestly it's really simple

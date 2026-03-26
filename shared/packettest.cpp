@@ -54,7 +54,7 @@ int main(void) {
     packet reqpktsend = packet();
 
     char reqmsg[] = "this is a fancy request message asking for weather or somethin idk man";
-    Request sss= Request(99, sizeof(reqmsg), reqmsg);
+    Request sss= Request(TEST, sizeof(reqmsg), reqmsg);
     printf("before sending: %d, %d, %s\n", sss.getType(), sss.getBsize(), sss.getBody());
 
     int reqpktID = 0x0a;
