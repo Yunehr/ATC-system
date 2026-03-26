@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Packet.h"
+#include "Request.h"
 
 //okay I couldn't actually be bothered to do individual unit testing because ughh
 //but anyways this shows usage and functionality of the packet.
