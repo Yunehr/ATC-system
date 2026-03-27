@@ -11,7 +11,8 @@ public:
     bool connectToServer(const std::string& ip, unsigned short port);
     void disconnect();
 
-    std::string dataRequest(const std::string& data, pkTyFl pkType, reqtyp type);
+    std::string dataRequest(const std::string& data, reqtyp type);
+    std::string authRequest(const std::string&data);
 
 private:
     SOCKET sock;

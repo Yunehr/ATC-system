@@ -53,11 +53,15 @@ int main(int argc, char* argv[]) {
             std::string Username;
             std::cout << "Please enter Username: ";
             std::cin >> Username;
-
             std::string Password;
             std::cout << "Please enter Password: ";
             std::cin >> Password;
-
+            std::string URN = "Login?Username="+Username+"&Password="+Password;
+            
+            std::string result = client.authRequest(URN);
+            std::cout << "LoginAuth: " << result << "\n";
+            std::cout.flush();
+            continue;
 
         }
         
@@ -67,7 +71,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Please enter location name: ";
             std::cin >> input;
 
-            std::string result = client.dataRequest(input, pkt_req, req_weather);
+            std::string result = client.dataRequest(input, req_weather);
             std::cout << "WEATHER_RESPONSE: " << result << "\n";
             std::cout.flush();
             continue;
@@ -77,13 +81,13 @@ int main(int argc, char* argv[]) {
             std::cout << "Please enter Flight ID: ";
             std::cin >> input;
 
-            std::string result = client.dataRequest(input, pkt_req, req_fplan);
+            std::string result = client.dataRequest(input, req_fplan);
             std::cout << "Flight Plan: " << result << "\n";
             std::cout.flush();
             continue;
         }
         if (cmd == "TAXI") {
-            std::string result = client.dataRequest(input, pkt_req, req_taxi);
+            std::string result = client.dataRequest(input, req_taxi);
             std::cout << "Taxi Response: " << result << "\n";
             std::cout.flush();
             continue;
@@ -91,19 +95,19 @@ int main(int argc, char* argv[]) {
 
         // ACTIVE_AIRSPACE
         if (cmd == "LAND") {
-            std::string result = client.dataRequest(input, pkt_req, req_fplan);
+            std::string result = client.dataRequest(input, req_fplan);
             std::cout << "Clearance_Request: " << result << "\n";
             std::cout.flush();
             continue;
         }
         if (cmd == "TELEM") {
-            std::string result = client.dataRequest(input, pkt_req, req_telemetry);
+            std::string result = client.dataRequest(input, req_telemetry);
             std::cout << "Telemetry Response: " << result << "\n";
             std::cout.flush();
             continue;
         }
         if (cmd == "TRAFFIC") {
-            std::string result = client.dataRequest(input, pkt_req, req_traffic);
+            std::string result = client.dataRequest(input, req_traffic);
             std::cout << "Air Traffic Response: " << result << "\n";
             std::cout.flush();
             continue;
@@ -111,7 +115,7 @@ int main(int argc, char* argv[]) {
 
         //DATA_TRANSFER
         if (cmd == "MANUAL") {
-            std::string result = client.dataRequest(input, pkt_req, req_fplan);
+            std::string result = client.dataRequest(input, req_fplan);
             std::cout << "Manual Response: " << result << "\n";
             std::cout.flush();
             continue;
