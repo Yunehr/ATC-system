@@ -1,6 +1,7 @@
 #include "ServerEngine.hpp"
 #include "../shared/PacketTransport.hpp"
 #include "../shared/packet.h"
+#include "../shared/Request.h"
 #include "WeatherService.hpp"
 #include <iostream>
 #include <string>
@@ -75,25 +76,56 @@ void ServerEngine::stop() {
 
 void ServerEngine::handleClient(SOCKET clientSock) {
     while (true) {
-        packet req;
+        packet rxPkt;
 
-        if (!PacketTransport::receivePacket((int)clientSock, req)) {
+        if (!PacketTransport::receivePacket((int)clientSock, rxPkt)) {
             break;
         }
 
-        unsigned char type = req.getPKType();
-        unsigned char clientID = req.getCLID();
+        unsigned char type = rxPkt.getPKType();
+        unsigned char clientID = rxPkt.getCLID();
+
+        if (rxPkt.calcCRC() != rxPkt.GetCRC()){
+            std::string msg = "CRC Checksum Failed";
+
+            packet err;
+            err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
+
+            if (!PacketTransport::sendPacket((int)clientSock, err)) {
+                break;
+            }
+        }
 
         if (type == pkt_req) {
-            std::string location(req.getData(), req.getPloadLength());
+            Request rxReq(rxPkt.getData(), rxPkt.getPloadLength());
+            std::string data;
 
-            std::cout << "REQUEST RECEIVED: " << location << "\n";
-            std::cout << "Client ID: " << (int)clientID << "\n";
+            if(rxReq.getType() == req_weather) {
+                std::string location(rxReq.getBody(), rxReq.getBsize());
 
-            std::string weather = WeatherService::getWeather(location);
+                std::cout << "REQUEST RECEIVED: " << location << "\n";
+                std::cout << "Client ID: " << (int)clientID << "\n";
+
+                data = WeatherService::getWeather(location);
+            }
+            else if (rxReq.getType() == req_telemetry){ 
+                data = "Telemetry Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_file){ 
+                data = "Flight Manual Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_taxi){ 
+                data = "Taxi Request Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_fplan){ 
+                data = "Flight Plan Request: Service currently unavailable\n";
+            } //continue with the above format for each request type
+            else {
+                data = "Unknown request type";
+            }
 
             packet resp;
-            resp.PopulPacket((char*)weather.c_str(), (int)weather.size(), clientID, pkt_dat);
+            resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_dat);
 
             std::cout << "DATA: ";
             std::cout.write(resp.getData(), resp.getPloadLength());
@@ -111,7 +143,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             }
         }
         else {
-            std::string msg = "Unknown request type";
+            std::string msg = "Unknown packet type";
 
             packet err;
             err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
