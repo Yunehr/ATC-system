@@ -1,27 +1,15 @@
 #pragma once
-//sebastian solorzano -- atc tower pr4j -- packet and networks 
-//would it be easier to simply treat this as a header library? I'm not sure
-//anyways. definition/implementation of the packets being used
-//aka the protocol
+#include <iostream>
+#include <vector>
+#include <cstdint>
 
-#include <memory>
-#include <cstring> //do I really need this for memcpy? it should be in memory??
-//guess not lol
-
-//screw it I love #defines
-//i'd make this an enum but cpp enums actually behave kind of annoyingly?
-//also steve made me not trust const ints so #define it is
-//anyway these are moreso outwards facing (packet doesn't care lmao), so should they be somewhere else?
 
 #define EMTPY_PKTSIZE  6
-#define MAX_PKTSIZE 250 // ok so this is *somewhat* arbitrary? payload_length is 1 byte so it can store 255 max,
-//and we also *want* to have a limit on packet size anyways. (trying to send the 1mb data file in a single packet is insanity)
-//anyways you guys didn't complain when I explained this earlier so I've made an executive decision
+#define MAX_PKTSIZE 250 
 #define PKT_TRNSMT_COMP 0X0
 #define PKT_TRNSMT_INCOMP 0x1
-//do I need both? maybe not. but I think it's good practice?
 
-//okay I can't argue that an enum is best here
+
 typedef enum pkTyFl {
     pkt_empty = 0x00,
     pkt_req = 0x1,
@@ -30,24 +18,22 @@ typedef enum pkTyFl {
     pkt_emgcy = 0x4
 }PKTYPE;
 
-
-
 class packet {
 
 private:
 
     struct header {
-        char transmit_flag : 1;
-        unsigned char packet_type : 3;  //allows 7 flags, we discussed and agreed that's fine
-        unsigned char client_id : 4; //allows 15 client ids? we're focusing on a single connection for now so its fine
-        unsigned char payload_length;
-        //okay all of these are unsigned lol I forgot about 2's complement messing with your representation w
+        uint8_t transmit_flag : 1;
+        uint8_t packet_type : 3;  //allows 7 flags, we discussed and agreed that's fine
+        uint8_t client_id : 4; //allows 15 client ids? we're focusing on a single connection for now so its fine
+        uint8_t payload_length;
+       
     }HEAD;
 
     char* data;
     char* txbuff;
 
-    int CRC;
+    int32_t CRC; //4 byte tail
 
 public:
     //packet [creation side]
@@ -55,11 +41,18 @@ public:
         data = nullptr;
         txbuff = nullptr;
         memset(&HEAD, 0, sizeof(header));
-        //ensuring everything is zeroed, I guess
-        //elliot does it in his packet def.
+    }
 
-        //packet_type should be 0 in this case,
-        //which we should keep defined as 'empty packet?'
+    //Destructor: Prevents memory leaks during 1MB tranfer
+    ~packet(){
+        if (data) {
+            delete[] data;
+            data = nullptr;
+        }
+        if (txbuff) {
+            delete[] txbuff;
+            txbuff = nullptr;
+        }
     }
 
     //packet [recieving side]
@@ -128,8 +121,20 @@ public:
     }
 
     int calcCRC() {
-        //uh idk guys
-        return 0;
+        int sum = 0;
+
+        //sum every byte in the header
+        uint8_t* hPtr = reinterpret_cast<uint8_t*>(&HEAD);
+        for (size_t i = 0; i < sizeof(header); ++i) {
+            sum += hPtr[i];
+        }
+        //sum every byte in the body
+        if ( data != nullptr) {
+            for (size_t i = 0; i < HEAD.payload_length; ++i) {
+                sum += static_cast<uint8_t>(data[i]);
+            }
+        }
+        return sum;
     }
 
 
