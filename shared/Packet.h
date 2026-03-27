@@ -8,14 +8,29 @@
 #define PKT_TRNSMT_COMP 0X0
 #define PKT_TRNSMT_INCOMP 0x1
 
+#pragma once
+#include <stdint.h>
+#include <string.h>
 
+// --- LAYER 1: THE ENVELOPE (PKTYPE) ---
+// Used by the Networking layer to route raw data
 typedef enum pkTyFl {
     pkt_empty = 0x00,
-    pkt_req = 0x1,
-    pkt_dat = 0x2,
-    pkt_auth = 0x3,
-    pkt_emgcy = 0x4
-}PKTYPE;
+    pkt_req   = 0x01,  // "There is a Request object inside this packet"
+    pkt_dat   = 0x02,  // "This is raw file data for the 1MB transfer"
+    pkt_auth  = 0x03,  // "This is an authentication attempt" 
+    pkt_emgcy = 0x04   // "PRIORITY: Emergency state change"
+} PKTYPE;
+
+// --- LAYER 2: THE COMMAND (REQTYPE) ---
+// Used by the Server State Machine to execute logic
+typedef enum reqtyp {
+    req_weather   = 0, // Pull from weather.csv
+    req_telemetry = 1, // Log to System TrafficLog.csv 
+    req_file      = 2, // Start 1MB FlightManual.pdf stream 
+    req_taxi      = 3, // Request runway clearance 
+    req_test      = 100
+} REQTYPE;
 
 class packet {
 
@@ -23,15 +38,14 @@ private:
 
     struct header {
         uint8_t transmit_flag : 1;
-        uint8_t packet_type : 3;  //allows 7 flags, we discussed and agreed that's fine
-        uint8_t client_id : 4; //allows 15 client ids? we're focusing on a single connection for now so its fine
+        uint8_t packet_type : 3;  //allows 7 flags
+        uint8_t client_id : 4; //allows 15 client ids
         uint8_t payload_length;
        
     }HEAD;
 
     char* data;
     char* txbuff;
-
     int32_t CRC; //4 byte tail
 
 public:

@@ -1,15 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <cstring>
-
-typedef enum reqtyp{
-    req_auth = 0,      // For login
-    req_weather = 1,   // For weather.csv
-    req_telemetry = 2, // For coordinates
-    req_file = 3,      // For 1MB FlightManual.pdf 
-    req_emergency = 4, // To trigger state change 
-    req_test = 100
-} REQTYPE;
+#include "packet.h"
 
 class Request {
     uint8_t type;
