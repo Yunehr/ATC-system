@@ -8,7 +8,6 @@
 #include <cstring> //do I really need this for memcpy? it should be in memory??
 //guess not lol
 
-
 //screw it I love #defines
 //i'd make this an enum but cpp enums actually behave kind of annoyingly?
 //also steve made me not trust const ints so #define it is
@@ -24,12 +23,14 @@
 
 //okay I can't argue that an enum is best here
 typedef enum pkTyFl {
-    pkt_empty=0x00,
+    pkt_empty = 0x00,
     pkt_req = 0x1,
     pkt_dat = 0x2,
     pkt_auth = 0x3,
     pkt_emgcy = 0x4
 }PKTYPE;
+
+
 
 class packet {
 
@@ -132,11 +133,11 @@ public:
     }
 
 
-    char getTFlag(){return HEAD.transmit_flag;}
-    char getPKType(){return HEAD.packet_type;}
-    char getCLID(){return HEAD.client_id;}
-    unsigned char getPloadLength(){return HEAD.payload_length;}
-    char* getData(){return data;}
+    char getTFlag() { return HEAD.transmit_flag; }
+    char getPKType() { return HEAD.packet_type; }
+    char getCLID() { return HEAD.client_id; }
+    unsigned char getPloadLength() { return HEAD.payload_length; }
+    char* getData() { return data; }
     //okay so the data types might get a little weird ngl especially with the char* at the end
     //but like what does it matter why are you modifying a packet you recieved anyways? i'm sure its fine
 
