@@ -34,6 +34,17 @@ class ATCScreen:
         self.log_text = tk.Text(self.log_frame, state="disabled", bg="black", fg="#00ff00", font=("Consolas", 10))
         self.log_text.pack(expand=True, fill="both", padx=5, pady=5)
 
+        self.progress_frame = tk.Frame(root, bg="#1e1e1e")
+        self.progress_frame.pack(fill="x", padx=10, pady=5)
+
+        self.progress_label = tk.Label(self.progress_frame, text="File Transfer: Idle", 
+                                       fg="white", bg="#1e1e1e", font=("Consolas", 9))
+        self.progress_label.pack(side="top", anchor="w")
+
+        self.progress = ttk.Progressbar(self.progress_frame, orient="horizontal", 
+                                        length=100, mode="determinate")
+        self.progress.pack(fill="x", expand=True)
+
         # 3. Manual Controls (REQ-SYS-060)
         self.ctrl_frame = tk.Frame(root, bg="#1e1e1e")
         self.ctrl_frame.pack(fill="x", side="bottom", pady=10)
@@ -48,6 +59,13 @@ class ATCScreen:
         self.log_text.insert(tk.END, f"> {message}\n")
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
+    
+    def update_progress(self, current, total):
+        """Updates the progress bar for REQ-SYS-070 transfers"""
+        percent = (current / total) * 100
+        self.progress['value'] = percent
+        self.progress_label.config(text=f"File Transfer: {int(percent)}%")
+        self.root.update_idletasks() # Forces the UI to refresh immediately
 
     def trigger_emergency(self):
         """Example action for REQ-USE-020"""
