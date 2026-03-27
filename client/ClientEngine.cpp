@@ -6,6 +6,7 @@
 #include "ClientEngine.hpp"
 //#include "../shared/PacketTransport.hpp"
 #include "../shared/Packet.h"
+#include "../shared/Request.h"
 #include <iostream>
 #include <vector>
 
@@ -76,21 +77,22 @@ void ClientEngine::disconnect() {
 
 std::string ClientEngine::requestWeather(const std::string& location) {
     
-    // Create packet body (e.g., location string)
-    packet req;
+    int reqSize = location.size();   //-1 for null terminator used in testing, Unknown if needed here
+    Request txReq(req_weather, reqSize, (char*)location.data());
+    
+    int reqSerialSize = 0;
+    char* serializedReq = txReq.serializeRequest(&reqSerialSize);
 
-    int bodySize = req.PopulPacket(
-        (char*)location.data(), 
-        (int)location.size(), 
-        (char)clientID, 
-        pkt_req     // PKTYPE defines any Request packet as pkt_req
-    );
+
+    // Create packet body (e.g., location string)
+    packet txPkt;
+    txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
 
     // Serialize and Send request packet
-    int serializedSize;
-    char* serializedReq = req.Serialize(&serializedSize);
+    int serialPktSize = 0;
+    char* serializedPkt = txPkt.Serialize(&serialPktSize);
 
-    int bytesSent = send(sock, serializedReq, serializedSize, 0);
+    int bytesSent = send(sock, serializedPkt, serialPktSize, 0);
     if (bytesSent == SOCKET_ERROR) {
         //std::cout << "Failed to send packet\n";
         return "Failed to send WEATHER_REQUEST";
@@ -105,15 +107,19 @@ std::string ClientEngine::requestWeather(const std::string& location) {
     }
 
     // Deserialize response packet
-    packet resp(buffer); 
+    packet rxPkt(buffer); 
+    //verify crc
+    if (rxPkt.calcCRC() != rxPkt.GetCRC()){
+        return "CRC Checksum Failed";
+    }
     
     //read header to determine if response is valid and what type it is
-    if (resp.getTFlag() == PKT_TRNSMT_INCOMP) {
+    if (rxPkt.getTFlag() == PKT_TRNSMT_INCOMP) {
         //std::cout << "Received incomplete packet\n";
         return "Received incomplete response";
     }
-    if (resp.getPKType() == pkt_dat) { 
-        return std::string(resp.getData()); 
+    if (rxPkt.getPKType() == pkt_dat) { 
+        return std::string(rxPkt.getData()); 
     }
 
     return "Unexpected response type";

@@ -1,6 +1,7 @@
 #include "ServerEngine.hpp"
 #include "../shared/PacketTransport.hpp"
 #include "../shared/packet.h"
+#include "../shared/Request.h"
 #include "WeatherService.hpp"
 #include <iostream>
 #include <string>
@@ -75,43 +76,68 @@ void ServerEngine::stop() {
 
 void ServerEngine::handleClient(SOCKET clientSock) {
     while (true) {
-        packet req;
+        packet rxPkt;
 
-        if (!PacketTransport::receivePacket((int)clientSock, req)) {
+        if (!PacketTransport::receivePacket((int)clientSock, rxPkt)) {
             break;
         }
 
-        unsigned char type = req.getPKType();
-        unsigned char clientID = req.getCLID();
+        unsigned char type = rxPkt.getPKType();
+        unsigned char clientID = rxPkt.getCLID();
 
-        if (type == pkt_req) {
-            std::string location(req.getData(), req.getPloadLength());
+        if (rxPkt.calcCRC() != rxPkt.GetCRC()){
+            std::string msg = "CRC Checksum Failed";
 
-            std::cout << "REQUEST RECEIVED: " << location << "\n";
-            std::cout << "Client ID: " << (int)clientID << "\n";
+            packet err;
+            err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
 
-            std::string weather = WeatherService::getWeather(location);
-
-            packet resp;
-            resp.PopulPacket((char*)weather.c_str(), (int)weather.size(), clientID, pkt_dat);
-
-            std::cout << "DATA: ";
-            std::cout.write(resp.getData(), resp.getPloadLength());
-            std::cout << std::endl;
-
-            // just for me to debug
-            std::cout << "CRC: " << resp.calcCRC() << std::endl;
-            std::cout << "TYPE: " << (int)resp.getPKType() << std::endl;
-            std::cout << "FLAG: " << (int)resp.getTFlag() << std::endl;
-            std::cout << "CLIENT ID: " << (int)resp.getCLID() << std::endl;
-            std::cout << "LENGTH: " << (int)resp.getPloadLength() << std::endl;
-
-            if (!PacketTransport::sendPacket((int)clientSock, resp)) {
+            if (!PacketTransport::sendPacket((int)clientSock, err)) {
                 break;
             }
         }
+
+        if (type == pkt_req) {
+            Request rxReq(rxPkt.getData(), rxPkt.getPloadLength());
+
+            if(rxReq.getType() == req_weather) {
+                std::string location(rxReq.getBody(), rxReq.getBsize());
+
+                std::cout << "REQUEST RECEIVED: " << location << "\n";
+                std::cout << "Client ID: " << (int)clientID << "\n";
+
+                std::string weather = WeatherService::getWeather(location);
+
+                packet resp;
+                resp.PopulPacket((char*)weather.c_str(), (int)weather.size(), clientID, pkt_dat);
+
+                std::cout << "DATA: ";
+                std::cout.write(resp.getData(), resp.getPloadLength());
+                std::cout << std::endl;
+
+                // just for me to debug
+                std::cout << "CRC: " << resp.calcCRC() << std::endl;
+                std::cout << "TYPE: " << (int)resp.getPKType() << std::endl;
+                std::cout << "FLAG: " << (int)resp.getTFlag() << std::endl;
+                std::cout << "CLIENT ID: " << (int)resp.getCLID() << std::endl;
+                std::cout << "LENGTH: " << (int)resp.getPloadLength() << std::endl;
+
+                if (!PacketTransport::sendPacket((int)clientSock, resp)) {
+                    break;
+                }
+            }
+            else {
+                std::string msg = "Unknown request type";
+
+                packet err;
+                err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
+
+                if (!PacketTransport::sendPacket((int)clientSock, err)) {
+                    break;
+                }
+            }
+        }
         else {
-            std::string msg = "Unknown request type";
+            std::string msg = "Unknown packet type";
 
             packet err;
             err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);

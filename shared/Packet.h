@@ -171,5 +171,6 @@ public:
     char getCLID() { return HEAD.client_id; }
     unsigned char getPloadLength() { return HEAD.payload_length; }
     char* getData() { return data; }
+    int GetCRC() { return CRC; }
 
 };
