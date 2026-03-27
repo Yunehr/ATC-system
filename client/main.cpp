@@ -36,19 +36,72 @@ int main(int argc, char* argv[]) {
     // WEATHER <location>
     std::string cmd;
     while (std::cin >> cmd) {
+        std::string input = "";
+        
 
+        // STARTUP
         if (cmd == "QUIT") {
             std::cout << "BYE\n";
             std::cout.flush();
             break;
         }
 
-        if (cmd == "WEATHER") {
-            std::string location;
-            std::cin >> location;
+        // EMERGENCY
 
-            std::string result = client.requestWeather(location);
+        //AUTH
+        
+        //PRE_FLIGHT
+        if (cmd == "WEATHER") {
+            std::string input;
+            std::cout << "Please enter location name: ";
+            std::cin >> input;
+
+            std::string result = client.dataRequest(input, req_weather);
             std::cout << "WEATHER_RESPONSE: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+        if (cmd == "FLIGHT") {
+            std::string input;
+            std::cout << "Please enter Flight ID: ";
+            std::cin >> input;
+
+            std::string result = client.dataRequest(input, req_fplan);
+            std::cout << "Flight Plan: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+        if (cmd == "TAXI") {
+            std::string result = client.dataRequest(input, req_fplan);
+            std::cout << "Taxi Response: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+
+        // ACTIVE_AIRSPACE
+        if (cmd == "LAND") {
+            std::string result = client.dataRequest(input, req_fplan);
+            std::cout << "Clearance_Request: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+        if (cmd == "TELEM") {
+            std::string result = client.dataRequest(input, req_telemetry);
+            std::cout << "Telemetry Response: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+        if (cmd == "TRAFFIC") {
+            std::string result = client.dataRequest(input, req_traffic);
+            std::cout << "Air Traffic Response: " << result << "\n";
+            std::cout.flush();
+            continue;
+        }
+
+        //DATA_TRANSFER
+        if (cmd == "MANUAL") {
+            std::string result = client.dataRequest(input, req_fplan);
+            std::cout << "unknown Response: " << result << "\n";
             std::cout.flush();
             continue;
         }

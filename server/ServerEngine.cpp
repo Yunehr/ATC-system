@@ -98,6 +98,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
 
         if (type == pkt_req) {
             Request rxReq(rxPkt.getData(), rxPkt.getPloadLength());
+            std::string data;
 
             if(rxReq.getType() == req_weather) {
                 std::string location(rxReq.getBody(), rxReq.getBsize());
@@ -105,35 +106,40 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 std::cout << "REQUEST RECEIVED: " << location << "\n";
                 std::cout << "Client ID: " << (int)clientID << "\n";
 
-                std::string weather = WeatherService::getWeather(location);
-
-                packet resp;
-                resp.PopulPacket((char*)weather.c_str(), (int)weather.size(), clientID, pkt_dat);
-
-                std::cout << "DATA: ";
-                std::cout.write(resp.getData(), resp.getPloadLength());
-                std::cout << std::endl;
-
-                // just for me to debug
-                std::cout << "CRC: " << resp.calcCRC() << std::endl;
-                std::cout << "TYPE: " << (int)resp.getPKType() << std::endl;
-                std::cout << "FLAG: " << (int)resp.getTFlag() << std::endl;
-                std::cout << "CLIENT ID: " << (int)resp.getCLID() << std::endl;
-                std::cout << "LENGTH: " << (int)resp.getPloadLength() << std::endl;
-
-                if (!PacketTransport::sendPacket((int)clientSock, resp)) {
-                    break;
-                }
+                data = WeatherService::getWeather(location);
             }
+            else if (rxReq.getType() == req_telemetry){ 
+                data = "Telemetry Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_file){ 
+                data = "Flight Manual Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_taxi){ 
+                data = "Taxi Request Request: Service currently unavailable\n";
+            }
+            else if (rxReq.getType() == req_fplan){ 
+                data = "Flight Plan Request: Service currently unavailable\n";
+            } //continue with the above format for each request type
             else {
-                std::string msg = "Unknown request type";
+                data = "Unknown request type";
+            }
 
-                packet err;
-                err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
+            packet resp;
+            resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_dat);
 
-                if (!PacketTransport::sendPacket((int)clientSock, err)) {
-                    break;
-                }
+            std::cout << "DATA: ";
+            std::cout.write(resp.getData(), resp.getPloadLength());
+            std::cout << std::endl;
+
+            // just for me to debug
+            std::cout << "CRC: " << resp.calcCRC() << std::endl;
+            std::cout << "TYPE: " << (int)resp.getPKType() << std::endl;
+            std::cout << "FLAG: " << (int)resp.getTFlag() << std::endl;
+            std::cout << "CLIENT ID: " << (int)resp.getCLID() << std::endl;
+            std::cout << "LENGTH: " << (int)resp.getPloadLength() << std::endl;
+
+            if (!PacketTransport::sendPacket((int)clientSock, resp)) {
+                break;
             }
         }
         else {

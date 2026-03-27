@@ -75,10 +75,10 @@ void ClientEngine::disconnect() {
  * @return std::string The weather data, a server error message, or a transport error description.
  */
 
-std::string ClientEngine::requestWeather(const std::string& location) {
+std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
     
-    int reqSize = location.size();   //-1 for null terminator used in testing, Unknown if needed here
-    Request txReq(req_weather, reqSize, (char*)location.data());
+    int reqSize = data.size();   //-1 for null terminator used in testing, Unknown if needed here
+    Request txReq(type, reqSize, (char*)data.data());
     
     int reqSerialSize = 0;
     char* serializedReq = txReq.serializeRequest(&reqSerialSize);
@@ -95,7 +95,7 @@ std::string ClientEngine::requestWeather(const std::string& location) {
     int bytesSent = send(sock, serializedPkt, serialPktSize, 0);
     if (bytesSent == SOCKET_ERROR) {
         //std::cout << "Failed to send packet\n";
-        return "Failed to send WEATHER_REQUEST";
+        return "Failed to send request";
     }
 
     // Receive response packet
@@ -119,7 +119,7 @@ std::string ClientEngine::requestWeather(const std::string& location) {
         return "Received incomplete response";
     }
     if (rxPkt.getPKType() == pkt_dat) { 
-        return std::string(rxPkt.getData()); 
+        return std::string(rxPkt.getData(), rxPkt.getPloadLength()); 
     }
 
     return "Unexpected response type";

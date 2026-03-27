@@ -1,6 +1,7 @@
 #pragma once
 #include <winsock2.h>
 #include <string>
+#include "../shared/Packet.h"
 
 class ClientEngine {
 public:
@@ -10,7 +11,7 @@ public:
     bool connectToServer(const std::string& ip, unsigned short port);
     void disconnect();
 
-    std::string requestWeather(const std::string& location);
+    std::string dataRequest(const std::string& data, reqtyp type);
 
 private:
     SOCKET sock;

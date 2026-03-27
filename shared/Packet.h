@@ -24,6 +24,8 @@ typedef enum reqtyp {
     req_telemetry = 1, // Log to System TrafficLog.csv 
     req_file      = 2, // Start 1MB FlightManual.pdf stream 
     req_taxi      = 3, // Request runway clearance 
+    req_fplan     = 4, // Pull from Flight_plan.csv
+    req_traffic   = 5,
     req_test      = 100
 } REQTYPE;
 
