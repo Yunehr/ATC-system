@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 
         // ACTIVE_AIRSPACE
         if (cmd == "LAND") {
-            std::string result = client.dataRequest(input, req_fplan);
+            std::string result = client.dataRequest(input, req_taxi);
             std::cout << "Clearance_Request: " << result << "\n";
             std::cout.flush();
             continue;
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 
         //DATA_TRANSFER
         if (cmd == "MANUAL") {
-            std::string result = client.dataRequest(input, req_fplan);
+            std::string result = client.dataRequest(input, req_file);
             std::cout << "Manual Response: " << result << "\n";
             std::cout.flush();
             continue;
