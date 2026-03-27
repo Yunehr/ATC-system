@@ -1,8 +1,7 @@
 #pragma once
-#include <iostream>
-#include <vector>
-#include <cstdint>
 
+#include <cstdint>  // For uint8_t and int32_t consistency
+#include <cstring>   // REQUIRED for memset and memcpy 
 
 #define EMTPY_PKTSIZE  6
 #define MAX_PKTSIZE 250 
@@ -41,6 +40,28 @@ public:
         data = nullptr;
         txbuff = nullptr;
         memset(&HEAD, 0, sizeof(header));
+    }
+    
+    packet& operator=(const packet& other) {
+        if (this == &other) return *this;
+        
+        // 1. Clean up our existing memory to prevent leaks
+        if (data) delete[] data;
+        if (txbuff) delete[] txbuff;
+
+        // 2. Copy the Header and CRC
+        HEAD = other.HEAD;
+        CRC = other.CRC;
+        txbuff = nullptr; // Don't copy the transmission buffer
+
+        // 3. Perform a DEEP COPY of the data 
+        if (other.data) {
+            data = new char[HEAD.payload_length];
+            memcpy(data, other.data, HEAD.payload_length);
+        } else {
+            data = nullptr;
+        }
+        return *this;
     }
 
     //Destructor: Prevents memory leaks during 1MB tranfer
@@ -92,7 +113,6 @@ public:
         HEAD.payload_length = consumed;
         HEAD.client_id = id;
         HEAD.packet_type = type;
-        //i'll leave it up to the sender to make sure their packet type and actual contents correspond
 
         return consumed;
     }
@@ -137,14 +157,10 @@ public:
         return sum;
     }
 
-
     char getTFlag() { return HEAD.transmit_flag; }
     char getPKType() { return HEAD.packet_type; }
     char getCLID() { return HEAD.client_id; }
     unsigned char getPloadLength() { return HEAD.payload_length; }
     char* getData() { return data; }
-    //okay so the data types might get a little weird ngl especially with the char* at the end
-    //but like what does it matter why are you modifying a packet you recieved anyways? i'm sure its fine
 
-    //also, the actual sending and recieving wouldn't be done here, right? 
 };
