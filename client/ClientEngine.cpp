@@ -75,7 +75,7 @@ void ClientEngine::disconnect() {
  * @return std::string The weather data, a server error message, or a transport error description.
  */
 
-std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
+std::string ClientEngine::dataRequest(const std::string& data, pkTyFl pkType, reqtyp type) {
     
     int reqSize = data.size();   //-1 for null terminator used in testing, Unknown if needed here
     Request txReq(type, reqSize, (char*)data.data());
@@ -86,7 +86,7 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
 
     // Create packet body (e.g., location string)
     packet txPkt;
-    txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
+    txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkType);
 
     // Serialize and Send request packet
     int serialPktSize = 0;
