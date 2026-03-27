@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdint>  // For uint8_t and int32_t consistency
 #include <cstring>   // REQUIRED for memset and memcpy 
 
@@ -7,10 +6,6 @@
 #define MAX_PKTSIZE 250 
 #define PKT_TRNSMT_COMP 0X0
 #define PKT_TRNSMT_INCOMP 0x1
-
-#pragma once
-#include <stdint.h>
-#include <string.h>
 
 // --- LAYER 1: THE ENVELOPE (PKTYPE) ---
 // Used by the Networking layer to route raw data
