@@ -1,53 +1,47 @@
 #pragma once
-//sebastian solorzano -- atc tower pr4j -- packet and networks 
-//would it be easier to simply treat this as a header library? I'm not sure
-//anyways. definition/implementation of the packets being used
-//aka the protocol
-
-#include <memory>
-#include <cstring> //do I really need this for memcpy? it should be in memory??
-//guess not lol
-
-//screw it I love #defines
-//i'd make this an enum but cpp enums actually behave kind of annoyingly?
-//also steve made me not trust const ints so #define it is
-//anyway these are moreso outwards facing (packet doesn't care lmao), so should they be somewhere else?
+#include <cstdint>  // For uint8_t and int32_t consistency
+#include <cstring>   // REQUIRED for memset and memcpy 
 
 #define EMTPY_PKTSIZE  6
-#define MAX_PKTSIZE 250 // ok so this is *somewhat* arbitrary? payload_length is 1 byte so it can store 255 max,
-//and we also *want* to have a limit on packet size anyways. (trying to send the 1mb data file in a single packet is insanity)
-//anyways you guys didn't complain when I explained this earlier so I've made an executive decision
+#define MAX_PKTSIZE 250 
 #define PKT_TRNSMT_COMP 0X0
 #define PKT_TRNSMT_INCOMP 0x1
-//do I need both? maybe not. but I think it's good practice?
 
-//okay I can't argue that an enum is best here
+// --- LAYER 1: THE ENVELOPE (PKTYPE) ---
+// Used by the Networking layer to route raw data
 typedef enum pkTyFl {
     pkt_empty = 0x00,
-    pkt_req = 0x1,
-    pkt_dat = 0x2,
-    pkt_auth = 0x3,
-    pkt_emgcy = 0x4
-}PKTYPE;
+    pkt_req   = 0x01,  // "There is a Request object inside this packet"
+    pkt_dat   = 0x02,  // "This is raw file data for the 1MB transfer"
+    pkt_auth  = 0x03,  // "This is an authentication attempt" 
+    pkt_emgcy = 0x04   // "PRIORITY: Emergency state change"
+} PKTYPE;
 
-
+// --- LAYER 2: THE COMMAND (REQTYPE) ---
+// Used by the Server State Machine to execute logic
+typedef enum reqtyp {
+    req_weather   = 0, // Pull from weather.csv
+    req_telemetry = 1, // Log to System TrafficLog.csv 
+    req_file      = 2, // Start 1MB FlightManual.pdf stream 
+    req_taxi      = 3, // Request runway clearance 
+    req_test      = 100
+} REQTYPE;
 
 class packet {
 
 private:
 
     struct header {
-        char transmit_flag : 1;
-        unsigned char packet_type : 3;  //allows 7 flags, we discussed and agreed that's fine
-        unsigned char client_id : 4; //allows 15 client ids? we're focusing on a single connection for now so its fine
-        unsigned char payload_length;
-        //okay all of these are unsigned lol I forgot about 2's complement messing with your representation w
+        uint8_t transmit_flag : 1;
+        uint8_t packet_type : 3;  //allows 7 flags
+        uint8_t client_id : 4; //allows 15 client ids
+        uint8_t payload_length;
+       
     }HEAD;
 
     char* data;
     char* txbuff;
-
-    int CRC;
+    int32_t CRC; //4 byte tail
 
 public:
     //packet [creation side]
@@ -55,11 +49,40 @@ public:
         data = nullptr;
         txbuff = nullptr;
         memset(&HEAD, 0, sizeof(header));
-        //ensuring everything is zeroed, I guess
-        //elliot does it in his packet def.
+    }
+    
+    packet& operator=(const packet& other) {
+        if (this == &other) return *this;
+        
+        // 1. Clean up our existing memory to prevent leaks
+        if (data) delete[] data;
+        if (txbuff) delete[] txbuff;
 
-        //packet_type should be 0 in this case,
-        //which we should keep defined as 'empty packet?'
+        // 2. Copy the Header and CRC
+        HEAD = other.HEAD;
+        CRC = other.CRC;
+        txbuff = nullptr; // Don't copy the transmission buffer
+
+        // 3. Perform a DEEP COPY of the data 
+        if (other.data) {
+            data = new char[HEAD.payload_length];
+            memcpy(data, other.data, HEAD.payload_length);
+        } else {
+            data = nullptr;
+        }
+        return *this;
+    }
+
+    //Destructor: Prevents memory leaks during 1MB tranfer
+    ~packet(){
+        if (data) {
+            delete[] data;
+            data = nullptr;
+        }
+        if (txbuff) {
+            delete[] txbuff;
+            txbuff = nullptr;
+        }
     }
 
     //packet [recieving side]
@@ -99,7 +122,6 @@ public:
         HEAD.payload_length = consumed;
         HEAD.client_id = id;
         HEAD.packet_type = type;
-        //i'll leave it up to the sender to make sure their packet type and actual contents correspond
 
         return consumed;
     }
@@ -128,18 +150,26 @@ public:
     }
 
     int calcCRC() {
-        //uh idk guys
-        return 0;
-    }
+        int sum = 0;
 
+        //sum every byte in the header
+        uint8_t* hPtr = reinterpret_cast<uint8_t*>(&HEAD);
+        for (size_t i = 0; i < sizeof(header); ++i) {
+            sum += hPtr[i];
+        }
+        //sum every byte in the body
+        if ( data != nullptr) {
+            for (size_t i = 0; i < HEAD.payload_length; ++i) {
+                sum += static_cast<uint8_t>(data[i]);
+            }
+        }
+        return sum;
+    }
 
     char getTFlag() { return HEAD.transmit_flag; }
     char getPKType() { return HEAD.packet_type; }
     char getCLID() { return HEAD.client_id; }
     unsigned char getPloadLength() { return HEAD.payload_length; }
     char* getData() { return data; }
-    //okay so the data types might get a little weird ngl especially with the char* at the end
-    //but like what does it matter why are you modifying a packet you recieved anyways? i'm sure its fine
 
-    //also, the actual sending and recieving wouldn't be done here, right? 
 };

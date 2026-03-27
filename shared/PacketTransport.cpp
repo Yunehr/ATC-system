@@ -16,30 +16,29 @@ bool PacketTransport::sendPacket(int sock, packet& pak)
 
 bool PacketTransport::receivePacket(int sock, packet& outpak)
 {
-    const int HEADER_SIZE = 2;
-
+    // Use sizeof(HEAD) instead of hardcoded '2' for reliability
+    const int HEADER_SIZE = 2; 
     char headerBuff[HEADER_SIZE];
 
     if (!recvAll(sock, headerBuff, HEADER_SIZE)) {
         return false;
     }
 
-    unsigned char payloadLength = (unsigned char)headerBuff[1];
-    int totalSize = HEADER_SIZE + payloadLength + sizeof(int); // CRC is 4 bytes
+    // Extract length from the buffer
+    uint8_t payloadLength = (uint8_t)headerBuff[1];
+    int totalSize = HEADER_SIZE + payloadLength + sizeof(int32_t); 
 
     char* fullBuffer = new char[totalSize];
-
     memcpy(fullBuffer, headerBuff, HEADER_SIZE);
 
-    int remaining = totalSize - HEADER_SIZE;
-
-    if (!recvAll(sock, fullBuffer + HEADER_SIZE, remaining)) {
+    // Get the rest of the packet (Body + Tail)
+    if (!recvAll(sock, fullBuffer + HEADER_SIZE, totalSize - HEADER_SIZE)) {
         delete[] fullBuffer;
         return false;
     }
 
-    packet temp(fullBuffer);
-    outpak = temp;
+    // This now uses the 'operator=' for a safe deep copy
+    outpak = packet(fullBuffer); 
 
     delete[] fullBuffer;
     return true;
