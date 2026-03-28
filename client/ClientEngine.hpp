@@ -12,6 +12,7 @@ public:
     void disconnect();
 
     std::string dataRequest(const std::string& data, reqtyp type);
+    std::string authRequest(const std::string&data);
 
 private:
     SOCKET sock;

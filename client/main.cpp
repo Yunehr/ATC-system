@@ -49,6 +49,21 @@ int main(int argc, char* argv[]) {
         // EMERGENCY
 
         //AUTH
+        if (cmd == "Login"){
+            std::string Username;
+            std::cout << "Please enter Username: ";
+            std::cin >> Username;
+            std::string Password;
+            std::cout << "Please enter Password: ";
+            std::cin >> Password;
+            std::string URN = "Login?Username="+Username+"&Password="+Password;
+            
+            std::string result = client.authRequest(URN);
+            std::cout << "LoginAuth: " << result << "\n";
+            std::cout.flush();
+            continue;
+
+        }
         
         //PRE_FLIGHT
         if (cmd == "WEATHER") {
@@ -72,7 +87,7 @@ int main(int argc, char* argv[]) {
             continue;
         }
         if (cmd == "TAXI") {
-            std::string result = client.dataRequest(input, req_fplan);
+            std::string result = client.dataRequest(input, req_taxi);
             std::cout << "Taxi Response: " << result << "\n";
             std::cout.flush();
             continue;
@@ -80,7 +95,7 @@ int main(int argc, char* argv[]) {
 
         // ACTIVE_AIRSPACE
         if (cmd == "LAND") {
-            std::string result = client.dataRequest(input, req_fplan);
+            std::string result = client.dataRequest(input, req_taxi);
             std::cout << "Clearance_Request: " << result << "\n";
             std::cout.flush();
             continue;
@@ -100,8 +115,8 @@ int main(int argc, char* argv[]) {
 
         //DATA_TRANSFER
         if (cmd == "MANUAL") {
-            std::string result = client.dataRequest(input, req_fplan);
-            std::cout << "unknown Response: " << result << "\n";
+            std::string result = client.dataRequest(input, req_file);
+            std::cout << "Manual Response: " << result << "\n";
             std::cout.flush();
             continue;
         }

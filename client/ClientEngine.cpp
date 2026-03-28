@@ -124,3 +124,45 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
 
     return "Unexpected response type";
 }
+
+std::string ClientEngine::authRequest(const std::string&data){
+    packet txPkt;
+    int size = data.size();
+    txPkt.PopulPacket((char*)data.data(),size,(char)clientID,pkt_auth);
+
+    // Serialize and Send request packet
+    int serialPktSize = 0;
+    char* serializedPkt = txPkt.Serialize(&serialPktSize);
+
+    int bytesSent = send(sock, serializedPkt, serialPktSize, 0);
+    if (bytesSent == SOCKET_ERROR) {
+        //std::cout << "Failed to send packet\n";
+        return "Failed to send request";
+    }
+
+    // Receive response packet
+    char buffer[MAX_PKTSIZE];
+    int received = recv(sock, buffer, sizeof(buffer), 0);
+    if (received == SOCKET_ERROR || received == 0) { 
+        //std::cout << "Failed to receive packet\n";
+        return "Failed to receive response";
+    }
+
+    // Deserialize response packet
+    packet rxPkt(buffer); 
+    //verify crc
+    if (rxPkt.calcCRC() != rxPkt.GetCRC()){
+        return "CRC Checksum Failed";
+    }
+    
+    //read header to determine if response is valid and what type it is
+    if (rxPkt.getTFlag() == PKT_TRNSMT_INCOMP) {
+        //std::cout << "Received incomplete packet\n";
+        return "Received incomplete response";
+    }
+    if (rxPkt.getPKType() == pkt_dat) { 
+        return std::string(rxPkt.getData(), rxPkt.getPloadLength()); 
+    }
+
+    return "Unexpected response type";
+}
