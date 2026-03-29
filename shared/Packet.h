@@ -108,6 +108,8 @@ public:
             delete[] data;
         }
 
+        HEAD.transmit_flag = PKT_TRNSMT_COMP;
+
         if (size >= MAX_PKTSIZE) {
             consumed = MAX_PKTSIZE;
             HEAD.transmit_flag = PKT_TRNSMT_INCOMP;
@@ -174,5 +176,6 @@ public:
     unsigned char getPloadLength() { return HEAD.payload_length; }
     char* getData() { return data; }
     int GetCRC() { return CRC; }
+    void setTransmitFlag(char flag) { HEAD.transmit_flag = (flag ? PKT_TRNSMT_INCOMP : PKT_TRNSMT_COMP); }
 
 };

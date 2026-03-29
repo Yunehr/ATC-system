@@ -15,4 +15,5 @@ private:
     bool running;
 
     void handleClient(SOCKET clientSock);
+    bool sendFlightManual(SOCKET clientSock, unsigned char clientId);
 };

@@ -3,8 +3,28 @@
 #include "../shared/packet.h"
 #include "../shared/Request.h"
 #include "WeatherService.hpp"
+#include "FileTransferManager.hpp"
+#include "ClientSession.hpp"
+#include "StateMachine.hpp"
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <cstdint>
+#include <cstring>
+
+static std::ifstream openManualFile() {
+    std::ifstream in("../data/FlightManual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("data/FlightManual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("../data/flightmanual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("data/flightmanual.pdf", std::ios::binary);
+    return in;
+}
 
 ServerEngine::ServerEngine() : listenSock(INVALID_SOCKET), running(false) {}
 
@@ -74,7 +94,55 @@ void ServerEngine::stop() {
     }
 }
 
+bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
+    std::ifstream src = openManualFile();
+    if (!src.is_open()) {
+        return false;
+    }
+
+    const int chunkSize = MAX_PKTSIZE - (int)sizeof(uint32_t);
+    char fileBuffer[MAX_PKTSIZE] = { 0 };
+    char payload[MAX_PKTSIZE] = { 0 };
+    uint32_t currentOffset = 0;
+    bool sentAnyChunk = false;
+
+    while (true) {
+        src.read(fileBuffer, chunkSize);
+        std::streamsize bytesRead = src.gcount();
+        if (bytesRead <= 0) {
+            break;
+        }
+
+        std::memcpy(payload, &currentOffset, sizeof(uint32_t));
+        std::memcpy(payload + sizeof(uint32_t), fileBuffer, (size_t)bytesRead);
+
+        packet chunk;
+        chunk.PopulPacket(payload, (int)bytesRead + (int)sizeof(uint32_t), (char)clientId, pkt_dat);
+
+        bool isLastChunk = (src.peek() == EOF);
+        chunk.setTransmitFlag(isLastChunk ? PKT_TRNSMT_COMP : PKT_TRNSMT_INCOMP);
+
+        if (!PacketTransport::sendPacket((int)clientSock, chunk)) {
+            return false;
+        }
+
+        sentAnyChunk = true;
+        currentOffset += (uint32_t)bytesRead;
+    }
+
+    if (!sentAnyChunk) {
+        packet eofChunk;
+        eofChunk.PopulPacket(payload, (int)sizeof(uint32_t), (char)clientId, pkt_dat);
+        eofChunk.setTransmitFlag(PKT_TRNSMT_COMP);
+        return PacketTransport::sendPacket((int)clientSock, eofChunk);
+    }
+
+    return true;
+}
+
 void ServerEngine::handleClient(SOCKET clientSock) {
+    StateMachine stateMachine;
+
     while (true) {
         packet rxPkt;
 
@@ -99,27 +167,53 @@ void ServerEngine::handleClient(SOCKET clientSock) {
         if (type == pkt_req) {
             Request rxReq(rxPkt.getData(), rxPkt.getPloadLength());
             std::string data;
+            reqtyp reqType = static_cast<reqtyp>(rxReq.getType());
 
-            if(rxReq.getType() == req_weather) {
+            if (!stateMachine.canHandle(reqType)) {
+                data = "Request denied in state: " + stateMachine.getStateName();
+            }
+            else if (reqType == req_weather) {
                 std::string location(rxReq.getBody(), rxReq.getBsize());
 
                 std::cout << "REQUEST RECEIVED: " << location << "\n";
                 std::cout << "Client ID: " << (int)clientID << "\n";
 
                 data = WeatherService::getWeather(location);
+                stateMachine.onRequestHandled(reqType);
             }
-            else if (rxReq.getType() == req_telemetry){ 
-                data = "Telemetry Request: Service currently unavailable\n";
+            else if (reqType == req_telemetry) {
+                std::string telemetry(rxReq.getBody(), rxReq.getBsize());
+                data = FileTransferManager::logTelemetry(telemetry, clientID);
+                stateMachine.onRequestHandled(reqType);
             }
-            else if (rxReq.getType() == req_file){ 
-                data = "Flight Manual Request: Service currently unavailable\n";
+            else if (reqType == req_file) {
+                if (!sendFlightManual(clientSock, clientID)) {
+                    data = "Flight Manual: transfer failed or file missing";
+                    packet resp;
+                    resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_empty);
+                    if (!PacketTransport::sendPacket((int)clientSock, resp)) {
+                        break;
+                    }
+                } else {
+                    stateMachine.onRequestHandled(reqType);
+                    stateMachine.onDataTransferComplete();
+                }
+                continue;
             }
-            else if (rxReq.getType() == req_taxi){ 
-                data = "Taxi Request Request: Service currently unavailable\n";
+            else if (reqType == req_taxi) {
+                data = FileTransferManager::getTaxiClearance();
+                stateMachine.onRequestHandled(reqType);
             }
-            else if (rxReq.getType() == req_fplan){ 
-                data = "Flight Plan Request: Service currently unavailable\n";
-            } //continue with the above format for each request type
+            else if (reqType == req_fplan) {
+                std::string flightId(rxReq.getBody(), rxReq.getBsize());
+                data = FileTransferManager::getFlightPlan(flightId);
+                stateMachine.onRequestHandled(reqType);
+            }
+            else if (reqType == req_traffic) {
+                std::string flightId(rxReq.getBody(), rxReq.getBsize());
+                data = FileTransferManager::getTraffic(flightId);
+                stateMachine.onRequestHandled(reqType);
+            }
             else {
                 data = "Unknown request type";
             }
@@ -141,8 +235,29 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             if (!PacketTransport::sendPacket((int)clientSock, resp)) {
                 break;
             }
+            continue;
         }
-        else {
+
+        if (type == pkt_auth) {
+            std::string credentials(rxPkt.getData(), rxPkt.getPloadLength());
+            std::cout << "AUTH ATTEMPT: " << credentials << "\n";
+            std::cout << "Client ID: " << (int)clientID << "\n";
+
+            std::string response = ClientSession::authenticate(credentials);
+            if (response.find("Authentication Successful") != std::string::npos) {
+                stateMachine.onAuthSuccess();
+            }
+
+            packet authResp;
+            authResp.PopulPacket((char*)response.c_str(), (int)response.size(), clientID, pkt_auth);
+
+            if (!PacketTransport::sendPacket((int)clientSock, authResp)) {
+                break;
+            }
+            continue;
+        }
+
+        {
             std::string msg = "Unknown packet type";
 
             packet err;

@@ -12,7 +12,8 @@ public:
     void disconnect();
 
     std::string dataRequest(const std::string& data, reqtyp type);
-    std::string authRequest(const std::string&data);
+    std::string pkRequest(const std::string&data, pkTyFl PKtype);
+    std::string downloadFlightManual(const std::string& outputPath);
 
 private:
     SOCKET sock;
