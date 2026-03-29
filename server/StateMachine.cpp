@@ -93,3 +93,7 @@ void StateMachine::onRequestHandled(reqtyp requestType) {
 		state = ServerState::ACTIVE_AIRSPACE;
 	}
 }
+
+void StateMachine::onDataTransferComplete() {
+	state = ServerState::PRE_FLIGHT;
+}

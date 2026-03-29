@@ -13,6 +13,7 @@ public:
 
     std::string dataRequest(const std::string& data, reqtyp type);
     std::string pkRequest(const std::string&data, pkTyFl PKtype);
+    std::string downloadFlightManual(const std::string& outputPath);
 
 private:
     SOCKET sock;

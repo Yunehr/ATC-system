@@ -17,6 +17,7 @@ public:
 	bool canHandle(reqtyp requestType) const;
 	void onAuthSuccess();
 	void onRequestHandled(reqtyp requestType);
+	void onDataTransferComplete();
 
 	std::string getStateName() const;
 

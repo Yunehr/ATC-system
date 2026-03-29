@@ -8,6 +8,23 @@
 #include "StateMachine.hpp"
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <cstdint>
+#include <cstring>
+
+static std::ifstream openManualFile() {
+    std::ifstream in("../data/FlightManual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("data/FlightManual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("../data/flightmanual.pdf", std::ios::binary);
+    if (in.is_open()) return in;
+
+    in.open("data/flightmanual.pdf", std::ios::binary);
+    return in;
+}
 
 ServerEngine::ServerEngine() : listenSock(INVALID_SOCKET), running(false) {}
 
@@ -77,6 +94,52 @@ void ServerEngine::stop() {
     }
 }
 
+bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
+    std::ifstream src = openManualFile();
+    if (!src.is_open()) {
+        return false;
+    }
+
+    const int chunkSize = MAX_PKTSIZE - (int)sizeof(uint32_t);
+    char fileBuffer[MAX_PKTSIZE] = { 0 };
+    char payload[MAX_PKTSIZE] = { 0 };
+    uint32_t currentOffset = 0;
+    bool sentAnyChunk = false;
+
+    while (true) {
+        src.read(fileBuffer, chunkSize);
+        std::streamsize bytesRead = src.gcount();
+        if (bytesRead <= 0) {
+            break;
+        }
+
+        std::memcpy(payload, &currentOffset, sizeof(uint32_t));
+        std::memcpy(payload + sizeof(uint32_t), fileBuffer, (size_t)bytesRead);
+
+        packet chunk;
+        chunk.PopulPacket(payload, (int)bytesRead + (int)sizeof(uint32_t), (char)clientId, pkt_dat);
+
+        bool isLastChunk = (src.peek() == EOF);
+        chunk.setTransmitFlag(isLastChunk ? PKT_TRNSMT_COMP : PKT_TRNSMT_INCOMP);
+
+        if (!PacketTransport::sendPacket((int)clientSock, chunk)) {
+            return false;
+        }
+
+        sentAnyChunk = true;
+        currentOffset += (uint32_t)bytesRead;
+    }
+
+    if (!sentAnyChunk) {
+        packet eofChunk;
+        eofChunk.PopulPacket(payload, (int)sizeof(uint32_t), (char)clientId, pkt_dat);
+        eofChunk.setTransmitFlag(PKT_TRNSMT_COMP);
+        return PacketTransport::sendPacket((int)clientSock, eofChunk);
+    }
+
+    return true;
+}
+
 void ServerEngine::handleClient(SOCKET clientSock) {
     StateMachine stateMachine;
 
@@ -124,8 +187,18 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 stateMachine.onRequestHandled(reqType);
             }
             else if (reqType == req_file) {
-                data = FileTransferManager::getManualInfo();
-                stateMachine.onRequestHandled(reqType);
+                if (!sendFlightManual(clientSock, clientID)) {
+                    data = "Flight Manual: transfer failed or file missing";
+                    packet resp;
+                    resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_empty);
+                    if (!PacketTransport::sendPacket((int)clientSock, resp)) {
+                        break;
+                    }
+                } else {
+                    stateMachine.onRequestHandled(reqType);
+                    stateMachine.onDataTransferComplete();
+                }
+                continue;
             }
             else if (reqType == req_taxi) {
                 data = FileTransferManager::getTaxiClearance();

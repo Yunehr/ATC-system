@@ -4,9 +4,10 @@
  */
 
 #include "ClientEngine.hpp"
-//#include "../shared/PacketTransport.hpp"
+#include "../shared/PacketTransport.hpp"
 #include "../shared/Packet.h"
 #include "../shared/Request.h"
+#include "FileReceiver.hpp"
 #include <iostream>
 #include <vector>
 
@@ -87,27 +88,17 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
     // Create packet body (e.g., location string)
     packet txPkt;
     txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
+    delete[] serializedReq;
 
-    // Serialize and Send request packet
-    int serialPktSize = 0;
-    char* serializedPkt = txPkt.Serialize(&serialPktSize);
-
-    int bytesSent = send(sock, serializedPkt, serialPktSize, 0);
-    if (bytesSent == SOCKET_ERROR) {
-        //std::cout << "Failed to send packet\n";
+    if (!PacketTransport::sendPacket((int)sock, txPkt)) {
         return "Failed to send request";
     }
 
-    // Receive response packet
-    char buffer[MAX_PKTSIZE];
-    int received = recv(sock, buffer, sizeof(buffer), 0);
-    if (received == SOCKET_ERROR || received == 0) { 
-        //std::cout << "Failed to receive packet\n";
+    packet rxPkt;
+    if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
         return "Failed to receive response";
     }
 
-    // Deserialize response packet
-    packet rxPkt(buffer); 
     //verify crc
     if (rxPkt.calcCRC() != rxPkt.GetCRC()){
         return "CRC Checksum Failed";
@@ -130,26 +121,15 @@ std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
     int size = data.size();
     txPkt.PopulPacket((char*)data.data(),size,(char)clientID,PKType);
 
-    // Serialize and Send request packet
-    int serialPktSize = 0;
-    char* serializedPkt = txPkt.Serialize(&serialPktSize);
-
-    int bytesSent = send(sock, serializedPkt, serialPktSize, 0);
-    if (bytesSent == SOCKET_ERROR) {
-        //std::cout << "Failed to send packet\n";
+    if (!PacketTransport::sendPacket((int)sock, txPkt)) {
         return "Failed to send request";
     }
 
-    // Receive response packet
-    char buffer[MAX_PKTSIZE];
-    int received = recv(sock, buffer, sizeof(buffer), 0);
-    if (received == SOCKET_ERROR || received == 0) { 
-        //std::cout << "Failed to receive packet\n";
+    packet rxPkt;
+    if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
         return "Failed to receive response";
     }
 
-    // Deserialize response packet
-    packet rxPkt(buffer); 
     //verify crc
     if (rxPkt.calcCRC() != rxPkt.GetCRC()){
         return "CRC Checksum Failed";
@@ -165,4 +145,54 @@ std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
     }
 
     return "Unexpected response type";
+}
+
+std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
+    Request txReq(req_file, 0, (char*)"");
+
+    int reqSerialSize = 0;
+    char* serializedReq = txReq.serializeRequest(&reqSerialSize);
+
+    packet txPkt;
+    txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
+    delete[] serializedReq;
+
+    if (!PacketTransport::sendPacket((int)sock, txPkt)) {
+        return "Failed to request flight manual";
+    }
+
+    FileReceiver receiver;
+    std::string err;
+    if (!receiver.start(outputPath, err)) {
+        return err;
+    }
+
+    while (true) {
+        packet rxPkt;
+        if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
+            return "Transfer interrupted while receiving flight manual";
+        }
+
+        if (rxPkt.calcCRC() != rxPkt.GetCRC()) {
+            return "CRC Checksum Failed during manual transfer";
+        }
+
+        if (rxPkt.getPKType() == pkt_empty) {
+            return std::string(rxPkt.getData(), rxPkt.getPloadLength());
+        }
+
+        if (!receiver.processPacket(rxPkt, err)) {
+            return err;
+        }
+
+        if (receiver.isComplete()) {
+            break;
+        }
+    }
+
+    if (!receiver.finalize(err)) {
+        return err;
+    }
+
+    return "Flight Manual downloaded to " + outputPath;
 }
