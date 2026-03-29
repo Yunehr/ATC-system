@@ -4,10 +4,9 @@ import tkinter.font as tkFont
 import subprocess
 import threading
 import os
-import sys
 from datetime import datetime
-from pathlib import Path
 import queue
+import time
 
 class ATCScreen:
     # Professional Color Palette
@@ -19,6 +18,7 @@ class ATCScreen:
     TEXT_PRIMARY = "#ffffff"    # White text
     TEXT_SECONDARY = "#a0aec0"  # Muted gray text
     BORDER_COLOR = "#2d3748"    # Subtle borders
+    SERVER_PORT = 54000
     
     def __init__(self, root):
         self.root = root
@@ -35,6 +35,7 @@ class ATCScreen:
         self.server_running = False
         self.active_connections = {}
         self.server_start_time = None
+        self.metric_values = {}
         
         # Configure styles
         self.setup_styles()
@@ -56,6 +57,7 @@ class ATCScreen:
         
         # Start polling for server updates
         self.poll_server_output()
+        self.poll_connections()
         
         # Cleanup on exit
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -100,12 +102,14 @@ class ATCScreen:
             while self.server_running and self.server_process:
                 line = self.server_process.stdout.readline()
                 if line:
-                    self.log_queue.put(line.strip())
+                    clean_line = line.strip()
+                    self.log_queue.put(clean_line)
                     
                     # Parse connection info
-                    if "Client connected" in line.lower():
+                    lower_line = clean_line.lower()
+                    if "client connected" in lower_line:
                         self.connection_queue.put(("connect", "New Aircraft"))
-                    elif "Client disconnected" in line.lower():
+                    elif "client disconnected" in lower_line:
                         self.connection_queue.put(("disconnect", None))
         except Exception as e:
             self.log_queue.put(f"❌ Error reading server output: {str(e)}")
@@ -114,24 +118,30 @@ class ATCScreen:
         """Start thread for periodic UI updates"""
         def update_uptime():
             while self.server_running:
-                threading.Event().wait(1)  # Sleep for 1 second
+                time.sleep(1)
                 if self.server_start_time:
                     uptime = datetime.now() - self.server_start_time
                     hours = int(uptime.total_seconds() // 3600)
                     minutes = int((uptime.total_seconds() % 3600) // 60)
                     seconds = int(uptime.total_seconds() % 60)
-                    # Update would go here if needed
+                    self.root.after(0, lambda h=hours, m=minutes, s=seconds: self.set_metric("SYSTEM UPTIME", f"{h:02}:{m:02}:{s:02}"))
         
         uptime_thread = threading.Thread(target=update_uptime, daemon=True)
         uptime_thread.start()
     
     def poll_server_output(self):
         """Poll for server output and update UI"""
+        if self.server_process and self.server_running and self.server_process.poll() is not None:
+            self.server_running = False
+            self.add_log("❌ Server process exited")
+            self.status_text.config(text="● System: Offline", fg=self.ACCENT_ORANGE)
+
         try:
             # Process log queue
             while not self.log_queue.empty():
                 log_msg = self.log_queue.get_nowait()
                 self.add_log(log_msg)
+                self.update_last_activity()
         except queue.Empty:
             pass
         
@@ -149,6 +159,56 @@ class ATCScreen:
         # Schedule next poll (every 100ms)
         if self.server_running:
             self.root.after(100, self.poll_server_output)
+
+    def poll_connections(self):
+        """Poll active TCP connections for server port and refresh UI list."""
+        if not self.server_running or not self.server_process:
+            return
+
+        try:
+            result = subprocess.run(
+                ["netstat", "-ano", "-p", "tcp"],
+                capture_output=True,
+                text=True,
+                check=False
+            )
+
+            endpoints = []
+            server_pid = str(self.server_process.pid)
+            local_suffix = f":{self.SERVER_PORT}"
+
+            for line in result.stdout.splitlines():
+                parts = line.split()
+                if len(parts) < 5 or parts[0] != "TCP":
+                    continue
+
+                local_addr, remote_addr, state, pid = parts[1], parts[2], parts[3], parts[4]
+                if state == "ESTABLISHED" and local_addr.endswith(local_suffix) and pid == server_pid:
+                    endpoints.append(remote_addr)
+
+            self.refresh_connections(sorted(set(endpoints)))
+        except Exception as e:
+            self.add_log(f"⚠ Connection poll failed: {str(e)}")
+
+        if self.server_running:
+            self.root.after(1000, self.poll_connections)
+
+    def refresh_connections(self, endpoints):
+        """Render connection list from currently established remote endpoints."""
+        self.aircraft_list.delete(0, tk.END)
+        self.active_connections.clear()
+
+        if not endpoints:
+            self.aircraft_list.insert(tk.END, "No active connections")
+            self.set_metric("ACTIVE CONNECTIONS", "0")
+            return
+
+        for idx, endpoint in enumerate(endpoints):
+            label = f"Aircraft {idx + 1}  {endpoint}"
+            self.aircraft_list.insert(tk.END, label)
+            self.active_connections[idx] = label
+
+        self.set_metric("ACTIVE CONNECTIONS", str(len(endpoints)))
     
     def add_connection(self, name):
         """Add a connection to the aircraft list"""
@@ -295,6 +355,7 @@ class ATCScreen:
         value_widget = tk.Label(content, text=value, fg=self.ACCENT_BLUE, 
                                bg=self.SECONDARY_BG, font=self.font_subtitle)
         value_widget.pack(anchor="w", pady=(5, 0))
+        self.metric_values[label] = value_widget
     
     def create_aircraft_section(self, parent):
         """Create active aircraft panel"""
@@ -417,6 +478,16 @@ class ATCScreen:
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
         self.root.update_idletasks()
+
+    def set_metric(self, metric_name, value):
+        """Update a metric card value by label."""
+        label = self.metric_values.get(metric_name)
+        if label:
+            label.config(text=value)
+
+    def update_last_activity(self):
+        """Update the last activity metric to current time."""
+        self.set_metric("LAST ACTIVITY", datetime.now().strftime("%H:%M:%S"))
     
     def update_progress(self, current, total):
         """Updates the progress bar for REQ-SYS-070 transfers"""
