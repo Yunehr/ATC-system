@@ -86,8 +86,22 @@ std::string FileTransferManager::getTaxiClearance() {
 	std::getline(in, line); // header
 
 	while (std::getline(in, line)) {
-		if (line == "PRE_FLIGHT,TAXI_REQUEST") {
-			return "Taxi Clearance: APPROVED for departure sequence";
+		std::stringstream ss(line);
+		std::string stateName;
+		std::string commandList;
+
+		if (!std::getline(ss, stateName, ',')) continue;
+		if (!std::getline(ss, commandList)) continue;
+
+		if (stateName == "PRE_FLIGHT") {
+			// Check if TAXI_REQUEST is in the comma-separated command list
+			std::stringstream cmdStream(commandList);
+			std::string cmd;
+			while (std::getline(cmdStream, cmd, '-')) {
+				if (cmd == "TAXI_REQUEST") {
+					return "Taxi Clearance: APPROVED for departure sequence";
+				}
+			}
 		}
 	}
 

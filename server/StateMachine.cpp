@@ -47,13 +47,20 @@ bool StateMachine::commandAllowedForState(const std::string& command) const {
 	while (std::getline(in, line)) {
 		std::stringstream ss(line);
 		std::string stateName;
-		std::string commandName;
+		std::string commandList;
 
 		if (!std::getline(ss, stateName, ',')) continue;
-		if (!std::getline(ss, commandName)) continue;
+		if (!std::getline(ss, commandList)) continue;
 
-		if (stateName == currentState && commandName == command) {
-			return true;
+		if (stateName == currentState) {
+			// Parse commands separated by hyphens
+			std::stringstream cmdStream(commandList);
+			std::string cmd;
+			while (std::getline(cmdStream, cmd, '-')) {
+				if (cmd == command) {
+					return true;
+				}
+			}
 		}
 	}
 	return false;
