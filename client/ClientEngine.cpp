@@ -160,7 +160,7 @@ std::string ClientEngine::authRequest(const std::string&data){
         //std::cout << "Received incomplete packet\n";
         return "Received incomplete response";
     }
-    if (rxPkt.getPKType() == pkt_dat) { 
+    if (rxPkt.getPKType() == pkt_auth) { 
         return std::string(rxPkt.getData(), rxPkt.getPloadLength()); 
     }
 

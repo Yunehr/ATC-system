@@ -142,6 +142,21 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 break;
             }
         }
+        if (type == pkt_auth) {
+            std::string credentials(rxPkt.getData(), rxPkt.getPloadLength());
+            std::cout << "AUTH ATTEMPT: " << credentials << "\n";
+            std::cout << "Client ID: " << (int)clientID << "\n";
+
+            // For demonstration, we will just accept any credentials that are not empty
+            std::string response = credentials.empty() ? "Authentication Failed" : "Authentication Successful";
+
+            packet authResp;
+            authResp.PopulPacket((char*)response.c_str(), (int)response.size(), clientID, pkt_auth);
+
+            if (!PacketTransport::sendPacket((int)clientSock, authResp)) {
+                break;
+            }
+        }
         else {
             std::string msg = "Unknown packet type";
 
