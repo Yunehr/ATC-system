@@ -161,10 +161,38 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return "Failed to request flight manual";
     }
 
+    packet firstPkt;
+    if (!PacketTransport::receivePacket((int)sock, firstPkt)) {
+        return "Transfer interrupted while receiving flight manual";
+    }
+
+    if (firstPkt.calcCRC() != firstPkt.GetCRC()) {
+        return "CRC Checksum Failed during manual transfer";
+    }
+
+    if (firstPkt.getPKType() == pkt_empty) {
+        return std::string(firstPkt.getData(), firstPkt.getPloadLength());
+    }
+
+    if (firstPkt.getPKType() != pkt_dat) {
+        return "Unexpected packet type during manual transfer";
+    }
+
     FileReceiver receiver;
     std::string err;
     if (!receiver.start(outputPath, err)) {
         return err;
+    }
+
+    if (!receiver.processPacket(firstPkt, err)) {
+        return err;
+    }
+
+    if (receiver.isComplete()) {
+        if (!receiver.finalize(err)) {
+            return err;
+        }
+        return "Flight Manual downloaded to " + outputPath;
     }
 
     while (true) {
@@ -175,10 +203,6 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
 
         if (rxPkt.calcCRC() != rxPkt.GetCRC()) {
             return "CRC Checksum Failed during manual transfer";
-        }
-
-        if (rxPkt.getPKType() == pkt_empty) {
-            return std::string(rxPkt.getData(), rxPkt.getPloadLength());
         }
 
         if (!receiver.processPacket(rxPkt, err)) {

@@ -121,7 +121,7 @@ int main(int argc, char* argv[]) {
 
         //DATA_TRANSFER
         if (cmd == "MANUAL") {
-            std::string result = client.downloadFlightManual("flightmanual.pdf");
+            std::string result = client.downloadFlightManual("../client/flightmanual.pdf");
             std::cout << "Manual Response: " << result << "\n";
             std::cout.flush();
             continue;

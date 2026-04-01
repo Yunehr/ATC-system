@@ -171,6 +171,15 @@ void ServerEngine::handleClient(SOCKET clientSock) {
 
             if (!stateMachine.canHandle(reqType)) {
                 data = "Request denied in state: " + stateMachine.getStateName();
+
+                packet denyResp;
+                unsigned char denyType = (reqType == req_file) ? pkt_empty : pkt_dat;
+                denyResp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, denyType);
+
+                if (!PacketTransport::sendPacket((int)clientSock, denyResp)) {
+                    break;
+                }
+                continue;
             }
             else if (reqType == req_weather) {
                 std::string location(rxReq.getBody(), rxReq.getBsize());
