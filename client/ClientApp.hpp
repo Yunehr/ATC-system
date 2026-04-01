@@ -20,6 +20,18 @@ public:
     // Explicit cleanup (also called by destructor)
     void shutdown();
 
+    // --- Shared backend API (used by CLI and Python) ---
+    std::string handleEmergency();
+    std::string handleLogin(const std::string& user, const std::string& pass);
+    std::string handleWeather(const std::string& location);
+    std::string handleFlight(const std::string& flightId);
+    std::string handleTaxi();
+    std::string handleLand();
+    std::string handleTelemetry();
+    std::string handleTraffic();
+    std::string handleManualDownload();
+
+
     // ---------------------------------------------------------
     // FUTURE PYBIND11 API:
     // - std::string sendCommand(const std::string& cmd)

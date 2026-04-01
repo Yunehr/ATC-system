@@ -52,26 +52,20 @@ void ClientApp::runCommandLoop() {
 
         // EMERGENCY
         if (cmd == "EMERGENCY") {
-            std::string result = client.pkRequest(input, pkt_emgcy);
-            std::cout << "EMERGENCY_RESPONSE: " << result << "\n";
+            std::cout << "EMERGENCY_RESPONSE: " << handleEmergency() << "\n";
             std::cout.flush();
             continue;
         }
 
         // AUTH
         if (cmd == "Login") {
-            std::string Username;
+            std::string Username, Password;
             std::cout << "Please enter Username: ";
             std::cin >> Username;
-
-            std::string Password;
             std::cout << "Please enter Password: ";
             std::cin >> Password;
 
-            std::string info = Username + "," + Password;
-            std::string result = client.pkRequest(info, pkt_auth);
-
-            std::cout << "LoginAuth: " << result << "\n";
+            std::cout << "LoginAuth: " << handleLogin(Username, Password) << "\n";
             std::cout.flush();
             continue;
         }
@@ -81,8 +75,7 @@ void ClientApp::runCommandLoop() {
             std::cout << "Please enter location name: ";
             std::cin >> input;
 
-            std::string result = client.dataRequest(input, req_weather);
-            std::cout << "WEATHER_RESPONSE: " << result << "\n";
+            std::cout << "WEATHER_RESPONSE: " << handleWeather(input) << "\n";
             std::cout.flush();
             continue;
         }
@@ -91,45 +84,39 @@ void ClientApp::runCommandLoop() {
             std::cout << "Please enter Flight ID: ";
             std::cin >> input;
 
-            std::string result = client.dataRequest(input, req_fplan);
-            std::cout << "Flight Plan: " << result << "\n";
+            std::cout << "Flight Plan: " << handleFlight(input) << "\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TAXI") {
-            std::string result = client.dataRequest(input, req_taxi);
-            std::cout << "Taxi Response: " << result << "\n";
+            std::cout << "Taxi Response: " << handleTaxi() << "\n";
             std::cout.flush();
             continue;
         }
 
         // ACTIVE AIRSPACE
         if (cmd == "LAND") {
-            std::string result = client.dataRequest(input, req_taxi);
-            std::cout << "Clearance_Request: " << result << "\n";
+            std::cout << "Clearance_Request: " << handleLand() << "\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TELEM") {
-            std::string result = client.dataRequest(input, req_telemetry);
-            std::cout << "Telemetry Response: " << result << "\n";
+            std::cout << "Telemetry Response: " << handleTelemetry() << "\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TRAFFIC") {
-            std::string result = client.dataRequest(input, req_traffic);
-            std::cout << "Air Traffic Response: " << result << "\n";
+            std::cout << "Air Traffic Response: " << handleTraffic() << "\n";
             std::cout.flush();
             continue;
         }
 
         // DATA TRANSFER
         if (cmd == "MANUAL") {
-            std::string result = client.downloadFlightManual("../client/flightmanual.pdf");
-            std::cout << "Manual Response: " << result << "\n";
+            std::cout << "Manual Response: " << handleManualDownload() << "\n";
             std::cout.flush();
             continue;
         }
@@ -141,6 +128,46 @@ void ClientApp::runCommandLoop() {
         std::cout.flush();
     }
 }
+
+// ----------------------
+// Backend API functions
+// ----------------------
+std::string ClientApp::handleEmergency() {
+    return client.pkRequest("", pkt_emgcy);
+}
+
+std::string ClientApp::handleLogin(const std::string& user, const std::string& pass) {
+    return client.pkRequest(user + "," + pass, pkt_auth);
+}
+
+std::string ClientApp::handleWeather(const std::string& location) {
+    return client.dataRequest(location, req_weather);
+}
+
+std::string ClientApp::handleFlight(const std::string& flightId) {
+    return client.dataRequest(flightId, req_fplan);
+}
+
+std::string ClientApp::handleTaxi() {
+    return client.dataRequest("", req_taxi);
+}
+
+std::string ClientApp::handleLand() {
+    return client.dataRequest("", req_taxi);
+}
+
+std::string ClientApp::handleTelemetry() {
+    return client.dataRequest("", req_telemetry);
+}
+
+std::string ClientApp::handleTraffic() {
+    return client.dataRequest("", req_traffic);
+}
+
+std::string ClientApp::handleManualDownload() {
+    return client.downloadFlightManual("../client/flightmanual.pdf");
+}
+
 
 // ---------------------------------------------------------
 // Cleanup function
