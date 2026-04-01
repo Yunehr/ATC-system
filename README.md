@@ -37,21 +37,29 @@ Requires gcc to compile
 
 ### Compile Executables
 ```
-g++ server/main.cpp server/ServerEngine.cpp server/WeatherService.cpp shared/Packet.h shared/Request.h shared/PacketTransport.cpp -o build/server.exe -lws2_32
+g++ .\server\*.hpp .\server\*.cpp -o .\build\server.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32 
 
-g++ client/main.cpp client/ClientEngine.cpp shared/PacketTransport.cpp shared/Packet.h shared/Request.h -o build/client.exe -lws2_32                                                
+g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\main.cpp -o .\build\clientCMD.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
+
+g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\clientAPI.cpp -o .\build\clientAPI.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
 ```
-> **Note:** You will get the warning `warning: #pragma once in main file` Please test to see if the solution runs after you get this warning. 
-### Running solution
-Navigate to `\pr4j----ATC-system\build\` in 2 terminals
-
+### Running Application (Server)
 #### Terminal 1 (Server)
 ```
-.\server
+cd .\server
+python .\Server_UI.py
 ```
-#### Terminal 2 (Client)
+### Running Application (Client)
+#### Terminal 2 (Client) option 1 - CMD line
 ```
-.\client
+cd .\build
+.\clientCMD.exe
+```
+#### Terminal 2 (Client) option 2 - App UI
+You can run this by just pressing the play button on the python file. but if you want to use cmd args
+```
+cd .\client
+python .\Client.py
 ```
 
 ---
