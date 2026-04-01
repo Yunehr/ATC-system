@@ -35,7 +35,7 @@ def test_unauthorized_packet_rejection(server_socket):
 
 
 def calculate_checksum(header_bytes, data_bytes):
-    # Matches packet.h calcCRC() logic [cite: 327]
+    # Matches packet.h calcCRC() logic
     return sum(header_bytes) + sum(data_bytes)
 
 def test_full_operational_flow(server_socket):
@@ -56,7 +56,7 @@ def test_full_operational_flow(server_socket):
     server_socket.recv(1024) 
 
     # --- 2. WEATHER REQUEST ---
-    location = b"YKF" # Typical Airport ID [cite: 289]
+    location = b"YKF" # Typical Airport ID
     weather_len = len(location)
     # pkt_req is 0x01. ID 1, Flag 0: (1 << 4) | (1 << 1) | 0 = 0x12
     header_byte_0 = (1 << 4) | (1 << 1) | 0

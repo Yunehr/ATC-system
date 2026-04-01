@@ -80,12 +80,12 @@ TEST(Requirement_SVR_040, Block_Taxi_Before_Auth) {
     
     bool canTaxi = sm.canHandle(req_taxi);
     
-    // This should be FALSE. If the server allows it, log a Security Issue.
+    // This should be FALSE.
     EXPECT_FALSE(canTaxi);
 }
 
 TEST(Requirement_COM_040, Server_Blocks_Corrupted_CRC) {
-    // Create a packet and intentionally mess up the data so CRC doesn't match
+    // Create a packet and mess up the data so CRC doesn't match
     packet badPkt;
     char data[] = "Kill Engine";
     badPkt.PopulPacket(data, sizeof(data), 1, pkt_req);
@@ -127,6 +127,41 @@ TEST(Logic_Tests, Client_Session_Isolation) {
     // Pilot 2 is still at the login screen
     EXPECT_EQ(pilot2.getStateName(), "STARTUP/AUTH");
 }
+
+TEST(Requirement_INT_050, Reject_All_Commands_Before_Auth) {
+    StateMachine sm;
+    // Ensure we are in the initial state
+    ASSERT_EQ(sm.getStateName(), "STARTUP/AUTH");
+
+    // List of functional commands that require prior authentication
+    std::vector<reqtyp> functionalCommands = {
+        req_weather,
+        req_telemetry,
+        req_file,
+        req_taxi,
+        req_fplan,
+        req_traffic
+    };
+
+    for (auto cmd : functionalCommands) {
+        // canHandle should return false for all of these in STARTUP_AUTH 
+        EXPECT_FALSE(sm.canHandle(cmd)) << "Command " << cmd << " was incorrectly allowed in STARTUP/AUTH state.";
+    }
+}
+
+TEST(Requirement_USE_020, Restrict_NonEssential_In_Emergency) {
+    StateMachine sm;
+    sm.onAuthSuccess(); // Move to PRE_FLIGHT
+    
+    // Trigger Emergency state change
+    sm.onRequestHandled(static_cast<reqtyp>(pkt_emgcy));
+    ASSERT_EQ(sm.getStateName(), "EMERGENCY");
+
+    // In Emergency, requesting a large file transfer should be restricted 
+    EXPECT_FALSE(sm.canHandle(req_file)) << "Large data transfer should be blocked during an EMERGENCY.";
+       
+}
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
