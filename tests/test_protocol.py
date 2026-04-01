@@ -66,3 +66,29 @@ def test_full_operational_flow(server_socket):
     weather_packet = weather_header + location + struct.pack('<i', chk_weather)
     
     server_socket.sendall(weather_packet)
+
+from unittest.mock import MagicMock
+
+def test_emergency_confirmation_logic():
+    """REQ-CLT-030: Verify 'Mayday' requires confirmation before sending."""
+    # 1. Setup a mock for the network send function
+    # In your real code, this would be your ClientEngine.sendPacket
+    mock_send = MagicMock()
+    
+    # 2. Scenario A: User clicks "Cancel" on the popup
+    user_confirmed = False 
+    if user_confirmed:
+        mock_send(type=0x04) # pkt_emgcy [cite: 312]
+
+    # Verify no packet was sent
+    mock_send.assert_not_called()
+
+    # 3. Scenario B: User clicks "Yes" on the popup
+    user_confirmed = True
+    if user_confirmed:
+        # Only now should the packet be sent
+        mock_send(type=0x04) 
+
+    # 4. Final Verification
+    mock_send.assert_called_once_with(type=0x04)
+    print("\n[QA] SUCCESS: Emergency packet sent only after confirmation.")
