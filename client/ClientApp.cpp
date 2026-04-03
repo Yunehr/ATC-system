@@ -95,13 +95,6 @@ void ClientApp::runCommandLoop() {
             continue;
         }
 
-        // ACTIVE AIRSPACE
-        if (cmd == "LAND") {
-            std::cout << "Clearance_Request: " << handleLand() << "\n";
-            std::cout.flush();
-            continue;
-        }
-
         if (cmd == "TELEM") {
             std::cout << "Telemetry Response: " << handleTelemetry() << "\n";
             std::cout.flush();
@@ -170,7 +163,7 @@ std::string ClientApp::handleTaxi() {
 }
 
 std::string ClientApp::handleLand() {
-    return client.dataRequest("", req_taxi);
+    return handleTaxi();
 }
 
 std::string ClientApp::handleTelemetry() {
