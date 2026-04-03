@@ -9,7 +9,8 @@ static std::ifstream openDataFile(const std::string& fileName) {
 	return in;
 }
 
-StateMachine::StateMachine() : state(ServerState::STARTUP_AUTH) {}
+StateMachine::StateMachine()
+	: state(ServerState::STARTUP_AUTH), previousState(ServerState::STARTUP_AUTH) {}
 
 std::string StateMachine::getStateName() const {
 	switch (state) {
@@ -85,6 +86,7 @@ void StateMachine::onRequestHandled(reqtyp requestType) {
 	}
 
 	if (requestType == req_file) {
+		previousState = state;
 		state = ServerState::DATA_TRANSFER;
 		return;
 	}
@@ -95,5 +97,5 @@ void StateMachine::onRequestHandled(reqtyp requestType) {
 }
 
 void StateMachine::onDataTransferComplete() {
-	state = ServerState::PRE_FLIGHT;
+	state = previousState;
 }
