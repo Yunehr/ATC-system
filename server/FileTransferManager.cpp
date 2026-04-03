@@ -76,7 +76,7 @@ std::string FileTransferManager::getTraffic(const std::string& flightId) {
 	return findByFlightId("../data/Traffic_Positions.csv", flightId, "Traffic");
 }
 
-std::string FileTransferManager::getTaxiClearance() {
+std::string FileTransferManager::getTaxiClearance(const std::string& currentState) {
 	std::ifstream in = openDataRead("StatePermissions.csv");
 	if (!in.is_open()) {
 		return "Taxi Clearance: unable to verify permissions";
@@ -93,12 +93,15 @@ std::string FileTransferManager::getTaxiClearance() {
 		if (!std::getline(ss, stateName, ',')) continue;
 		if (!std::getline(ss, commandList)) continue;
 
-		if (stateName == "PRE_FLIGHT") {
+		if (stateName == currentState) {
 			// Check if TAXI_REQUEST is in the comma-separated command list
 			std::stringstream cmdStream(commandList);
 			std::string cmd;
 			while (std::getline(cmdStream, cmd, '-')) {
 				if (cmd == "TAXI_REQUEST") {
+					if (currentState == "ACTIVE_AIRSPACE") {
+						return "Landing Clearance: APPROVED for arrival sequence";
+					}
 					return "Taxi Clearance: APPROVED for departure sequence";
 				}
 			}

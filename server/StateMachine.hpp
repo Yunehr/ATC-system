@@ -23,6 +23,7 @@ public:
 
 private:
 	ServerState state;
+	ServerState previousState;
 
 	std::string requestToCommand(reqtyp requestType) const;
 	bool commandAllowedForState(const std::string& command) const;
