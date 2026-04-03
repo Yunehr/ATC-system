@@ -23,7 +23,7 @@ class ClientAPI:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             text=True,
-            bufsize=1,
+            bufsize=1, 
             cwd=os.path.dirname(API_EXE) # <-- set working directory to where the exe is
         )
 

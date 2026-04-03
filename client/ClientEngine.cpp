@@ -181,8 +181,23 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     FileReceiver receiver;
     std::string err;
     if (!receiver.start(outputPath, err)) {
-        return err;
+        // We must drain the incoming file packets to avoid corrupting the socket state
+        packet drainPkt;
+
+        while (true) {
+            if (!PacketTransport::receivePacket((int)sock, drainPkt)) {
+                break; // connection dropped, nothing more to do
+            }
+
+            // Stop draining once we hit the end of the file transfer
+            if (drainPkt.getTFlag() == PKT_TRNSMT_COMP || drainPkt.getPKType() == pkt_empty) {
+                break;
+            }
+        }
+
+        return err;  // Now safe to return
     }
+
 
     if (!receiver.processPacket(firstPkt, err)) {
         return err;
