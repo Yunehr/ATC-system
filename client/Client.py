@@ -46,7 +46,13 @@ def on_response(text):
     elif text.startswith("LoginAuth:") or text.startswith("Authentication Failed"):
         app.pages["LoginPage"].error_var.set(text)
 
+    # Taxi ACK/NACK
+    if text.startswith("Taxi Clearance: APPROVED"):
+        app.show_page("ActiveAirspacePage")
+    elif text.startswith("Landing Clearance: APPROVED"):
+        app.show_page("PreFlightPage")
 
+    # Download ACK/NACK for Flight Manual
     global download_status
     ## Check for NACK responses
     if text.startswith("Request denied in state:"):
@@ -93,28 +99,33 @@ class Page(tk.Frame):
 
 # ├── class TopBar
 class TopBar(ttk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, page_name):
         super().__init__(parent)
         self.controller = controller
 
-        self.configure(padding=10)
+        self.configure(padding=(3, 3))
 
-        # Left: Logout # TODO: Only show on Pre Flight, and change functionality to a back button when in Display Manual page
-        logout_btn = ttk.Button(self, text="Logout",
-                                command=lambda: controller.show_page("LoginPage"))
-        logout_btn.pack(side="left", padx=5)
+        # Left: Logout /Back button
+        if page_name in ("PreFlightPage"):
+            left_btn = ttk.Button(self, text="Logout",
+                                  command=lambda: controller.show_page("LoginPage"))
+        elif page_name == "PDFViewerPage":
+            left_btn = ttk.Button(self, text="Back", # returns to precious page (either PreFlight or ActiveAirspace)
+                                  command=lambda: controller.show_page(controller.previous_page))
+        else:
+            left_btn = None
 
+        if left_btn:
+            left_btn.pack(side="left", padx=5)
+        
         # Right: Emergency
-        emergency_btn = ttk.Button(self, text="EMERGENCY", style="Danger.TButton",
-                                   command=lambda: controller.api.send("EMERGENCY"))
+        emergency_btn = ttk.Button(
+            self,
+            text="EMERGENCY",
+            command=lambda: controller.api.send("EMERGENCY")
+        )
         emergency_btn.pack(side="right", padx=5)
 
-        style = ttk.Style()
-        style.configure("Danger.TButton",
-                        foreground="white",
-                        background="red",
-                        padding=10,
-                        font=("Arial", 12, "bold"))
 
 # ├── class LogPanel
 class LogPanel(ttk.Frame):
@@ -165,7 +176,7 @@ class PreFlightPage(Page):
         super().__init__(parent, controller)
 
         # Top bar
-        TopBar(self, controller).pack(fill="x")
+        TopBar(self, controller, page_name="PreFlightPage").pack(fill="x")
 
         # Log panel
         self.log_panel = LogPanel(self)
@@ -195,7 +206,7 @@ class ActiveAirspacePage(Page):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        TopBar(self, controller).pack(fill="x")
+        TopBar(self, controller, page_name="ActiveAirspacePage").pack(fill="x")
 
         self.log_panel = LogPanel(self)
         self.log_panel.pack(fill="both", expand=True, pady=10)
@@ -205,7 +216,7 @@ class ActiveAirspacePage(Page):
 
         ttk.Button(btns, text="Telemetry Update", command=lambda: controller.api.send("TELEMETRY")).grid(row=0, column=0, padx=5)
         ttk.Button(btns, text="Airtraffic Request", command=lambda: controller.api.send("AIRTRAFFIC")).grid(row=0, column=1, padx=5)
-        ttk.Button(btns, text="Clear Runway", command=lambda: controller.api.send("CLEAR")).grid(row=0, column=2, padx=5)
+        ttk.Button(btns, text="Clear Runway", command=lambda: controller.api.send("TAXI")).grid(row=0, column=2, padx=5)
         ttk.Button(btns, text="Aircraft Manual", command=lambda: controller.show_page("PDFViewerPage")).grid(row=0, column=3, padx=5)
 
 # ├── class PDFViewerPage
@@ -213,7 +224,7 @@ class PDFViewerPage(Page):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        TopBar(self, controller).pack(fill="x")
+        TopBar(self, controller, page_name="PDFViewerPage").pack(fill="x")
 
         self.display = ttk.Frame(self)
         self.display.pack(fill="both", expand=True)
@@ -258,6 +269,7 @@ class App(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.pages = {}
+        self.previous_page = None
 
         for P in (LoginPage, PreFlightPage, ActiveAirspacePage, PDFViewerPage):
             page = P(container, self)
@@ -267,6 +279,10 @@ class App(tk.Tk):
         self.show_page("LoginPage")
 
     def show_page(self, name):
+        if hasattr(self, "current_page"):
+            self.previous_page = self.current_page
+
+        self.current_page = name
         page = self.pages[name]
         page.tkraise()
 
