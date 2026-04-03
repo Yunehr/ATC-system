@@ -289,6 +289,22 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             continue;
         }
 
+        if (type == pkt_emgcy) {
+            stateMachine.onEmergency();
+
+            const std::string response = "Emergency acknowledged. State changed to: " + stateMachine.getStateName();
+            packet emgResp;
+            emgResp.PopulPacket((char*)response.c_str(), (int)response.size(), clientID, pkt_emgcy);
+
+            if (!PacketTransport::sendPacket((int)clientSock, emgResp)) {
+                break;
+            }
+
+            std::cout << "EMERGENCY TRIGGERED by client " << (int)clientID
+                      << ". Current state: " << stateMachine.getStateName() << "\n";
+            continue;
+        }
+
         {
             std::string msg = "Unknown packet type";
 
