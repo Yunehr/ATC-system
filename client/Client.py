@@ -61,11 +61,23 @@ def on_response(text):
         download_status["filename"] = None
         download_status["error"] = error_msg.strip()
 
+        # stop spinner if error occurs during download
+        try:
+            app.pages["PDFViewerPage"].start_loading()
+        except:
+            pass
+
     elif text.startswith("Flight Manual:") and "downloaded" not in text:
         _, error_msg = text.split(":", 1)
         download_status["ready"] = False
         download_status["filename"] = None
         download_status["error"] = error_msg.strip()
+
+        # stop spinner if error occurs during download
+        try:
+            app.pages["PDFViewerPage"].stop_loading()
+        except:
+            pass
 
     ## Check for ACK responses
     elif text.startswith("Flight Manual downloaded"):
@@ -73,6 +85,11 @@ def on_response(text):
         download_status["ready"] = True
         download_status["filename"] = filename
         download_status["error"] = None
+
+        try:
+            app.pages["PDFViewerPage"].stop_loading()
+        except:
+            pass
 
         # Refresh PDF viewer if user is on that page
         try:
@@ -233,17 +250,25 @@ class PDFViewerPage(Page):
         self.display = ttk.Frame(self)
         self.display.pack(fill="both", expand=True)
         self.display.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        self.loading = False
+        self.loading_label = None
+        self.loading_step = 0
 
         self.refresh()
 
     def refresh(self):
+        if self.loading:
+            return # don't refresh if we're in the middle of downloading
+        
         for w in self.display.winfo_children():
             w.destroy()
 
         # If no file downloaded yet
         if not download_status["filename"]:
             ttk.Button(self.display, text="Download Manual",
-                    command=lambda: self.controller.api.send("MANUAL")).pack(expand=True)
+                command=self.download_manual).pack(expand=True)
+
             return
 
         pdf_path = os.path.join(BASE_DIR, download_status["filename"])
@@ -253,7 +278,54 @@ class PDFViewerPage(Page):
             viewer.pack(fill="both", expand=True)
         else:
             ttk.Button(self.display, text="Download Manual",
-                    command=lambda: self.controller.api.send("MANUAL")).pack(expand=True)
+                command=self.download_manual).pack(expand=True)
+  
+    def start_loading(self):
+        self.loading = True
+
+        # Clear display
+        for w in self.display.winfo_children():
+            w.destroy()
+
+        # Create animated label
+        self.loading_label = ttk.Label(self.display, text="Downloading.")
+        self.loading_label.pack(expand=True, pady=20)
+
+        # Start animation loop
+        self.animate_loading()
+
+    def animate_loading(self):
+        if not self.loading:
+            return
+
+        dots = ["Downloading.", "Downloading..", "Downloading..."]
+        self.loading_label.config(text=dots[self.loading_step])
+
+        self.loading_step = (self.loading_step + 1) % 3
+
+        # Schedule next frame
+        self.after(500, self.animate_loading)
+
+
+    def stop_loading(self):
+        self.loading = False
+
+        if self.loading_label:
+            self.loading_label.destroy()
+            self.loading_label = None
+
+        self.refresh()
+
+
+    def download_manual(self):
+        # Start spinner immediately
+        self.start_loading()
+
+        self.display.update_idletasks()  # ensure spinner shows before sending command
+
+        # Send command to backend
+        self.controller.api.send("MANUAL")
+
 
 
 # ├── class App
