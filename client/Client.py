@@ -1,4 +1,3 @@
-from email.mime import text
 import tkinter as tk
 from tkinter import ttk
 import subprocess
@@ -36,13 +35,18 @@ class ClientAPI:
             line = self.proc.stdout.readline()
             if not line:
                 break
-            callback(line.strip())
-
-    
+            callback(line.strip())  
 
 api = ClientAPI()
 
 def on_response(text):
+    #Login ACK/NACK
+    if text.startswith("Authentication Successful"):
+        app.show_page("PreFlightPage")
+    elif text.startswith("LoginAuth:"):
+        app.pages["LoginPage"].error_var.set(text)
+
+
     global download_status
     ## Check for NACK responses
     if text.startswith("Request denied in state:"):
@@ -64,97 +68,185 @@ def on_response(text):
         download_status["filename"] = filename
         download_status["error"] = None
 
+        # Refresh PDF viewer if user is on that page
+        try:
+            app.pages["PDFViewerPage"].refresh()
+        except:
+            pass
 
-    output_box.config(state="normal")
-    output_box.insert("end", text + "\n")
-    output_box.config(state="disabled")
+    # Send logs to whichever page is active
+    try:
+        app.pages["PreFlightPage"].log_panel.add(text)
+        app.pages["ActiveAirspacePage"].log_panel.add(text)
+    except:
+        pass
 
 def send_cmd(cmd):
     api.send(cmd)
 
-def pdf_display_page():
-    """Opens a subpage for viewing or downloading a PDF."""
-    sub = tk.Toplevel(root)
-    sub.title("PDF Viewer")
-    sub.geometry("800x600")
+# ├── class Page
+class Page(tk.Frame):
+    """Base class for all pages."""
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
-    # --- Top bar with Back button ---
-    top_bar = ttk.Frame(sub)
-    top_bar.pack(fill="x")
+# ├── class App
+class App(tk.Tk):
+    def __init__(self, api):
+        super().__init__()
+        self.api = api
+        self.title("ClientApp UI")
+        self.geometry("900x600")
 
-    ttk.Button(top_bar, text="Back", command=sub.destroy).pack(side="left")
+        container = tk.Frame(self)
+        container.pack(fill="both", expand=True)
 
-    # --- Display Area ---
-    display = ttk.Frame(sub)
-    display.pack(fill="both", expand=True)
+        self.pages = {}
 
-    def refresh_display():
-        """Refresh the display area depending on download status."""
-        for w in display.winfo_children():
+        for P in (LoginPage, PreFlightPage, ActiveAirspacePage, PDFViewerPage):
+            page = P(container, self)
+            self.pages[P.__name__] = page
+            page.grid(row=0, column=0, sticky="nsew")
+
+        self.show_page("LoginPage")
+
+    def show_page(self, name):
+        page = self.pages[name]
+        page.tkraise()
+
+# ├── class TopBar
+class TopBar(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        ttk.Button(self, text="Logout", command=lambda: controller.show_page("LoginPage")).pack(side="left", padx=5)
+        ttk.Button(self, text="EMERGENCY", style="Danger.TButton",
+                   command=lambda: controller.api.send("EMERGENCY")).pack(side="right", padx=5)
+        
+        style = ttk.Style()
+        style.configure("Danger.TButton", foreground="white", background="red")
+
+# ├── class LogPanel
+class LogPanel(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.text = tk.Text(self, height=12, state="disabled")
+        scroll = ttk.Scrollbar(self, command=self.text.yview)
+        self.text.configure(yscrollcommand=scroll.set)
+
+        self.text.pack(side="left", fill="both", expand=True)
+        scroll.pack(side="right", fill="y")
+
+    def add(self, msg):
+        self.text.config(state="normal")
+        self.text.insert("end", msg + "\n")
+        self.text.see("end")
+        self.text.config(state="disabled")
+
+# ├── class LoginPage
+class LoginPage(Page):
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
+
+        ttk.Label(self, text="Login", font=("Arial", 20)).pack(pady=20)
+
+        self.user_var = tk.StringVar()
+        self.pass_var = tk.StringVar()
+        self.error_var = tk.StringVar()
+
+        ttk.Entry(self, textvariable=self.user_var).pack(pady=5)
+        ttk.Entry(self, textvariable=self.pass_var, show="*").pack(pady=5)
+
+        ttk.Button(self, text="Login", command=self.try_login).pack(pady=10)
+        ttk.Label(self, textvariable=self.error_var, foreground="red").pack()
+
+    def try_login(self):
+        user = self.user_var.get()
+        pw = self.pass_var.get()
+        self.controller.api.send(f"LOGIN {user} {pw}")
+
+# ├── class PreFlightPage
+class PreFlightPage(Page):
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
+
+        # Top bar
+        TopBar(self, controller).pack(fill="x")
+
+        # Log panel
+        self.log_panel = LogPanel(self)
+        self.log_panel.pack(fill="both", expand=True, pady=10)
+
+        # Button row
+        btns = ttk.Frame(self)
+        btns.pack()
+
+        ttk.Button(btns, text="Weather", command=self.ask_weather).grid(row=0, column=0, padx=5)
+        ttk.Button(btns, text="Flight Plan", command=self.ask_flight).grid(row=0, column=1, padx=5)
+        ttk.Button(btns, text="Taxi Request", command=lambda: controller.api.send("TAXI")).grid(row=0, column=2, padx=5)
+        ttk.Button(btns, text="Aircraft Manual", command=lambda: controller.show_page("PDFViewerPage")).grid(row=0, column=3, padx=5)
+
+    def ask_weather(self):
+        # TODO: popup for airport code
+        self.controller.api.send("WEATHER YYZ")
+
+    def ask_flight(self):
+        # TODO: popup for flight ID
+        self.controller.api.send("FLIGHT AC123")
+
+# ├── class ActiveAirspacePage
+class ActiveAirspacePage(Page):
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
+
+        TopBar(self, controller).pack(fill="x")
+
+        self.log_panel = LogPanel(self)
+        self.log_panel.pack(fill="both", expand=True, pady=10)
+
+        btns = ttk.Frame(self)
+        btns.pack()
+
+        ttk.Button(btns, text="Telemetry Update", command=lambda: controller.api.send("TELEMETRY")).grid(row=0, column=0, padx=5)
+        ttk.Button(btns, text="Airtraffic Request", command=lambda: controller.api.send("AIRTRAFFIC")).grid(row=0, column=1, padx=5)
+        ttk.Button(btns, text="Clear Runway", command=lambda: controller.api.send("CLEAR")).grid(row=0, column=2, padx=5)
+        ttk.Button(btns, text="Aircraft Manual", command=lambda: controller.show_page("PDFViewerPage")).grid(row=0, column=3, padx=5)
+
+# ├── class PDFViewerPage
+class PDFViewerPage(Page):
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
+
+        TopBar(self, controller).pack(fill="x")
+
+        self.display = ttk.Frame(self)
+        self.display.pack(fill="both", expand=True)
+
+        self.refresh()
+
+    def refresh(self):
+        for w in self.display.winfo_children():
             w.destroy()
 
-        # PDF Exists locally but not identified as ready (previously downloaded but not updated in status) → show viewer
-        # - check if a .pdf file exists in the directory that matches the expected filename pattern (e.g., "flightmanual.pdf")
-        # - if found, set download_status to ready with that filename and show viewer
-        if not download_status["ready"]:
-            for file in os.listdir(BASE_DIR):
-                if file.lower().endswith(".pdf") and "flightmanual" in file.lower():
-                    download_status["ready"] = True
-                    download_status["filename"] = file
-                    download_status["error"] = None
-                    break
-
-        # Case 1: PDF is ready → show viewer
-        if download_status["ready"] and download_status["filename"]:
-            pdf_path = os.path.join(BASE_DIR, download_status["filename"])
-            if os.path.exists(pdf_path):
-                viewer = PDFViewer(display, pdf_path)
-                viewer.pack(fill="both", expand=True)
-                return
-
-        # Case 2: Error occurred → show error message + retry button
-        if download_status["error"]:
-            ttk.Label(display, text=f"Error: {download_status['error']}", foreground="red").pack(pady=20)
-            ttk.Button(display, text="Retry Download", command=download_pdf).pack()
+        # If no file downloaded yet
+        if not download_status["filename"]:
+            ttk.Button(self.display, text="Download Manual",
+                    command=lambda: self.controller.api.send("MANUAL")).pack(expand=True)
             return
 
-        # Case 3: No PDF downloaded yet → show download button
-        ttk.Button(display, text="Download PDF", command=download_pdf).pack(expand=True)
+        pdf_path = os.path.join(BASE_DIR, download_status["filename"])
 
-    def download_pdf():
-        """Send MANUAL request and wait for ACK/NACK."""
-        download_status["ready"] = False
-        download_status["filename"] = None
-        download_status["error"] = None
+        if os.path.exists(pdf_path):
+            viewer = PDFViewer(self.display, pdf_path)
+            viewer.pack(fill="both", expand=True)
+        else:
+            ttk.Button(self.display, text="Download Manual",
+                    command=lambda: self.controller.api.send("MANUAL")).pack(expand=True)
 
-        send_cmd("MANUAL")
-
-        # Poll for ACK/NACK
-        def poll():
-            if download_status["ready"] or download_status["error"]:
-                refresh_display()
-            else:
-                sub.after(300, poll)
-
-        poll()
-
-    refresh_display()
-
-
-root = tk.Tk()
-root.title("ClientApp UI")
-
-ttk.Button(root, text="Emergency", command=lambda: send_cmd("EMERGENCY")).pack(fill="x")    ## for now these are all hardcoded, but eventually we can add input fields for the user to specify args
-ttk.Button(root, text="Weather Toronto", command=lambda: send_cmd("WEATHER YYZ")).pack(fill="x")
-ttk.Button(root, text="Flight AC123", command=lambda: send_cmd("FLIGHT AC123")).pack(fill="x")
-ttk.Button(root, text="Login Ryan", command=lambda: send_cmd("LOGIN RHackbart91 Gamma789")).pack(fill="x")
-ttk.Button(root, text="Open Flight Manual", command=lambda: pdf_display_page()).pack(fill="x")
-
-output_box = tk.Text(root, height=15, width=60, state="disabled")
-output_box.pack(pady=10)
-
-
-
+app = App(api)
 threading.Thread(target=api.read_loop, args=(on_response,), daemon=True).start()
+app.mainloop()
 
-root.mainloop()
