@@ -33,7 +33,7 @@ The Flight Tower operates through the following transitions
 - Tail: 16-bit CRC for error detection and data integrity.
 
 ## Running the solution
-- Requires gcc to compile
+- Requires gcc to compile C++ Backend
 - Requires PyMuPDF to display PDF images
     - If not installed: `pip install PyMuPDF`
 
