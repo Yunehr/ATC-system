@@ -186,8 +186,8 @@ class PreFlightPage(Page):
         btns = ttk.Frame(self)
         btns.pack(pady=10)
 
-        ttk.Button(btns, text="Weather", width=20, command=self.ask_weather).pack(pady=5)
         ttk.Button(btns, text="Flight Plan", width=20, command=self.ask_flight).pack(pady=5)
+        ttk.Button(btns, text="Weather", width=20, command=self.ask_weather).pack(pady=5)
         ttk.Button(btns, text="Taxi Request", width=20,
                 command=lambda: controller.api.send("TAXI")).pack(pady=5)
         ttk.Button(btns, text="Aircraft Manual", width=20,
@@ -215,9 +215,9 @@ class ActiveAirspacePage(Page):
         btns.pack(pady=10)
 
         ttk.Button(btns, text="Telemetry Update", width=20,
-                command=lambda: controller.api.send("TELEMETRY")).pack(pady=5)
+                command=lambda: controller.api.send("TELEM")).pack(pady=5)
         ttk.Button(btns, text="Airtraffic Request", width=20,
-                command=lambda: controller.api.send("AIRTRAFFIC")).pack(pady=5)
+                command=lambda: controller.api.send("TRAFFIC")).pack(pady=5)
         ttk.Button(btns, text="Clear Runway", width=20,
                 command=lambda: controller.api.send("TAXI")).pack(pady=5)
         ttk.Button(btns, text="Aircraft Manual", width=20,
