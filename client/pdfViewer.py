@@ -33,16 +33,29 @@ class PDFViewer(ttk.Frame):
         self.inner.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
     def _load_pdf(self, pdf_path):
-        """Render all PDF pages and display them as images."""
+        """Render all PDF pages scaled to fit the viewer width."""
         doc = fitz.open(pdf_path)
 
         self.images = []  # keep references so Tk doesn't garbage collect them
+
+        # Get available width from the canvas
+        self.update_idletasks()
+        target_width = self.winfo_width()
+        if target_width < 50:
+            target_width = 500  # fallback for initial load
 
         for page in doc:
             pix = page.get_pixmap()
             img_data = pix.tobytes("png")
             pil_img = Image.open(io.BytesIO(img_data))
-            tk_img = ImageTk.PhotoImage(pil_img)
 
+            # Scale image to fit width
+            w, h = pil_img.size
+            scale = target_width / w
+            new_size = (int(w * scale), int(h * scale))
+            pil_img = pil_img.resize(new_size, Image.LANCZOS)
+
+            tk_img = ImageTk.PhotoImage(pil_img)
             self.images.append(tk_img)
+
             tk.Label(self.inner, image=tk_img).pack(pady=5)

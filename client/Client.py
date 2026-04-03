@@ -43,7 +43,7 @@ def on_response(text):
     #Login ACK/NACK
     if text.startswith("Authentication Successful"):
         app.show_page("PreFlightPage")
-    elif text.startswith("LoginAuth:"):
+    elif text.startswith("LoginAuth:") or text.startswith("Authentication Failed"):
         app.pages["LoginPage"].error_var.set(text)
 
 
@@ -91,53 +91,41 @@ class Page(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-# ├── class App
-class App(tk.Tk):
-    def __init__(self, api):
-        super().__init__()
-        self.api = api
-        self.title("ClientApp UI")
-        self.geometry("900x600")
-
-        container = tk.Frame(self)
-        container.pack(fill="both", expand=True)
-
-        self.pages = {}
-
-        for P in (LoginPage, PreFlightPage, ActiveAirspacePage, PDFViewerPage):
-            page = P(container, self)
-            self.pages[P.__name__] = page
-            page.grid(row=0, column=0, sticky="nsew")
-
-        self.show_page("LoginPage")
-
-    def show_page(self, name):
-        page = self.pages[name]
-        page.tkraise()
-
 # ├── class TopBar
 class TopBar(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-        ttk.Button(self, text="Logout", command=lambda: controller.show_page("LoginPage")).pack(side="left", padx=5)
-        ttk.Button(self, text="EMERGENCY", style="Danger.TButton",
-                   command=lambda: controller.api.send("EMERGENCY")).pack(side="right", padx=5)
-        
+        self.configure(padding=10)
+
+        # Left: Logout # TODO: Only show on Pre Flight, and change functionality to a back button when in Display Manual page
+        logout_btn = ttk.Button(self, text="Logout",
+                                command=lambda: controller.show_page("LoginPage"))
+        logout_btn.pack(side="left", padx=5)
+
+        # Right: Emergency
+        emergency_btn = ttk.Button(self, text="EMERGENCY", style="Danger.TButton",
+                                   command=lambda: controller.api.send("EMERGENCY"))
+        emergency_btn.pack(side="right", padx=5)
+
         style = ttk.Style()
-        style.configure("Danger.TButton", foreground="white", background="red")
+        style.configure("Danger.TButton",
+                        foreground="white",
+                        background="red",
+                        padding=10,
+                        font=("Arial", 12, "bold"))
 
 # ├── class LogPanel
 class LogPanel(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.text = tk.Text(self, height=12, state="disabled")
+        self.text = tk.Text(self, height=15, state="disabled")
         scroll = ttk.Scrollbar(self, command=self.text.yview)
         self.text.configure(yscrollcommand=scroll.set)
 
-        self.text.pack(side="left", fill="both", expand=True)
+        self.text.pack(side="left", fill="both", expand=True, padx=10, pady=10)
         scroll.pack(side="right", fill="y")
 
     def add(self, msg):
@@ -151,17 +139,20 @@ class LoginPage(Page):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        ttk.Label(self, text="Login", font=("Arial", 20)).pack(pady=20)
+        outer = ttk.Frame(self)
+        outer.pack(expand=True, padx=40)
+
+        ttk.Label(outer, text="Login", font=("Arial", 20)).pack(pady=20)
 
         self.user_var = tk.StringVar()
         self.pass_var = tk.StringVar()
         self.error_var = tk.StringVar()
 
-        ttk.Entry(self, textvariable=self.user_var).pack(pady=5)
-        ttk.Entry(self, textvariable=self.pass_var, show="*").pack(pady=5)
+        ttk.Entry(outer, textvariable=self.user_var, width=25).pack(pady=8)
+        ttk.Entry(outer, textvariable=self.pass_var, show="*", width=25).pack(pady=8)
 
-        ttk.Button(self, text="Login", command=self.try_login).pack(pady=10)
-        ttk.Label(self, textvariable=self.error_var, foreground="red").pack()
+        ttk.Button(outer, text="Login", command=self.try_login).pack(pady=15)
+        ttk.Label(outer, textvariable=self.error_var, foreground="red").pack()
 
     def try_login(self):
         user = self.user_var.get()
@@ -182,13 +173,15 @@ class PreFlightPage(Page):
 
         # Button row
         btns = ttk.Frame(self)
-        btns.pack()
+        btns.pack(pady=10)
 
-        ttk.Button(btns, text="Weather", command=self.ask_weather).grid(row=0, column=0, padx=5)
-        ttk.Button(btns, text="Flight Plan", command=self.ask_flight).grid(row=0, column=1, padx=5)
-        ttk.Button(btns, text="Taxi Request", command=lambda: controller.api.send("TAXI")).grid(row=0, column=2, padx=5)
-        ttk.Button(btns, text="Aircraft Manual", command=lambda: controller.show_page("PDFViewerPage")).grid(row=0, column=3, padx=5)
-
+        ttk.Button(btns, text="Weather", width=20, command=self.ask_weather).pack(pady=5)
+        ttk.Button(btns, text="Flight Plan", width=20, command=self.ask_flight).pack(pady=5)
+        ttk.Button(btns, text="Taxi Request", width=20,
+                command=lambda: controller.api.send("TAXI")).pack(pady=5)
+        ttk.Button(btns, text="Aircraft Manual", width=20,
+                command=lambda: controller.show_page("PDFViewerPage")).pack(pady=5)
+    
     def ask_weather(self):
         # TODO: popup for airport code
         self.controller.api.send("WEATHER YYZ")
@@ -224,6 +217,7 @@ class PDFViewerPage(Page):
 
         self.display = ttk.Frame(self)
         self.display.pack(fill="both", expand=True)
+        self.display.pack(fill="both", expand=True, padx=10, pady=10)
 
         self.refresh()
 
@@ -245,6 +239,37 @@ class PDFViewerPage(Page):
         else:
             ttk.Button(self.display, text="Download Manual",
                     command=lambda: self.controller.api.send("MANUAL")).pack(expand=True)
+
+
+# ├── class App
+class App(tk.Tk):
+    def __init__(self, api):
+        super().__init__()
+        self.api = api
+        self.title("ClientApp UI")
+        self.geometry("500x650")
+        self.minsize(400, 600)
+
+        self.eval('tk::PlaceWindow . center')  # Center the window on the screen
+
+        container = tk.Frame(self)
+        container.pack(fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.pages = {}
+
+        for P in (LoginPage, PreFlightPage, ActiveAirspacePage, PDFViewerPage):
+            page = P(container, self)
+            self.pages[P.__name__] = page
+            page.grid(row=0, column=0, sticky="nsew")
+
+        self.show_page("LoginPage")
+
+    def show_page(self, name):
+        page = self.pages[name]
+        page.tkraise()
+
 
 app = App(api)
 threading.Thread(target=api.read_loop, args=(on_response,), daemon=True).start()
