@@ -212,12 +212,16 @@ class ActiveAirspacePage(Page):
         self.log_panel.pack(fill="both", expand=True, pady=10)
 
         btns = ttk.Frame(self)
-        btns.pack()
+        btns.pack(pady=10)
 
-        ttk.Button(btns, text="Telemetry Update", command=lambda: controller.api.send("TELEMETRY")).grid(row=0, column=0, padx=5)
-        ttk.Button(btns, text="Airtraffic Request", command=lambda: controller.api.send("AIRTRAFFIC")).grid(row=0, column=1, padx=5)
-        ttk.Button(btns, text="Clear Runway", command=lambda: controller.api.send("TAXI")).grid(row=0, column=2, padx=5)
-        ttk.Button(btns, text="Aircraft Manual", command=lambda: controller.show_page("PDFViewerPage")).grid(row=0, column=3, padx=5)
+        ttk.Button(btns, text="Telemetry Update", width=20,
+                command=lambda: controller.api.send("TELEMETRY")).pack(pady=5)
+        ttk.Button(btns, text="Airtraffic Request", width=20,
+                command=lambda: controller.api.send("AIRTRAFFIC")).pack(pady=5)
+        ttk.Button(btns, text="Clear Runway", width=20,
+                command=lambda: controller.api.send("TAXI")).pack(pady=5)
+        ttk.Button(btns, text="Aircraft Manual", width=20,
+                command=lambda: controller.show_page("PDFViewerPage")).pack(pady=5)
 
 # ├── class PDFViewerPage
 class PDFViewerPage(Page):
