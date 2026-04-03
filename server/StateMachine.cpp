@@ -81,7 +81,11 @@ void StateMachine::onAuthSuccess() {
 
 void StateMachine::onRequestHandled(reqtyp requestType) {
 	if (requestType == req_taxi) {
-		state = ServerState::ACTIVE_AIRSPACE;
+		if (state == ServerState::ACTIVE_AIRSPACE) {
+			state = ServerState::PRE_FLIGHT;
+		} else {
+			state = ServerState::ACTIVE_AIRSPACE;
+		}
 		return;
 	}
 
