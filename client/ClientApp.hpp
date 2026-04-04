@@ -21,6 +21,7 @@ public:
     void shutdown();
 
     // --- Shared backend API (used by CLI and Python) ---
+    std::string apiRequest(const std::string& cmd, const std::string& arg1, const std::string& arg2);
     std::string handleEmergency();
     std::string handleLogin(const std::string& user, const std::string& pass);
     std::string handleWeather(const std::string& location);
