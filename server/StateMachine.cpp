@@ -105,3 +105,8 @@ void StateMachine::onRequestHandled(reqtyp requestType) {
 void StateMachine::onDataTransferComplete() {
 	state = previousState;
 }
+
+void StateMachine::onEmergency() {
+	previousState = state;
+	state = ServerState::EMERGENCY;
+}

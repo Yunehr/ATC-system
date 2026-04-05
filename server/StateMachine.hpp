@@ -18,6 +18,7 @@ public:
 	void onAuthSuccess();
 	void onRequestHandled(reqtyp requestType);
 	void onDataTransferComplete();
+	void onEmergency();
 
 	std::string getStateName() const;
 
