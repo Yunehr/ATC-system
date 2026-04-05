@@ -6,7 +6,7 @@
 // Constructor: performs WSAStartup + connectToServer
 // ---------------------------------------------------------
 ClientApp::ClientApp(const std::string& ip, unsigned short port)
-    : ip(ip), port(port), initialized(false), connected(false)
+    : ip(ip), port(port), initialized(false), connected(false), currentState("STARTUP/AUTH")
 {
     // --- WSA Startup (same as original main.cpp) ---
     if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
@@ -53,6 +53,7 @@ void ClientApp::runCommandLoop() {
         // EMERGENCY
         if (cmd == "EMERGENCY") {
             std::cout << "EMERGENCY_RESPONSE: " << handleEmergency() << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
@@ -66,6 +67,7 @@ void ClientApp::runCommandLoop() {
             std::cin >> Password;
 
             std::cout << "LoginAuth: " << handleLogin(Username, Password) << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
@@ -76,6 +78,7 @@ void ClientApp::runCommandLoop() {
             std::cin >> input;
 
             std::cout << "WEATHER_RESPONSE: " << handleWeather(input) << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
@@ -85,24 +88,28 @@ void ClientApp::runCommandLoop() {
             std::cin >> input;
 
             std::cout << "Flight Plan: " << handleFlight(input) << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TAXI") {
             std::cout << "Taxi Response: " << handleTaxi() << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TELEM") {
             std::cout << "Telemetry Response: " << handleTelemetry() << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
 
         if (cmd == "TRAFFIC") {
             std::cout << "Air Traffic Response: " << handleTraffic() << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
@@ -110,6 +117,7 @@ void ClientApp::runCommandLoop() {
         // DATA TRANSFER
         if (cmd == "MANUAL") {
             std::cout << "Manual Response: " << handleManualDownload() << "\n";
+            std::cout << "[Tower State: " << currentState << "]\n";
             std::cout.flush();
             continue;
         }
@@ -143,11 +151,19 @@ std::string ClientApp::apiRequest(const std::string& cmd, const std::string& arg
 }
 
 std::string ClientApp::handleEmergency() {
-    return client.pkRequest("", pkt_emgcy);
+    std::string resp = client.pkRequest("", pkt_emgcy);
+    // Response contains "State changed to: X" — parse and track it (REQ-CLT-040).
+    auto pos = resp.find("State changed to: ");
+    if (pos != std::string::npos)
+        currentState = resp.substr(pos + 18);
+    return resp;
 }
 
 std::string ClientApp::handleLogin(const std::string& user, const std::string& pass) {
-    return client.pkRequest(user + "," + pass, pkt_auth);
+    std::string resp = client.pkRequest(user + "," + pass, pkt_auth);
+    if (resp.find("Authentication Successful") != std::string::npos)
+        currentState = "PRE_FLIGHT";
+    return resp;
 }
 
 std::string ClientApp::handleWeather(const std::string& location) {
@@ -159,7 +175,12 @@ std::string ClientApp::handleFlight(const std::string& flightId) {
 }
 
 std::string ClientApp::handleTaxi() {
-    return client.dataRequest("", req_taxi);
+    std::string resp = client.dataRequest("", req_taxi);
+    if (resp.find("departure") != std::string::npos)
+        currentState = "ACTIVE_AIRSPACE";
+    else if (resp.find("arrival") != std::string::npos)
+        currentState = "PRE_FLIGHT";
+    return resp;
 }
 
 std::string ClientApp::handleLand() {

@@ -13,10 +13,12 @@ public:
 	bool processPacket(packet& pak, std::string& error);
 	bool finalize(std::string& error);
 	bool isComplete() const;
+	uint32_t getBytesReceived() const;
 
 private:
 	std::string finalPath;
 	std::string tempPath;
 	std::fstream out;
 	bool complete;
+	uint32_t bytesReceived;
 };

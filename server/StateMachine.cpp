@@ -80,6 +80,11 @@ void StateMachine::onAuthSuccess() {
 }
 
 void StateMachine::onRequestHandled(reqtyp requestType) {
+	if (static_cast<int>(requestType) == pkt_emgcy) {
+		onEmergency();
+		return;
+	}
+
 	if (requestType == req_taxi) {
 		if (state == ServerState::PRE_FLIGHT) {
 			state = ServerState::ACTIVE_AIRSPACE;

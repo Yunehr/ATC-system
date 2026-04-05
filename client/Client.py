@@ -52,7 +52,7 @@ def on_response(text):
     elif text.startswith("Landing Clearance: APPROVED"):
         app.show_page("PreFlightPage")
 
-    # Download ACK/NACK for Flight Manual
+     # Download ACK/NACK for Flight Manual
     global download_status
     ## Check for NACK responses
     if text.startswith("Request denied in state:"):
@@ -63,7 +63,7 @@ def on_response(text):
 
         # stop spinner if error occurs during download
         try:
-            app.pages["PDFViewerPage"].start_loading()
+            app.pages["PDFViewerPage"].stop_loading()
         except:
             pass
 

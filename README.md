@@ -54,6 +54,7 @@ cd tests
 g++ -std=c++17 -o ServerTests.exe servertests.cpp `
    ../server/StateMachine.cpp `
    ../server/ServerEngine.cpp `
+   ../server/Logger.cpp `
    ../shared/PacketTransport.cpp `
    ../server/WeatherService.cpp `
    ../server/FileTransferManager.cpp `
@@ -65,6 +66,7 @@ g++ -std=c++17 -o ServerTests.exe servertests.cpp `
    -I"../shared" `
    -lws2_32 -lpthread
 
+
 ./ServerTests.exe
 ```
 
@@ -75,6 +77,7 @@ cd tests
 
 g++ -std=c++17 -o ClientTests.exe clienttests.cpp `
   ../client/FileReceiver.cpp `
+  ../client/ClientEngine.cpp `
   ../shared/PacketTransport.cpp `
   "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
   -I"../external/googletest-1.17.0/googletest/include" `

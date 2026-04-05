@@ -4,7 +4,7 @@
 #include <cstring>
 #include <filesystem>
 
-FileReceiver::FileReceiver() : complete(false) {}
+FileReceiver::FileReceiver() : complete(false), bytesReceived(0) {}
 
 FileReceiver::~FileReceiver() {
 	if (out.is_open()) {
@@ -16,6 +16,7 @@ bool FileReceiver::start(const std::string& outputPath, std::string& error) {
 	finalPath = outputPath;
 	tempPath = outputPath + ".part";
 	complete = false;
+	bytesReceived = 0;
 
 	if (out.is_open()) {
 		out.close();
@@ -58,6 +59,10 @@ bool FileReceiver::processPacket(packet& pak, std::string& error) {
 			error = "Failed to write staging file";
 			return false;
 		}
+
+		uint32_t positionAfterWrite = offset + (uint32_t)fileDataSize;
+		if (positionAfterWrite > bytesReceived)
+			bytesReceived = positionAfterWrite;
 	}
 
 	if (pak.getTFlag() == PKT_TRNSMT_COMP) {
@@ -90,4 +95,8 @@ bool FileReceiver::finalize(std::string& error) {
 
 bool FileReceiver::isComplete() const {
 	return complete;
+}
+
+uint32_t FileReceiver::getBytesReceived() const {
+	return bytesReceived;
 }

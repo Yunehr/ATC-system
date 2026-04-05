@@ -6,6 +6,7 @@
 #include "FileTransferManager.hpp"
 #include "ClientSession.hpp"
 #include "StateMachine.hpp"
+#include "Logger.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -176,12 +177,47 @@ void ServerEngine::handleClient(SOCKET clientSock) {
         unsigned char type = rxPkt.getPKType();
         unsigned char clientID = rxPkt.getCLID();
 
+        // REQ-LOG-010/030/040: log every received packet with a human-readable description.
+        {
+            std::string rxDesc;
+            if (type == pkt_auth) {
+                rxDesc = "Auth attempt from client " + std::to_string((int)clientID);
+            } else if (type == pkt_emgcy) {
+                rxDesc = "Emergency declared by client " + std::to_string((int)clientID);
+            } else if (type == pkt_req && rxPkt.getPloadLength() > 0) {
+                int reqByte = (unsigned char)rxPkt.getData()[0];
+                switch (reqByte) {
+                case req_weather:
+                    rxDesc = "Weather request";
+                    break;
+                case req_telemetry: {
+                    // REQ-LOG-040: record Client Status and Last Location from telemetry body.
+                    int bodyLen = (int)rxPkt.getPloadLength() - 1;
+                    std::string body = (bodyLen > 0)
+                        ? std::string(rxPkt.getData() + 1, bodyLen)
+                        : "NO_TELEMETRY";
+                    rxDesc = "Telemetry update - Client Status and Last Location: " + body;
+                    break;
+                }
+                case req_file:    rxDesc = "Flight manual download request"; break;
+                case req_taxi:    rxDesc = "Taxi clearance request";         break;
+                case req_fplan:   rxDesc = "Flight plan request";            break;
+                case req_traffic: rxDesc = "Traffic request";                break;
+                default:          rxDesc = "Unknown request type " + std::to_string(reqByte);
+                }
+            } else {
+                rxDesc = "Unknown packet type " + std::to_string((int)type);
+            }
+            Logger::logPacket(rxPkt, Logger::Direction::RX, stateMachine.getStateName(), rxDesc);
+        }
+
         if (rxPkt.calcCRC() != rxPkt.GetCRC()){
             std::string msg = "CRC Checksum Failed";
 
             packet err;
             err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
 
+            Logger::logPacket(err, Logger::Direction::TX, stateMachine.getStateName(), msg);
             if (!PacketTransport::sendPacket((int)clientSock, err)) {
                 break;
             }
@@ -199,6 +235,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 unsigned char denyType = (reqType == req_file) ? pkt_empty : pkt_dat;
                 denyResp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, denyType);
 
+                Logger::logPacket(denyResp, Logger::Direction::TX, stateMachine.getStateName(), data);
                 if (!PacketTransport::sendPacket((int)clientSock, denyResp)) {
                     break;
                 }
@@ -223,12 +260,17 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                     data = "Flight Manual: transfer failed or file missing";
                     packet resp;
                     resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_empty);
+                    Logger::logPacket(resp, Logger::Direction::TX, stateMachine.getStateName(), data);
                     if (!PacketTransport::sendPacket((int)clientSock, resp)) {
                         break;
                     }
                 } else {
                     stateMachine.onRequestHandled(reqType);
                     stateMachine.onDataTransferComplete();
+                    std::string xferMsg = "Flight Manual transfer complete";
+                    packet xferLog;
+                    xferLog.PopulPacket((char*)xferMsg.c_str(), (int)xferMsg.size(), clientID, pkt_dat);
+                    Logger::logPacket(xferLog, Logger::Direction::TX, stateMachine.getStateName(), xferMsg);
                 }
                 continue;
             }
@@ -264,6 +306,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             std::cout << "CLIENT ID: " << (int)resp.getCLID() << std::endl;
             std::cout << "LENGTH: " << (int)resp.getPloadLength() << std::endl;
 
+            Logger::logPacket(resp, Logger::Direction::TX, stateMachine.getStateName(), data);
             if (!PacketTransport::sendPacket((int)clientSock, resp)) {
                 break;
             }
@@ -283,6 +326,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             packet authResp;
             authResp.PopulPacket((char*)response.c_str(), (int)response.size(), clientID, pkt_auth);
 
+            Logger::logPacket(authResp, Logger::Direction::TX, stateMachine.getStateName(), response);
             if (!PacketTransport::sendPacket((int)clientSock, authResp)) {
                 break;
             }
@@ -296,6 +340,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             packet emgResp;
             emgResp.PopulPacket((char*)response.c_str(), (int)response.size(), clientID, pkt_emgcy);
 
+            Logger::logPacket(emgResp, Logger::Direction::TX, stateMachine.getStateName(), response);
             if (!PacketTransport::sendPacket((int)clientSock, emgResp)) {
                 break;
             }
@@ -311,6 +356,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             packet err;
             err.PopulPacket((char*)msg.c_str(), (int)msg.size(), clientID, pkt_empty);
 
+            Logger::logPacket(err, Logger::Direction::TX, stateMachine.getStateName(), msg);
             if (!PacketTransport::sendPacket((int)clientSock, err)) {
                 break;
             }

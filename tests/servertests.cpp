@@ -13,7 +13,10 @@
 #include "../server/ClientSession.hpp"
 #include "../server/WeatherService.hpp"
 #include "../server/FileTransferManager.hpp"
+#include "../server/Logger.h"
 #include "../shared/Request.h"
+#include <fstream>
+#include <filesystem>
 
 // ==================================================================
 /// @name REQ-SVR-020 — State Machine Initialization & Transitions
@@ -67,6 +70,41 @@ TEST(Requirement_SVR_020, StateMovesToDataTransfer) {
 
     sm.onDataTransferComplete();
     EXPECT_EQ(sm.getStateName(), "PRE_FLIGHT");
+}
+
+/**
+ * @brief Verifies that the EMERGENCY state entered from PRE_FLIGHT is exited
+ *        back to PRE_FLIGHT when onDataTransferComplete() is called.
+ * @req REQ-SVR-020
+ */
+TEST(Requirement_SVR_020, Emergency_From_PreFlight_RestoresToPreFlight) {
+    StateMachine sm;
+    sm.onAuthSuccess();                           // -> PRE_FLIGHT
+    ASSERT_EQ(sm.getStateName(), "PRE_FLIGHT");
+
+    sm.onEmergency();                             // -> EMERGENCY (saves PRE_FLIGHT)
+    ASSERT_EQ(sm.getStateName(), "EMERGENCY");
+
+    sm.onDataTransferComplete();                  // restores saved state
+    EXPECT_EQ(sm.getStateName(), "PRE_FLIGHT");
+}
+
+/**
+ * @brief Verifies that the EMERGENCY state entered from ACTIVE_AIRSPACE is exited
+ *        back to ACTIVE_AIRSPACE, not PRE_FLIGHT.
+ * @req REQ-SVR-020
+ */
+TEST(Requirement_SVR_020, Emergency_From_ActiveAirspace_RestoresToActiveAirspace) {
+    StateMachine sm;
+    sm.onAuthSuccess();
+    sm.onRequestHandled(req_taxi);                // -> ACTIVE_AIRSPACE
+    ASSERT_EQ(sm.getStateName(), "ACTIVE_AIRSPACE");
+
+    sm.onEmergency();                             // -> EMERGENCY (saves ACTIVE_AIRSPACE)
+    ASSERT_EQ(sm.getStateName(), "EMERGENCY");
+
+    sm.onDataTransferComplete();                  // restores saved state
+    EXPECT_EQ(sm.getStateName(), "ACTIVE_AIRSPACE");
 }
 
 /// @}
@@ -144,6 +182,36 @@ TEST(Requirement_SVR_040, Block_Traffic_Request_In_Auth) {
 }
 
 /**
+ * @brief Verifies that flight plan requests are blocked in ACTIVE_AIRSPACE —
+ *        FLIGHT_PLAN_REQUEST is not listed in StatePermissions.csv for that state.
+ * @req REQ-SVR-040
+ */
+TEST(Requirement_SVR_040, ActiveAirspace_Blocks_FlightPlanRequest) {
+    StateMachine sm;
+    sm.onAuthSuccess();
+    sm.onRequestHandled(req_taxi);                // -> ACTIVE_AIRSPACE
+    ASSERT_EQ(sm.getStateName(), "ACTIVE_AIRSPACE");
+
+    EXPECT_FALSE(sm.canHandle(req_fplan))
+        << "Flight plan requests should be blocked once airborne.";
+}
+
+/**
+ * @brief Verifies that weather requests are blocked in ACTIVE_AIRSPACE —
+ *        WEATHER_REQUEST is not listed in StatePermissions.csv for that state.
+ * @req REQ-SVR-040
+ */
+TEST(Requirement_SVR_040, ActiveAirspace_Blocks_WeatherRequest) {
+    StateMachine sm;
+    sm.onAuthSuccess();
+    sm.onRequestHandled(req_taxi);                // -> ACTIVE_AIRSPACE
+    ASSERT_EQ(sm.getStateName(), "ACTIVE_AIRSPACE");
+
+    EXPECT_FALSE(sm.canHandle(req_weather))
+        << "Weather requests should be blocked once airborne.";
+}
+
+/**
  * @brief Verifies that non-essential commands (e.g. file transfer) are blocked
  *        while the pilot is in the EMERGENCY state.
  * @req REQ-SVR-040
@@ -214,7 +282,7 @@ TEST(Requirement_SVR_040, EmptyLocation_ReturnsNotFoundMessage) {
  * @req REQ-SVR-040
  */
 TEST(Requirement_SVR_040, TaxiClearance_GrantedFromStatePermissions) {
-    std::string result = FileTransferManager::getTaxiClearance();
+    std::string result = FileTransferManager::getTaxiClearance("PRE_FLIGHT");
     EXPECT_EQ(result, "Taxi Clearance: APPROVED for departure sequence");
 }
 
@@ -506,6 +574,146 @@ TEST(Requirement_PKT_030, Packet_CRC_StoredInTailAfterSerialize) {
     // CRC stored in the tail must be non-zero and match a fresh calculation
     EXPECT_NE(pkt.GetCRC(), 0);
     EXPECT_EQ(pkt.GetCRC(), pkt.calcCRC());
+}
+
+/// @}
+
+// ============================================================
+/// @name REQ-LOG — TX/RX Packet Audit Logging
+// ============================================================
+/// @{
+
+namespace {
+    /// Returns the last non-empty line from TransmitReceiveLog.csv.
+    std::string readLastLogLine() {
+        std::ifstream in("../data/TransmitReceiveLog.csv");
+        if (!in.is_open()) in.open("data/TransmitReceiveLog.csv");
+        std::string line, last;
+        while (std::getline(in, line))
+            if (!line.empty()) last = line;
+        return last;
+    }
+
+    /// Returns the first line (header) from TransmitReceiveLog.csv.
+    std::string readLogHeader() {
+        std::ifstream in("../data/TransmitReceiveLog.csv");
+        if (!in.is_open()) in.open("data/TransmitReceiveLog.csv");
+        std::string header;
+        std::getline(in, header);
+        return header;
+    }
+
+    /// Extracts the integer LogID from the first comma-delimited field of a line.
+    int extractLogId(const std::string& line) {
+        auto comma = line.find(',');
+        if (comma == std::string::npos) return -1;
+        try { return std::stoi(line.substr(0, comma)); }
+        catch (...) { return -1; }
+    }
+}
+
+/**
+ * @brief Verifies that the log file is created with the correct CSV header
+ *        the first time Logger::logPacket is called.
+ * @req REQ-LOG-010
+ */
+TEST(Requirement_LOG_010, LogFile_HasCorrectHeader) {
+    packet pkt;
+    char data[] = "HeaderProbe";
+    pkt.PopulPacket(data, sizeof(data), 1, pkt_auth);
+    Logger::logPacket(pkt, Logger::Direction::RX, "STARTUP/AUTH", "header probe");
+
+    std::string header = readLogHeader();
+    EXPECT_EQ(header, "LogID,ClientID,Direction,PacketType,ServerState,Timestamp,Description")
+        << "Log file header is missing or malformed";
+}
+
+/**
+ * @brief Verifies that an RX packet produces a log entry containing the RX
+ *        direction flag and the correct packet-type label.
+ * @req REQ-LOG-010
+ * @req REQ-LOG-030
+ */
+TEST(Requirement_LOG_010, LogPacket_RX_WritesEntryWithDirection) {
+    packet pkt;
+    char data[] = "RXTest";
+    pkt.PopulPacket(data, sizeof(data), 2, pkt_auth);
+    Logger::logPacket(pkt, Logger::Direction::RX, "STARTUP/AUTH", "rx direction test");
+
+    std::string last = readLastLogLine();
+    EXPECT_NE(last.find("RX"),   std::string::npos) << "Expected RX in: " << last;
+    EXPECT_NE(last.find("AUTH"), std::string::npos) << "Expected AUTH in: " << last;
+}
+
+/**
+ * @brief Verifies that a TX packet produces a log entry containing the TX
+ *        direction flag and the correct packet-type label.
+ * @req REQ-LOG-010
+ * @req REQ-LOG-030
+ */
+TEST(Requirement_LOG_010, LogPacket_TX_WritesEntryWithDirection) {
+    packet pkt;
+    char data[] = "TXTest";
+    pkt.PopulPacket(data, sizeof(data), 3, pkt_dat);
+    Logger::logPacket(pkt, Logger::Direction::TX, "PRE_FLIGHT", "tx direction test");
+
+    std::string last = readLastLogLine();
+    EXPECT_NE(last.find("TX"),         std::string::npos) << "Expected TX in: " << last;
+    EXPECT_NE(last.find("DATA"),       std::string::npos) << "Expected DATA in: " << last;
+    EXPECT_NE(last.find("PRE_FLIGHT"), std::string::npos) << "Expected PRE_FLIGHT in: " << last;
+}
+
+/**
+ * @brief Verifies that successive calls to logPacket produce strictly
+ *        incrementing LogIDs, satisfying the unique-ID-per-entry requirement.
+ * @req REQ-LOG-020
+ */
+TEST(Requirement_LOG_020, LogPacket_IdsIncrementOnSuccessiveCalls) {
+    packet pkt;
+    char data[] = "IDTest";
+    pkt.PopulPacket(data, sizeof(data), 1, pkt_req);
+
+    Logger::logPacket(pkt, Logger::Direction::RX, "PRE_FLIGHT", "id increment first");
+    int id1 = extractLogId(readLastLogLine());
+
+    Logger::logPacket(pkt, Logger::Direction::TX, "PRE_FLIGHT", "id increment second");
+    int id2 = extractLogId(readLastLogLine());
+
+    ASSERT_NE(id1, -1) << "Could not parse first LogID";
+    ASSERT_NE(id2, -1) << "Could not parse second LogID";
+    EXPECT_EQ(id2, id1 + 1) << "LogIDs must increment by exactly 1";
+}
+
+/**
+ * @brief Verifies that the server state name appears in the logged entry,
+ *        satisfying the job-description/status-flag requirement.
+ * @req REQ-LOG-030
+ */
+TEST(Requirement_LOG_030, LogPacket_ContainsServerState) {
+    packet pkt;
+    char data[] = "StateTest";
+    pkt.PopulPacket(data, sizeof(data), 1, pkt_emgcy);
+    Logger::logPacket(pkt, Logger::Direction::RX, "EMERGENCY", "emergency state test");
+
+    std::string last = readLastLogLine();
+    EXPECT_NE(last.find("EMERGENCY"), std::string::npos)
+        << "Server state missing from log entry: " << last;
+}
+
+/**
+ * @brief Verifies that the human-readable description is written into the log
+ *        entry, satisfying the job-description requirement.
+ * @req REQ-LOG-030
+ */
+TEST(Requirement_LOG_030, LogPacket_ContainsDescription) {
+    packet pkt;
+    char data[] = "DescTest";
+    pkt.PopulPacket(data, sizeof(data), 1, pkt_req);
+    Logger::logPacket(pkt, Logger::Direction::TX, "PRE_FLIGHT", "unique_description_marker_xyz");
+
+    std::string last = readLastLogLine();
+    EXPECT_NE(last.find("unique_description_marker_xyz"), std::string::npos)
+        << "Description missing from log entry: " << last;
 }
 
 /// @}

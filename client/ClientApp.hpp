@@ -49,4 +49,5 @@ private:
 
     bool initialized;
     bool connected;
+    std::string currentState;  // REQ-CLT-040: last known server state
 };

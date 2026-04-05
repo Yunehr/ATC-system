@@ -9,6 +9,7 @@
 #include "../shared/Request.h"
 #include "FileReceiver.hpp"
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 /**
@@ -199,11 +200,18 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     }
 
 
+    std::cout << "\rDownloading Flight Manual: 0 KB received..." << std::flush;
+
     if (!receiver.processPacket(firstPkt, err)) {
+        std::cout << "\n";
         return err;
     }
 
+    std::cout << "\rDownloading Flight Manual: "
+              << (receiver.getBytesReceived() / 1024) << " KB received..." << std::flush;
+
     if (receiver.isComplete()) {
+        std::cout << "\n";
         if (!receiver.finalize(err)) {
             return err;
         }
@@ -213,22 +221,29 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     while (true) {
         packet rxPkt;
         if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
+            std::cout << "\n";
             return "Transfer interrupted while receiving flight manual";
         }
 
         if (rxPkt.calcCRC() != rxPkt.GetCRC()) {
+            std::cout << "\n";
             return "CRC Checksum Failed during manual transfer";
         }
 
         if (!receiver.processPacket(rxPkt, err)) {
+            std::cout << "\n";
             return err;
         }
+
+        std::cout << "\rDownloading Flight Manual: "
+                  << (receiver.getBytesReceived() / 1024) << " KB received..." << std::flush;
 
         if (receiver.isComplete()) {
             break;
         }
     }
 
+    std::cout << "\n";
     if (!receiver.finalize(err)) {
         return err;
     }
