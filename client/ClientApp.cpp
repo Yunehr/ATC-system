@@ -95,13 +95,6 @@ void ClientApp::runCommandLoop() {
             continue;
         }
 
-        // ACTIVE AIRSPACE
-        if (cmd == "LAND") {
-            std::cout << "Clearance_Request: " << handleLand() << "\n";
-            std::cout.flush();
-            continue;
-        }
-
         if (cmd == "TELEM") {
             std::cout << "Telemetry Response: " << handleTelemetry() << "\n";
             std::cout.flush();
@@ -132,6 +125,23 @@ void ClientApp::runCommandLoop() {
 // ----------------------
 // Backend API functions
 // ----------------------
+std::string ClientApp::apiRequest(const std::string& cmd, const std::string& arg1, const std::string& arg2) {
+    if (!initialized || !connected)
+        return "ERROR_NOT_CONNECTED";
+
+    if (cmd == "EMERGENCY") return handleEmergency();
+    if (cmd == "LOGIN")     return handleLogin(arg1, arg2);
+    if (cmd == "WEATHER")   return handleWeather(arg1);
+    if (cmd == "FLIGHT")    return handleFlight(arg1);
+    if (cmd == "TAXI")      return handleTaxi();
+    if (cmd == "LAND")      return handleLand();
+    if (cmd == "TELEM")     return handleTelemetry();
+    if (cmd == "TRAFFIC")   return handleTraffic();
+    if (cmd == "MANUAL")    return handleManualDownload();
+
+    return "ERROR_UNKNOWN_CMD";
+}
+
 std::string ClientApp::handleEmergency() {
     return client.pkRequest("", pkt_emgcy);
 }
@@ -153,7 +163,7 @@ std::string ClientApp::handleTaxi() {
 }
 
 std::string ClientApp::handleLand() {
-    return client.dataRequest("", req_taxi);
+    return handleTaxi();
 }
 
 std::string ClientApp::handleTelemetry() {

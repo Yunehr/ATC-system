@@ -26,6 +26,16 @@ static std::ifstream openManualFile() {
     return in;
 }
 
+static std::streamsize getManualFileSize() {
+    std::ifstream in = openManualFile();
+    if (!in.is_open()) {
+        return 0;
+    }
+
+    in.seekg(0, std::ios::end);
+    return in.tellg();
+}
+
 ServerEngine::ServerEngine() : listenSock(INVALID_SOCKET), running(false) {}
 
 ServerEngine::~ServerEngine() {
@@ -100,6 +110,9 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
         return false;
     }
 
+    const std::streamsize totalBytes = getManualFileSize();
+    std::cout << "TRANSFER START: total=" << (long long)totalBytes << std::endl;
+
     const int chunkSize = MAX_PKTSIZE - (int)sizeof(uint32_t);
     char fileBuffer[MAX_PKTSIZE] = { 0 };
     char payload[MAX_PKTSIZE] = { 0 };
@@ -126,6 +139,9 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
             return false;
         }
 
+        std::cout << "TRANSFER PROGRESS: current=" << (long long)(currentOffset + (uint32_t)bytesRead)
+                  << " total=" << (long long)totalBytes << std::endl;
+
         sentAnyChunk = true;
         currentOffset += (uint32_t)bytesRead;
     }
@@ -134,9 +150,16 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
         packet eofChunk;
         eofChunk.PopulPacket(payload, (int)sizeof(uint32_t), (char)clientId, pkt_dat);
         eofChunk.setTransmitFlag(PKT_TRNSMT_COMP);
-        return PacketTransport::sendPacket((int)clientSock, eofChunk);
+        if (!PacketTransport::sendPacket((int)clientSock, eofChunk)) {
+            return false;
+        }
+
+        std::cout << "TRANSFER COMPLETE: current=0 total=0" << std::endl;
+        return true;
     }
 
+    std::cout << "TRANSFER COMPLETE: current=" << (long long)currentOffset
+              << " total=" << (long long)totalBytes << std::endl;
     return true;
 }
 
@@ -210,7 +233,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 continue;
             }
             else if (reqType == req_taxi) {
-                data = FileTransferManager::getTaxiClearance();
+                data = FileTransferManager::getTaxiClearance(stateMachine.getStateName());
                 stateMachine.onRequestHandled(reqType);
             }
             else if (reqType == req_fplan) {

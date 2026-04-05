@@ -36,6 +36,9 @@ class ATCScreen:
         self.active_connections = {}
         self.server_start_time = None
         self.metric_values = {}
+        self.data_transferred_bytes = 0
+        self.transfer_total_bytes = 0
+        self.transfer_current_bytes = 0
         
         # Configure styles
         self.setup_styles()
@@ -104,6 +107,11 @@ class ATCScreen:
                 if line:
                     clean_line = line.strip()
                     self.log_queue.put(clean_line)
+
+                    transfer_event = self.parse_transfer_event(clean_line)
+                    if transfer_event:
+                        event_type, current, total = transfer_event
+                        self.root.after(0, lambda et=event_type, c=current, t=total: self.handle_transfer_event(et, c, t))
                     
                     # Parse connection info
                     lower_line = clean_line.lower()
@@ -484,6 +492,69 @@ class ATCScreen:
         label = self.metric_values.get(metric_name)
         if label:
             label.config(text=value)
+
+    def parse_transfer_event(self, line):
+        """Extract file-transfer progress events from server log lines."""
+        if line.startswith("TRANSFER START:"):
+            try:
+                total = int(line.split("total=", 1)[1].strip())
+                return ("start", 0, total)
+            except (IndexError, ValueError):
+                return None
+
+        if line.startswith("TRANSFER PROGRESS:"):
+            try:
+                rest = line.split(":", 1)[1].strip()
+                parts = dict(part.split("=", 1) for part in rest.split() if "=" in part)
+                current = int(parts.get("current", "0"))
+                total = int(parts.get("total", "0"))
+                return ("progress", current, total)
+            except (ValueError, IndexError):
+                return None
+
+        if line.startswith("TRANSFER COMPLETE:"):
+            try:
+                rest = line.split(":", 1)[1].strip()
+                parts = dict(part.split("=", 1) for part in rest.split() if "=" in part)
+                current = int(parts.get("current", "0"))
+                total = int(parts.get("total", "0"))
+                return ("complete", current, total)
+            except (ValueError, IndexError):
+                return None
+
+        return None
+
+    def handle_transfer_event(self, event_type, current, total):
+        """Update the progress bar and transferred-byte metrics."""
+        if event_type == "start":
+            self.transfer_total_bytes = total
+            self.transfer_current_bytes = 0
+            self.progress['value'] = 0
+            self.progress_label.config(text="📁 File Transfer: 0%")
+            self.progress_percent.config(text="0%")
+            return
+
+        if total > 0:
+            self.transfer_total_bytes = total
+            self.transfer_current_bytes = current
+            self.data_transferred_bytes = current
+            self.update_progress(current, total)
+            self.set_metric("DATA TRANSFERRED", self.format_bytes(self.data_transferred_bytes))
+
+        if event_type == "complete":
+            if total > 0:
+                self.update_progress(total, total)
+                self.data_transferred_bytes = total
+                self.set_metric("DATA TRANSFERRED", self.format_bytes(self.data_transferred_bytes))
+            self.progress_label.config(text="📁 File Transfer: Complete")
+
+    def format_bytes(self, byte_count):
+        """Format a byte count for the metric card."""
+        if byte_count >= 1024 * 1024:
+            return f"{byte_count / (1024 * 1024):.2f} MB"
+        if byte_count >= 1024:
+            return f"{byte_count / 1024:.1f} KB"
+        return f"{byte_count} B"
 
     def update_last_activity(self):
         """Update the last activity metric to current time."""
