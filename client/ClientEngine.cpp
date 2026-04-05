@@ -1,8 +1,17 @@
 /**
  * @file ClientEngine.cpp
- * @brief Implementation of the ClientEngine class for handling server connectivity and weather requests.
+ * @brief Implementation of the ClientEngine class.
+ *
+ * Provides TCP connectivity to the backend server and implements three
+ * transport-level request patterns:
+ * - dataRequest()  — wraps a payload in a Request struct before sending.
+ * - pkRequest()    — sends a raw packet of a specified type.
+ * - downloadFlightManual() — multi-packet file transfer with progress reporting.
+ *
+ * All methods perform CRC verification on received packets and map transport
+ * errors to human-readable strings that are forwarded back to the Python UI
+ * via the stdout bridge.
  */
-
 #include "ClientEngine.hpp"
 #include "../shared/PacketTransport.hpp"
 #include "../shared/Packet.h"
@@ -13,29 +22,41 @@
 #include <iomanip>
 #include <vector>
 
+// ---------------------------------------------------------
+// Construction / destruction
+// ---------------------------------------------------------
+ 
 /**
- * @brief Construct a new Client Engine object.
- * Initializes the socket to an invalid state and sets a default client ID.
+ * @brief Constructs a ClientEngine with an invalid socket and a default client ID.
+ *
+ * The socket is not opened until connectToServer() is called.
  */
-
 ClientEngine::ClientEngine() : sock(INVALID_SOCKET), clientID(1) {}
-
+ 
 /**
- * @brief Destroy the Client Engine object.
- * Ensures the connection is closed before the object is destroyed.
+ * @brief Destructor — ensures the socket is closed before the object is destroyed.
  */
 ClientEngine::~ClientEngine() {
     disconnect();
 }
 
+// ---------------------------------------------------------
+// Connection management
+// ---------------------------------------------------------
+ 
 /**
- * @brief Establishes a TCP connection to the specified server.
- * * @param ip The IPv4 address of the server as a string.
- * @param port The port number to connect to.
- * @return true if the connection was successful.
- * @return false if socket creation or connection failed.
+ * @brief Opens a TCP connection to the specified server.
+ *
+ * Creates an AF_INET/SOCK_STREAM socket, resolves the IPv4 address, and
+ * calls connect().  On failure the socket is closed and reset to
+ * INVALID_SOCKET so that subsequent guard checks in the callers work
+ * correctly.
+ *
+ * @param ip   IPv4 address of the server as a dotted-decimal string.
+ * @param port TCP port to connect to.
+ * @return @c true  if the connection was established successfully.
+ * @return @c false if socket creation or connect() failed.
  */
-
 bool ClientEngine::connectToServer(const std::string& ip, unsigned short port) {
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET) {
@@ -61,8 +82,10 @@ bool ClientEngine::connectToServer(const std::string& ip, unsigned short port) {
 
 /**
  * @brief Gracefully closes the active socket connection.
+ *
+ * Safe to call when the socket is already invalid (no-op in that case).
+ * Resets @ref sock to INVALID_SOCKET after closing.
  */
-
 void ClientEngine::disconnect() {
     if (sock != INVALID_SOCKET) {
         closesocket(sock);
@@ -70,14 +93,28 @@ void ClientEngine::disconnect() {
     }
 }
 
+// ---------------------------------------------------------
+// Request handlers
+// ---------------------------------------------------------
+ 
 /**
- * @brief Sends a weather data request to the server and awaits a response.
- * * This method encapsulates the location string into a Packet, sends it via 
- * PacketTransport, and handles the resulting server response or error.
- * * @param location The name of the city or region for the weather query.
- * @return std::string The weather data, a server error message, or a transport error description.
+ * @brief Sends a typed data request to the server and returns the response.
+ *
+ * Serialises @p data into a Request of the given @p type, wraps it in a
+ * @c pkt_req packet, and transmits it via PacketTransport.  The response
+ * packet is then CRC-verified and its payload is returned as a string.
+ *
+ * Error handling (each condition returns a descriptive string):
+ * - Send failure            → @c "Failed to send request"
+ * - Receive failure         → @c "Failed to receive response"
+ * - CRC mismatch            → @c "CRC Checksum Failed"
+ * - Incomplete transmission → @c "Received incomplete response"
+ * - Unexpected packet type  → @c "Unexpected response type"
+ *
+ * @param data Payload to include in the request (may be empty).
+ * @param type The request type enumeration value (e.g. @c req_weather, @c req_fplan).
+ * @return The server's response payload string, or an error description.
  */
-
 std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
     
     int reqSize = data.size();   //-1 for null terminator used in testing, Unknown if needed here
@@ -121,6 +158,25 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
     return "Unexpected response type";
 }
 
+/**
+ * @brief Sends a raw typed packet to the server and returns the response.
+ *
+ * Unlike dataRequest(), the payload is placed directly into the packet
+ * without first wrapping it in a Request struct.  The response packet type
+ * must match @p PKType for the payload to be returned; any other type is
+ * treated as an error.
+ *
+ * Error handling (each condition returns a descriptive string):
+ * - Send failure            → @c "Failed to send request"
+ * - Receive failure         → @c "Failed to receive response"
+ * - CRC mismatch            → @c "CRC Checksum Failed"
+ * - Incomplete transmission → @c "Received incomplete response"
+ * - Type mismatch           → @c "Unexpected response type"
+ *
+ * @param data    Payload bytes to include in the outgoing packet (may be empty).
+ * @param PKType  The packet type flag for both the outgoing and expected incoming packet.
+ * @return The server's response payload string, or an error description.
+ */
 std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
     packet txPkt;
     int size = data.size();
@@ -155,7 +211,44 @@ std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
     return "Unexpected response type";
 }
 
+/**
+ * @brief Downloads the flight manual from the server and writes it to disk.
+ *
+ * Sends a @c req_file request, then receives a multi-packet file transfer
+ * managed by a FileReceiver.  Progress is reported to stdout as a
+ * @c "\\r" overwritten line showing kilobytes received, which the Python UI
+ * reads and can display.
+ *
+ * @par Transfer protocol
+ * 1. A single @c req_file request packet is sent.
+ * 2. The first response packet is inspected:
+ *    - @c pkt_empty → the server returned an error string; return it directly.
+ *    - @c pkt_dat   → first chunk of the file; begin FileReceiver session.
+ *    - Anything else → return @c "Unexpected packet type during manual transfer".
+ * 3. Subsequent @c pkt_dat packets are fed to FileReceiver::processPacket()
+ *    until isComplete() returns true.
+ * 4. FileReceiver::finalize() flushes and closes the output file.
+ *
+ * @par Socket drain on FileReceiver failure
+ * If FileReceiver::start() fails (e.g. cannot open @p outputPath), incoming
+ * file packets are drained until a @c PKT_TRNSMT_COMP or @c pkt_empty packet
+ * is received, keeping the socket in a consistent state before returning the
+ * error.
+ *
+ * Error handling (each condition returns a descriptive string):
+ * - Send failure            → @c "Failed to request flight manual"
+ * - Receive failure         → @c "Transfer interrupted while receiving flight manual"
+ * - CRC mismatch            → @c "CRC Checksum Failed during manual transfer"
+ * - FileReceiver error      → error string from FileReceiver
+ * - Unexpected packet type  → @c "Unexpected packet type during manual transfer"
+ *
+ * @param outputPath Filesystem path where the downloaded PDF should be saved
+ *                   (e.g. @c "../client/flightmanual.pdf").
+ * @return @c "Flight Manual downloaded to <outputPath>" on success, or an
+ *         error description string on failure.
+ */
 std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
+    // Build and send the file request
     Request txReq(req_file, 0, (char*)"");
 
     int reqSerialSize = 0;
@@ -170,6 +263,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return "Failed to request flight manual";
     }
 
+    // Receive and validate the first response packet
     packet firstPkt;
     if (!PacketTransport::receivePacket((int)sock, firstPkt)) {
         return "Transfer interrupted while receiving flight manual";
@@ -180,7 +274,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     if (firstPkt.calcCRC() != firstPkt.GetCRC()) {
         return "CRC Checksum Failed during manual transfer";
     }
-
+    // Server signalled an error via an empty packet — surface its payload
     if (firstPkt.getPKType() == pkt_empty) {
         return std::string(firstPkt.getData(), firstPkt.getPloadLength());
     }
@@ -189,10 +283,11 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return "Unexpected packet type during manual transfer";
     }
 
+    // Open the output file via FileReceiver
     FileReceiver receiver;
     std::string err;
     if (!receiver.start(outputPath, err)) {
-        // We must drain the incoming file packets to avoid corrupting the socket state
+        // Drain remaining file packets to keep the socket consistent
         packet drainPkt;
 
         while (true) {
@@ -209,7 +304,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return err;  // Now safe to return
     }
 
-
+    // Process the first data chunk
     std::cout << "\rDownloading Flight Manual: 0 KB received..." << std::flush;
 
     if (!receiver.processPacket(firstPkt, err)) {
@@ -220,6 +315,8 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     std::cout << "\rDownloading Flight Manual: "
               << (receiver.getBytesReceived() / 1024) << " KB received..." << std::flush;
 
+              
+    // Single-packet transfer edge case
     if (receiver.isComplete()) {
         std::cout << "\n";
         if (!receiver.finalize(err)) {
@@ -228,6 +325,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return "Flight Manual downloaded to " + outputPath;
     }
 
+    // Receive remaining chunks until the transfer is complete
     while (true) {
         packet rxPkt;
         if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
