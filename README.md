@@ -44,10 +44,13 @@ g++ .\server\*.hpp .\server\*.cpp -o .\build\server.exe .\shared\Packet.h .\shar
 g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\main.cpp -o .\build\clientCMD.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
 
 g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\clientAPI.cpp -o .\build\clientAPI.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
+
 ```
 ### Running Test suite
 ## server
 ```
+cd tests
+
 g++ -std=c++17 -o ServerTests.exe servertests.cpp `
    ../server/StateMachine.cpp `
    ../server/ServerEngine.cpp `
@@ -67,6 +70,9 @@ g++ -std=c++17 -o ServerTests.exe servertests.cpp `
 
 ## Client
 ```
+
+cd tests
+
 g++ -std=c++17 -o ClientTests.exe clienttests.cpp `
   ../client/FileReceiver.cpp `
   ../shared/PacketTransport.cpp `
