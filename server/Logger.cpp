@@ -5,23 +5,20 @@
 #include <iomanip>
 #include <ctime>
 
-// --- module-level state -------------------------------------------------------
+
 
 static int         s_logId        = 0;
 static bool        s_initialized  = false;
 static std::string s_logPath;
 
-// Mirror the same data-directory resolution used by FileTransferManager:
-// probe ../data/ first (normal build layout), fall back to data/ (CWD = project root).
+
 static std::string detectLogPath() {
     std::ifstream probe("../data/SystemTrafficLog.csv");
     return probe.is_open() ? "../data/TransmitReceiveLog.csv"
                            : "data/TransmitReceiveLog.csv";
 }
 
-// Called once per process.  Resolves the log path, creates the CSV header if
-// the file does not yet exist, and seeds s_logId from the last row so IDs
-// never repeat across server restarts.
+
 void Logger::initialize() {
     if (s_initialized) return;
     s_initialized = true;

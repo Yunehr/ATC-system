@@ -78,6 +78,7 @@ cd tests
 g++ -std=c++17 -o ClientTests.exe clienttests.cpp `
   ../client/FileReceiver.cpp `
   ../client/ClientEngine.cpp `
+  ../client/Logger.cpp `
   ../shared/PacketTransport.cpp `
   "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
   -I"../external/googletest-1.17.0/googletest/include" `
@@ -88,6 +89,27 @@ g++ -std=c++17 -o ClientTests.exe clienttests.cpp `
 
 
   ./ClientTests.exe
+```
+## System Tests
+```
+g++ -std=c++17 -o SystemTests.exe systemtests.cpp `
+  ../client/FileReceiver.cpp `
+  ../client/ClientEngine.cpp `
+  ../client/Logger.cpp `
+  ../server/StateMachine.cpp `
+  ../server/ClientSession.cpp `
+  ../server/WeatherService.cpp `
+  ../server/FileTransferManager.cpp `
+  ../shared/PacketTransport.cpp `
+  "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
+  -I"../external/googletest-1.17.0/googletest/include" `
+  -I"../external/googletest-1.17.0/googletest" `
+  -I"../client" `
+  -I"../server" `
+  -I"../shared" `
+  -lws2_32 -lpthread
+
+./SystemTests.exe
 ```
 
 > **Note:** You will get the warning `warning: #pragma once in main file` Please test to see if the solution runs after you get this warning. 

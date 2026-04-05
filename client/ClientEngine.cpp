@@ -8,6 +8,7 @@
 #include "../shared/Packet.h"
 #include "../shared/Request.h"
 #include "FileReceiver.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -91,6 +92,7 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
     txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
     delete[] serializedReq;
 
+    Logger::logPacket(txPkt, Logger::Direction::TX, "Data request type " + std::to_string((int)type));
     if (!PacketTransport::sendPacket((int)sock, txPkt)) {
         return "Failed to send request";
     }
@@ -100,18 +102,20 @@ std::string ClientEngine::dataRequest(const std::string& data, reqtyp type) {
         return "Failed to receive response";
     }
 
+    Logger::logPacket(rxPkt, Logger::Direction::RX, "Response to request type " + std::to_string((int)type));
+
     //verify crc
     if (rxPkt.calcCRC() != rxPkt.GetCRC()){
         return "CRC Checksum Failed";
     }
-    
+
     //read header to determine if response is valid and what type it is
     if (rxPkt.getTFlag() == PKT_TRNSMT_INCOMP) {
         //std::cout << "Received incomplete packet\n";
         return "Received incomplete response";
     }
-    if (rxPkt.getPKType() == pkt_dat) { 
-        return std::string(rxPkt.getData(), rxPkt.getPloadLength()); 
+    if (rxPkt.getPKType() == pkt_dat) {
+        return std::string(rxPkt.getData(), rxPkt.getPloadLength());
     }
 
     return "Unexpected response type";
@@ -122,6 +126,7 @@ std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
     int size = data.size();
     txPkt.PopulPacket((char*)data.data(),size,(char)clientID,PKType);
 
+    Logger::logPacket(txPkt, Logger::Direction::TX, "Packet request type " + std::to_string((int)PKType));
     if (!PacketTransport::sendPacket((int)sock, txPkt)) {
         return "Failed to send request";
     }
@@ -131,18 +136,20 @@ std::string ClientEngine::pkRequest(const std::string&data, pkTyFl PKType){
         return "Failed to receive response";
     }
 
+    Logger::logPacket(rxPkt, Logger::Direction::RX, "Response to packet type " + std::to_string((int)PKType));
+
     //verify crc
     if (rxPkt.calcCRC() != rxPkt.GetCRC()){
         return "CRC Checksum Failed";
     }
-    
+
     //read header to determine if response is valid and what type it is
     if (rxPkt.getTFlag() == PKT_TRNSMT_INCOMP) {
         //std::cout << "Received incomplete packet\n";
         return "Received incomplete response";
     }
-    if (rxPkt.getPKType() == PKType) { 
-        return std::string(rxPkt.getData(), rxPkt.getPloadLength()); 
+    if (rxPkt.getPKType() == PKType) {
+        return std::string(rxPkt.getData(), rxPkt.getPloadLength());
     }
 
     return "Unexpected response type";
@@ -158,6 +165,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     txPkt.PopulPacket(serializedReq, reqSerialSize, (char)clientID, pkt_req);
     delete[] serializedReq;
 
+    Logger::logPacket(txPkt, Logger::Direction::TX, "Flight manual download request");
     if (!PacketTransport::sendPacket((int)sock, txPkt)) {
         return "Failed to request flight manual";
     }
@@ -166,6 +174,8 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     if (!PacketTransport::receivePacket((int)sock, firstPkt)) {
         return "Transfer interrupted while receiving flight manual";
     }
+
+    Logger::logPacket(firstPkt, Logger::Direction::RX, "Flight manual first packet");
 
     if (firstPkt.calcCRC() != firstPkt.GetCRC()) {
         return "CRC Checksum Failed during manual transfer";
@@ -224,6 +234,9 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
             std::cout << "\n";
             return "Transfer interrupted while receiving flight manual";
         }
+
+        Logger::logPacket(rxPkt, Logger::Direction::RX,
+            "Flight manual chunk, " + std::to_string(receiver.getBytesReceived()) + " bytes received so far");
 
         if (rxPkt.calcCRC() != rxPkt.GetCRC()) {
             std::cout << "\n";
