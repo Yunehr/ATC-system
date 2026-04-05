@@ -18,7 +18,7 @@ class ATCScreen:
     TEXT_PRIMARY = "#ffffff"    # White text
     TEXT_SECONDARY = "#a0aec0"  # Muted gray text
     BORDER_COLOR = "#2d3748"    # Subtle borders
-    SERVER_PORT = 54000
+    SERVER_PORT = 8080
     
     def __init__(self, root):
         self.root = root
@@ -113,6 +113,11 @@ class ATCScreen:
                         event_type, current, total = transfer_event
                         self.root.after(0, lambda et=event_type, c=current, t=total: self.handle_transfer_event(et, c, t))
                     
+                    # Parse state changes
+                    if clean_line.startswith("STATE:"):
+                        state = clean_line.split(":", 1)[1].strip()
+                        self.root.after(0, lambda s=state: self.set_system_state(s))
+
                     # Parse connection info
                     lower_line = clean_line.lower()
                     if "client connected" in lower_line:

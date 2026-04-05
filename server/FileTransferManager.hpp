@@ -6,7 +6,7 @@ public:
 	static std::string getFlightPlan(const std::string& flightId);
 	static std::string getTraffic(const std::string& flightId);
 	static std::string getTaxiClearance(const std::string& currentState);
-	static std::string logTelemetry(const std::string& telemetry, unsigned char clientId);
+	static std::string logTelemetry(const std::string& telemetry, unsigned char clientId, const std::string& pilotId);
 	static std::string getManualInfo();
 
 private:

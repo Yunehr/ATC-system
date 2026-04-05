@@ -3,7 +3,7 @@
 #include "ClientApp.hpp"
 
 int main() {
-    ClientApp app("127.0.0.1", 54000);
+    ClientApp app("127.0.0.1", 8080);
 
     std::string line;
     while (std::getline(std::cin, line)) {

@@ -31,6 +31,7 @@ std::string StateMachine::requestToCommand(reqtyp requestType) const {
 	case req_taxi: return "TAXI_REQUEST";
 	case req_fplan: return "FLIGHT_PLAN_REQUEST";
 	case req_traffic: return "TRAFFIC_REQUEST";
+	case req_resolve: return "RESOLVE_REQUEST";
 	default: return "UNKNOWN";
 	}
 }
@@ -80,11 +81,6 @@ void StateMachine::onAuthSuccess() {
 }
 
 void StateMachine::onRequestHandled(reqtyp requestType) {
-	if (static_cast<int>(requestType) == pkt_emgcy) {
-		onEmergency();
-		return;
-	}
-
 	if (requestType == req_taxi) {
 		if (state == ServerState::PRE_FLIGHT) {
 			state = ServerState::ACTIVE_AIRSPACE;
@@ -114,4 +110,8 @@ void StateMachine::onDataTransferComplete() {
 void StateMachine::onEmergency() {
 	previousState = state;
 	state = ServerState::EMERGENCY;
+}
+
+void StateMachine::onEmergencyResolved() {
+	state = previousState;
 }

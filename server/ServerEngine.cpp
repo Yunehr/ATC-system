@@ -71,6 +71,8 @@ bool ServerEngine::start(unsigned short port) {
 
     running = true;
     std::cout << "Server listening on port " << port << "\n";
+    std::cout << "STATE: STARTUP/AUTH\n";
+    std::cout.flush();
     return true;
 }
 
@@ -88,6 +90,7 @@ void ServerEngine::run() {
         }
 
         std::cout << "Client connected!\n";
+        std::cout.flush();
 
         handleClient(clientSock);
 
@@ -166,6 +169,7 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
 
 void ServerEngine::handleClient(SOCKET clientSock) {
     StateMachine stateMachine;
+    std::string pilotId = "UNKNOWN";
 
     while (true) {
         packet rxPkt;
@@ -252,7 +256,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             }
             else if (reqType == req_telemetry) {
                 std::string telemetry(rxReq.getBody(), rxReq.getBsize());
-                data = FileTransferManager::logTelemetry(telemetry, clientID);
+                data = FileTransferManager::logTelemetry(telemetry, clientID, pilotId);
                 stateMachine.onRequestHandled(reqType);
             }
             else if (reqType == req_file) {
@@ -267,6 +271,8 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 } else {
                     stateMachine.onRequestHandled(reqType);
                     stateMachine.onDataTransferComplete();
+                    std::cout << "STATE: " << stateMachine.getStateName() << "\n";
+                    std::cout.flush();
                     std::string xferMsg = "Flight Manual transfer complete";
                     packet xferLog;
                     xferLog.PopulPacket((char*)xferMsg.c_str(), (int)xferMsg.size(), clientID, pkt_dat);
@@ -288,9 +294,18 @@ void ServerEngine::handleClient(SOCKET clientSock) {
                 data = FileTransferManager::getTraffic(flightId);
                 stateMachine.onRequestHandled(reqType);
             }
+            else if (reqType == req_resolve) {
+                stateMachine.onEmergencyResolved();
+                data = "Emergency resolved. State changed to: " + stateMachine.getStateName();
+                std::cout << "EMERGENCY RESOLVED by client " << (int)clientID
+                          << ". Current state: " << stateMachine.getStateName() << "\n";
+                std::cout.flush();
+            }
             else {
                 data = "Unknown request type";
             }
+
+            std::cout << "STATE: " << stateMachine.getStateName() << "\n";
 
             packet resp;
             resp.PopulPacket((char*)data.c_str(), (int)data.size(), clientID, pkt_dat);
@@ -321,6 +336,11 @@ void ServerEngine::handleClient(SOCKET clientSock) {
             std::string response = ClientSession::authenticate(credentials);
             if (response.find("Authentication Successful") != std::string::npos) {
                 stateMachine.onAuthSuccess();
+                auto commaPos = credentials.find(',');
+                if (commaPos != std::string::npos)
+                    pilotId = credentials.substr(0, commaPos);
+                std::cout << "STATE: " << stateMachine.getStateName() << "\n";
+                std::cout.flush();
             }
 
             packet authResp;
@@ -335,6 +355,8 @@ void ServerEngine::handleClient(SOCKET clientSock) {
 
         if (type == pkt_emgcy) {
             stateMachine.onEmergency();
+            std::cout << "STATE: " << stateMachine.getStateName() << "\n";
+            std::cout.flush();
 
             const std::string response = "Emergency acknowledged. State changed to: " + stateMachine.getStateName();
             packet emgResp;
@@ -347,6 +369,7 @@ void ServerEngine::handleClient(SOCKET clientSock) {
 
             std::cout << "EMERGENCY TRIGGERED by client " << (int)clientID
                       << ". Current state: " << stateMachine.getStateName() << "\n";
+            std::cout.flush();
             continue;
         }
 

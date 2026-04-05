@@ -1,6 +1,9 @@
 #include "ClientApp.hpp"
 #include <iostream>
 #include <cstdlib>
+#include <random>
+#include <sstream>
+#include <iomanip>
 
 // ---------------------------------------------------------
 // Constructor: performs WSAStartup + connectToServer
@@ -138,16 +141,27 @@ std::string ClientApp::apiRequest(const std::string& cmd, const std::string& arg
         return "ERROR_NOT_CONNECTED";
 
     if (cmd == "EMERGENCY") return handleEmergency();
+    if (cmd == "RESOLVE")   return handleResolveEmergency();
     if (cmd == "LOGIN")     return handleLogin(arg1, arg2);
     if (cmd == "WEATHER")   return handleWeather(arg1);
     if (cmd == "FLIGHT")    return handleFlight(arg1);
     if (cmd == "TAXI")      return handleTaxi();
     if (cmd == "LAND")      return handleLand();
-    if (cmd == "TELEM")     return handleTelemetry();
+    if (cmd == "TELEM")     return handleTelemetry(arg1);
     if (cmd == "TRAFFIC")   return handleTraffic();
     if (cmd == "MANUAL")    return handleManualDownload();
 
     return "ERROR_UNKNOWN_CMD";
+}
+
+std::string ClientApp::handleResolveEmergency() {
+    std::string resp = client.dataRequest("", req_resolve);
+    if (resp.find("Emergency resolved") != std::string::npos) {
+        auto pos = resp.find("State changed to: ");
+        if (pos != std::string::npos)
+            currentState = resp.substr(pos + 18);
+    }
+    return resp;
 }
 
 std::string ClientApp::handleEmergency() {
@@ -187,8 +201,27 @@ std::string ClientApp::handleLand() {
     return handleTaxi();
 }
 
-std::string ClientApp::handleTelemetry() {
-    return client.dataRequest("", req_telemetry);
+std::string ClientApp::handleTelemetry(const std::string& data) {
+    if (!data.empty())
+        return client.dataRequest(data, req_telemetry);
+
+    // Simulate GPS: randomized lat/long/alt/speed
+    static std::mt19937 rng(std::random_device{}());
+    auto randFloat = [&](float lo, float hi) {
+        return lo + std::uniform_real_distribution<float>(0.f, 1.f)(rng) * (hi - lo);
+    };
+    auto randInt = [&](int lo, int hi) {
+        return std::uniform_int_distribution<int>(lo, hi)(rng);
+    };
+
+    std::ostringstream ss;
+    ss << std::fixed << std::setprecision(4)
+       << "Lat="   << randFloat(43.0f, 60.0f)
+       << ",Long=" << randFloat(-140.0f, -60.0f)
+       << ",Alt="  << randInt(5000, 35000)
+       << ",Speed="<< randInt(200, 500);
+
+    return client.dataRequest(ss.str(), req_telemetry);
 }
 
 std::string ClientApp::handleTraffic() {

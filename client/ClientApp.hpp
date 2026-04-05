@@ -28,9 +28,10 @@ public:
     std::string handleFlight(const std::string& flightId);
     std::string handleTaxi();
     std::string handleLand();
-    std::string handleTelemetry();
+    std::string handleTelemetry(const std::string& data = "");
     std::string handleTraffic();
     std::string handleManualDownload();
+    std::string handleResolveEmergency();
 
 
     // ---------------------------------------------------------

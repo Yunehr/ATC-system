@@ -19,6 +19,7 @@ public:
 	void onRequestHandled(reqtyp requestType);
 	void onDataTransferComplete();
 	void onEmergency();
+	void onEmergencyResolved();
 
 	std::string getStateName() const;
 

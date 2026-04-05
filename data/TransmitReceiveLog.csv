@@ -1,8 +1,3 @@
 LogID,ClientID,Direction,PacketType,ServerState,Timestamp,Description
 1,1,RX,AUTH,STARTUP/AUTH,2026-04-05 11:44:59,"header probe"
 2,2,RX,AUTH,STARTUP/AUTH,2026-04-05 11:44:59,"rx direction test"
-3,3,TX,DATA,PRE_FLIGHT,2026-04-05 11:44:59,"tx direction test"
-4,1,RX,REQUEST,PRE_FLIGHT,2026-04-05 11:44:59,"id increment first"
-5,1,TX,REQUEST,PRE_FLIGHT,2026-04-05 11:44:59,"id increment second"
-6,1,RX,EMERGENCY,EMERGENCY,2026-04-05 11:44:59,"emergency state test"
-7,1,TX,REQUEST,PRE_FLIGHT,2026-04-05 11:44:59,"unique_description_marker_xyz"

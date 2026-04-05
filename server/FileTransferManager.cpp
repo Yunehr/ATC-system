@@ -111,7 +111,16 @@ std::string FileTransferManager::getTaxiClearance(const std::string& currentStat
 	return "Taxi Clearance: DENIED by state policy";
 }
 
-std::string FileTransferManager::logTelemetry(const std::string& telemetry, unsigned char clientId) {
+static std::string parseField(const std::string& telemetry, const std::string& key) {
+	std::string search = key + "=";
+	auto pos = telemetry.find(search);
+	if (pos == std::string::npos) return "0";
+	pos += search.size();
+	auto end = telemetry.find(',', pos);
+	return (end == std::string::npos) ? telemetry.substr(pos) : telemetry.substr(pos, end - pos);
+}
+
+std::string FileTransferManager::logTelemetry(const std::string& telemetry, unsigned char clientId, const std::string& pilotId) {
 	std::ifstream io = openDataRead("SystemTrafficLog.csv");
 	int lastId = 0;
 
@@ -146,7 +155,9 @@ std::string FileTransferManager::logTelemetry(const std::string& telemetry, unsi
 
 	const int nextId = lastId + 1;
 	const std::string safeTelemetry = telemetry.empty() ? "NO_TELEMETRY" : telemetry;
-	out << nextId << ",UNKNOWN,0,0,ACTIVE," << safeTelemetry << "," << stamp.str() << "\n";
+	const std::string lat = parseField(telemetry, "Lat");
+	const std::string lon = parseField(telemetry, "Long");
+	out << nextId << "," << pilotId << "," << lat << "," << lon << ",ACTIVE," << safeTelemetry << "," << stamp.str() << "\n";
 
 	std::ostringstream msg;
 	msg << "Telemetry logged for client " << (int)clientId << " (LogID=" << nextId << ")";

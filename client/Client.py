@@ -46,6 +46,12 @@ def on_response(text):
     elif text.startswith("LoginAuth:") or text.startswith("Authentication Failed"):
         app.pages["LoginPage"].error_var.set(text)
 
+    # Emergency ACK/resolve
+    if text.startswith("Emergency acknowledged"):
+        app.set_emergency(True)
+    elif text.startswith("Emergency resolved"):
+        app.set_emergency(False)
+
     # Taxi ACK/NACK
     if text.startswith("Taxi Clearance: APPROVED"):
         app.show_page("ActiveAirspacePage")
@@ -135,13 +141,16 @@ class TopBar(ttk.Frame):
         if left_btn:
             left_btn.pack(side="left", padx=5)
         
-        # Right: Emergency
-        emergency_btn = ttk.Button(
-            self,
-            text="EMERGENCY",
-            command=lambda: controller.api.send("EMERGENCY")
-        )
+        # Right: Emergency (toggles to END EMERGENCY when active)
+        def on_emergency_click():
+            if controller.emergency_active:
+                controller.api.send("RESOLVE")
+            else:
+                controller.api.send("EMERGENCY")
+
+        emergency_btn = ttk.Button(self, text="EMERGENCY", command=on_emergency_click)
         emergency_btn.pack(side="right", padx=5)
+        controller.emergency_buttons.append(emergency_btn)
 
 
 # ├── class LogPanel
@@ -203,13 +212,22 @@ class PreFlightPage(Page):
         btns = ttk.Frame(self)
         btns.pack(pady=10)
 
-        ttk.Button(btns, text="Flight Plan", width=20, command=self.ask_flight).pack(pady=5)
-        ttk.Button(btns, text="Weather", width=20, command=self.ask_weather).pack(pady=5)
-        ttk.Button(btns, text="Taxi Request", width=20,
-                command=lambda: controller.api.send("TAXI")).pack(pady=5)
-        ttk.Button(btns, text="Aircraft Manual", width=20,
-                command=lambda: controller.show_page("PDFViewerPage")).pack(pady=5)
+        self._action_buttons = [
+            ttk.Button(btns, text="Flight Plan",    width=20, command=self.ask_flight),
+            ttk.Button(btns, text="Weather",        width=20, command=self.ask_weather),
+            ttk.Button(btns, text="Taxi Request",   width=20, command=lambda: controller.api.send("TAXI")),
+            ttk.Button(btns, text="Aircraft Manual",width=20, command=lambda: controller.show_page("PDFViewerPage")),
+        ]
+        for btn in self._action_buttons:
+            btn.pack(pady=5)
     
+    def set_emergency_mode(self, active):
+        state = "disabled" if active else "normal"
+        for btn in self._action_buttons:
+            btn.config(state=state)
+        msg = "⚠ EMERGENCY ACTIVE — all requests locked" if active else "✓ Emergency cleared"
+        self.log_panel.add(msg)
+
     def ask_weather(self):
         # TODO: popup for airport code
         self.controller.api.send("WEATHER YYZ")
@@ -231,14 +249,22 @@ class ActiveAirspacePage(Page):
         btns = ttk.Frame(self)
         btns.pack(pady=10)
 
-        ttk.Button(btns, text="Telemetry Update", width=20,
-                command=lambda: controller.api.send("TELEM")).pack(pady=5)
-        ttk.Button(btns, text="Airtraffic Request", width=20,
-                command=lambda: controller.api.send("TRAFFIC")).pack(pady=5)
-        ttk.Button(btns, text="Clear Runway", width=20,
-                command=lambda: controller.api.send("TAXI")).pack(pady=5)
-        ttk.Button(btns, text="Aircraft Manual", width=20,
-                command=lambda: controller.show_page("PDFViewerPage")).pack(pady=5)
+        self._action_buttons = [
+            ttk.Button(btns, text="Telemetry Update",   width=20, command=lambda: controller.api.send("TELEM")),
+            ttk.Button(btns, text="Airtraffic Request", width=20, command=lambda: controller.api.send("TRAFFIC")),
+            ttk.Button(btns, text="Clear Runway",       width=20, command=lambda: controller.api.send("TAXI")),
+            ttk.Button(btns, text="Aircraft Manual",    width=20, command=lambda: controller.show_page("PDFViewerPage")),
+        ]
+        for btn in self._action_buttons:
+            btn.pack(pady=5)
+
+    def set_emergency_mode(self, active):
+        state = "disabled" if active else "normal"
+        for btn in self._action_buttons:
+            btn.config(state=state)
+        msg = "⚠ EMERGENCY ACTIVE — all requests locked" if active else "✓ Emergency cleared"
+        self.log_panel.add(msg)
+
 
 # ├── class PDFViewerPage
 class PDFViewerPage(Page):
@@ -346,6 +372,8 @@ class App(tk.Tk):
 
         self.pages = {}
         self.previous_page = None
+        self.emergency_active = False
+        self.emergency_buttons = []
 
         for P in (LoginPage, PreFlightPage, ActiveAirspacePage, PDFViewerPage):
             page = P(container, self)
@@ -353,6 +381,19 @@ class App(tk.Tk):
             page.grid(row=0, column=0, sticky="nsew")
 
         self.show_page("LoginPage")
+        self.protocol("WM_DELETE_WINDOW", self._on_close)
+
+    def _on_close(self):
+        self.api.send("QUIT")
+        self.destroy()
+
+    def set_emergency(self, active):
+        self.emergency_active = active
+        label = "END EMERGENCY" if active else "EMERGENCY"
+        for btn in self.emergency_buttons:
+            btn.config(text=label)
+        for page_name in ("PreFlightPage", "ActiveAirspacePage"):
+            self.pages[page_name].set_emergency_mode(active)
 
     def show_page(self, name):
         if hasattr(self, "current_page"):
