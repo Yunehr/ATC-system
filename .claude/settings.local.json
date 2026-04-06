@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(g++ ./client/*.hpp ./client/ClientApp.cpp ./client/ClientEngine.cpp ./client/FileReceiver.cpp ./client/Logger.cpp ./client/clientAPI.cpp -o ./build/clientAPI.exe ./shared/Packet.h ./shared/PacketTransport.cpp ./shared/PacketTransport.hpp ./shared/Request.h -lws2_32)"
-    ]
-  }
-}
