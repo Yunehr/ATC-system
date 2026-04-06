@@ -359,7 +359,7 @@ TEST(Requirement_SVR_040, Traffic_UnknownId_ReturnsNoRecord) {
  * @req REQ-LOG-020
  */
 TEST(Requirement_SVR_050, LogTelemetry_ReturnsConfirmationForClient) {
-    std::string result = FileTransferManager::logTelemetry("Altitude=5000,Speed=250", 1);
+    std::string result = FileTransferManager::logTelemetry("Altitude=5000,Speed=250", 1, "CAN-8721269");
     EXPECT_TRUE(result.find("Telemetry logged for client 1") != std::string::npos);
 }
 
@@ -369,7 +369,7 @@ TEST(Requirement_SVR_050, LogTelemetry_ReturnsConfirmationForClient) {
  * @req REQ-SVR-050
  */
 TEST(Requirement_SVR_050, LogTelemetry_EmptyPayload_UsesPlaceholder) {
-    std::string result = FileTransferManager::logTelemetry("", 2);
+    std::string result = FileTransferManager::logTelemetry("", 2, "CAN-8721269");
     EXPECT_TRUE(result.find("Telemetry logged for client 2") != std::string::npos);
 }
 
@@ -380,8 +380,8 @@ TEST(Requirement_SVR_050, LogTelemetry_EmptyPayload_UsesPlaceholder) {
  * @req REQ-LOG-020
  */
 TEST(Requirement_SVR_050, LogTelemetry_LogIdIncrementsEachCall) {
-    std::string first  = FileTransferManager::logTelemetry("Pass=1", 3);
-    std::string second = FileTransferManager::logTelemetry("Pass=2", 3);
+    std::string first  = FileTransferManager::logTelemetry("Pass=1", 3, "CAN-8721269");
+    std::string second = FileTransferManager::logTelemetry("Pass=2", 3, "CAN-8721269");
 
     auto extractLogId = [](const std::string& s) {
         auto pos = s.find("LogID=");
