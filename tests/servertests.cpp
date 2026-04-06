@@ -52,7 +52,7 @@ TEST(Requirement_SVR_020, EmergencyStateIsReachable) {
     StateMachine sm;
     sm.onAuthSuccess();
     sm.onRequestHandled(req_taxi);
-    sm.onRequestHandled(static_cast<reqtyp>(pkt_emgcy));
+    sm.onEmergency();
     EXPECT_EQ(sm.getStateName(), "EMERGENCY");
 }
 
@@ -220,7 +220,7 @@ TEST(Requirement_SVR_040, Restrict_NonEssential_In_Emergency) {
     StateMachine sm;
     sm.onAuthSuccess();
 
-    sm.onRequestHandled(static_cast<reqtyp>(pkt_emgcy));
+    sm.onEmergency();
     ASSERT_EQ(sm.getStateName(), "EMERGENCY");
 
     EXPECT_FALSE(sm.canHandle(req_file))
