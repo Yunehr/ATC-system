@@ -44,7 +44,78 @@ g++ .\server\*.hpp .\server\*.cpp -o .\build\server.exe .\shared\Packet.h .\shar
 g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\main.cpp -o .\build\clientCMD.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
 
 g++ .\client\*.hpp .\client\ClientApp.cpp .\client\ClientEngine.cpp .\client\FileReceiver.cpp .\client\Logger.cpp .\client\clientAPI.cpp -o .\build\clientAPI.exe .\shared\Packet.h .\shared\PacketTransport.cpp .\shared\PacketTransport.hpp .\shared\Request.h -lws2_32
+
 ```
+### Running Test suite
+## server
+```
+cd tests
+
+g++ -std=c++17 -o ServerTests.exe servertests.cpp `
+   ../server/StateMachine.cpp `
+   ../server/ServerEngine.cpp `
+   ../server/Logger.cpp `
+   ../shared/PacketTransport.cpp `
+   ../server/WeatherService.cpp `
+   ../server/FileTransferManager.cpp `
+   ../server/ClientSession.cpp `
+   "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
+   -I"../external/googletest-1.17.0/googletest/include" `
+   -I"../external/googletest-1.17.0/googletest" `
+   -I"../server" `
+   -I"../shared" `
+   -lws2_32 -lpthread
+
+
+./ServerTests.exe
+```
+
+## Client
+```
+
+cd tests
+
+g++ -std=c++17 -o ClientTests.exe clienttests.cpp `
+  ../client/FileReceiver.cpp `
+  ../client/ClientEngine.cpp `
+  ../client/Logger.cpp `
+  ../shared/PacketTransport.cpp `
+  "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
+  -I"../external/googletest-1.17.0/googletest/include" `
+  -I"../external/googletest-1.17.0/googletest" `
+  -I"../client" `
+  -I"../shared" `
+  -lws2_32 -lpthread
+
+
+  ./ClientTests.exe
+```
+## System Tests
+```
+g++ -std=c++17 -o SystemTests.exe systemtests.cpp `
+  ../client/FileReceiver.cpp `
+  ../client/ClientEngine.cpp `
+  ../client/Logger.cpp `
+  ../server/StateMachine.cpp `
+  ../server/ClientSession.cpp `
+  ../server/WeatherService.cpp `
+  ../server/FileTransferManager.cpp `
+  ../shared/PacketTransport.cpp `
+  "../external/googletest-1.17.0/googletest/src/gtest-all.cc" `
+  -I"../external/googletest-1.17.0/googletest/include" `
+  -I"../external/googletest-1.17.0/googletest" `
+  -I"../client" `
+  -I"../server" `
+  -I"../shared" `
+  -lws2_32 -lpthread
+
+./SystemTests.exe
+```
+
+> **Note:** You will get the warning `warning: #pragma once in main file` Please test to see if the solution runs after you get this warning. 
+### Running solution
+Navigate to `\pr4j----ATC-system\build\` in 2 terminals
+
 ### Running Application (Server)
 #### Terminal 1 (Server)
 ```

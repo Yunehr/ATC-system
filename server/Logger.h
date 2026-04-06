@@ -1,102 +1,105 @@
-//sebastian solorzano -- logs
-//logging ands tuff
-//you know how it is
+/**
+ * @file Logger.h
+ * @brief Declaration of the server-side Logger class.
+ *
+ * Provides a single static method, logPacket(), for appending packet
+ * transmission and reception records to @c TransmitReceiveLog.csv.
+ *
+ * Unlike the client-side logger, each entry also captures the server's
+ * current state at the time of logging, producing a full audit trail of
+ * state-packet interactions.
+ *
+ * @par Requirements
+ * - REQ-LOG-010: Every transmitted (TX) and received (RX) packet is logged.
+ * - REQ-LOG-020: Each entry receives a unique, monotonically increasing LogID.
+ * - REQ-LOG-030: Each entry carries a direction flag (TX/RX) and a
+ *                human-readable description.
+ * - REQ-LOG-040: Telemetry entries include client status and last-known
+ *                location extracted from the packet body.
+ *
+ * @par Output
+ * @c data/TransmitReceiveLog.csv with columns:
+ * @code
+ * LogID, ClientID, Direction, PacketType, ServerState, Timestamp, Description
+ * @endcode
+ */
+#pragma once
+#include <string>
 #include "../shared/Packet.h"
-#include "../shared/Request.h"
-#include <stdio.h>
-#include <ctime>
 
-#define SENTLOG "SENT"
-#define RECVLOG "RECIEVED"
-
-//defines or enums? I mean there's only two,,...
-typedef enum logtype{
-    sent,
-    recieved//,
-  //  connected,
-  //  disconnected
-}LTYPE;
-
-
-class log{
-    static int logcount;
-    int logno;
-    int clientID;
-    int serverstate; //from the statemachine? it must be somewhere
-    int packetype;
-    logtype type;
-    char* body; 
-    time_t timestamp;
+/**
+ * @class Logger
+ * @brief Static utility class for server-side CSV packet logging.
+ *
+ * All methods are static; Logger is not intended to be instantiated.
+ * Internal state (log file path, entry counter, initialisation flag) is
+ * held in module-level statics in @c Logger.cpp and managed transparently
+ * by the private initialize() method, which is called lazily on the first
+ * logPacket() invocation.
+ *
+ * @see FileTransferManager::logTelemetry() for telemetry-specific logging
+ *      to @c SystemTrafficLog.csv (REQ-LOG-040).
+ */
+class Logger {
 public:
-   
-    log(packet latestp, bool direction){
-        logcount++;
+    /**
+     * @enum Direction
+     * @brief Indicates whether a packet was transmitted or received.
+     */
+    enum class Direction { TX, RX };
 
-        logno = logcount;
-        clientID = latestp.getCLID();// +  thread_id, if we do that
-        packetype = latestp.getPKType();
-        type=(logtype)direction; //WHY CAN'T I CAST IMPLICITLY I HATE C++
-        time(&timestamp);//gets current time, dunno why these functions are like that
+     
+    /**
+     * @brief Appends a single packet log entry to @c TransmitReceiveLog.csv.
+     *
+     * Initialises the logger on first call (lazy).  Sanitises @p description
+     * by replacing newline characters with spaces, then writes one CSV row in
+     * the format:
+     * @code
+     * LogID, ClientID, Direction, PacketType, ServerState, Timestamp, Description
+     * @endcode
+     * Silently returns without writing if the log file cannot be opened.
+     *
+     * @param pkt         The packet to log; supplies the client ID and packet type.
+     * @param dir         Transmission direction: @c Direction::TX or @c Direction::RX.
+     * @param serverState The server's current state string at the time of logging
+     *                    (e.g. @c "PRE_FLIGHT", @c "ACTIVE_AIRSPACE").
+     * @param description Human-readable context string
+     *                    (e.g. @c "Auth request from client 1").
+     */
+    static void logPacket(packet& pkt, Direction dir,
+                          const std::string& serverState,
+                          const std::string& description);
 
-        serverstate=0;//statemachine hasn't been implemented yet, so unsure how to deal with this one
+private:
+    /**
+     * @brief Resolves the log file path and seeds the entry counter (lazy, idempotent).
+     *
+     * Creates @c TransmitReceiveLog.csv with a header row if it does not yet
+     * exist.  If the file already exists, reads the highest @c LogID present
+     * so that IDs continue from the previous session without repeating
+     * (REQ-LOG-020).
+     */
+    static void initialize();
+     /**
+     * @brief Increments and returns the next unique log entry ID (REQ-LOG-020).
+     * @return Next sequential log ID.
+     */
+    static int         nextId();
+ 
+    /**
+     * @brief Returns the current local time as a @c "YYYY-MM-DD HH:MM:SS" string.
+     * @return Formatted timestamp string.
+     */
+    static std::string currentTimestamp();
+     
+    /**
+     * @brief Maps a numeric packet type to its CSV label string.
+     *
+     * @param pkType Numeric packet type (a @c pkTyFl enumeration value).
+     * @return One of @c "EMPTY", @c "REQUEST", @c "DATA", @c "AUTH",
+     *         @c "EMERGENCY", or @c "UNKNOWN".
+     */
+    static std::string packetTypeName(int pkType);
 
-        body = new char[latestp.getPloadLength()];
-        memcpy(body,latestp.getData(),latestp.getPloadLength());
-        //honestly I think I'd personaly prefer to dump the entire packet raw into the body here,
-        //but I feel that might not be appreciated.
-        //it would also mean either serializing it here, or unserializing here,
-        //both of which would result in a bunch of allocations I don't want to deal with
-    }
-    //if I add this you won't get mad at me right?
-    ~log(){
-        if(body)
-            delete[] body;
-        //honestly is this even necessary I thought cpp was supposed to be a smart language or something
-        //I mean really, the automatic destructors should be ashamed of themselves what are they even doing?
-        //if they can't delete a simple text buffer
-        //honestly
-        
-        //really though. isn't the whole point of the newfangled new[] that it's smart and takes care of itself?
-        //if it doesn't, then literally what's the point of it over malloc ?
-        //except that they just broke malloc for no reason because casting is stupid in cpp
-    }
-
-    //char* again? is it fine? who knows. I'm assuming the python accepts a string
-    //as always, I hate strings
-    char* writelog(){
-        //ughh I hate formating strings how do you even do it
-        char* log = new char[500]; //I don't want to allocate this;;;;; how should I even get its size?
-        //anyway i'll fix this file up later, just wanted to get it working
-
-        int check =sprintf(log,"Log no: %d, ClientID: %d, Pkt type: %d, Serverstate: %d, %s, Timestamp: %s, Packet body: %s",
-            logno,clientID,packetype,serverstate,(type) ? RECVLOG:SENTLOG,strtok(ctime(&timestamp), "\n"),body);
-        //absolutely disgusting.
-        //()?: means an inline if ; the strok monstrosity is because ctime adds a \n
-        if(check <0){//docs say fxn returns neg on failure
-            return nullptr;
-        }
-        return log;
-    }
 };
-int log::logcount=0; //this works? somehow??
-
-
-/*
-what information would b required to log?
--log no.
--client id
--timestamp
--serverstate
--body
-    ie: SENT packet "..."
-        RECD packet "..."
-
-//ok i'm not sure how to log these really. do we give it an empty packet and tell it to behave differently?
-//do we make a packet abstract and add other implementations? (packet log, client log, servstatelog)?
-//okay that actually might be a good idea
-//i'll do it later. probably after our math test or something
-        startup
-        end
-        client conn
-        client end
-*/
