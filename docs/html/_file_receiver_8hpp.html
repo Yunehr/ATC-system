@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: client/FileReceiver.hpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/client/FileReceiver.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,8 +92,41 @@ $(function(){initNavTree('_file_receiver_8hpp.html','',''); });
 </div><!--header-->
 <div class="contents">
 
+<p>Declaration of the <a class="el" href="class_file_receiver.html" title="Assembles a multi-packet file transfer into a local file.">FileReceiver</a> class.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &quot;<a class="el" href="_packet_8h_source.html">../shared/Packet.h</a>&quot;</code><br />
+</div>
 <p><a href="_file_receiver_8hpp_source.html">Go to the source code of this file.</a></p>
-</div><!-- contents -->
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:FileReceiver" id="r_FileReceiver"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="class_file_receiver.html">FileReceiver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembles a multi-packet file transfer into a local file.  <a href="class_file_receiver.html#details">More...</a><br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Declaration of the <a class="el" href="class_file_receiver.html" title="Assembles a multi-packet file transfer into a local file.">FileReceiver</a> class. </p>
+<p><a class="el" href="class_file_receiver.html" title="Assembles a multi-packet file transfer into a local file.">FileReceiver</a> manages the write-side of the multi-packet file transfer protocol used to download the flight manual. It assembles incoming <code>pkt_dat</code> packets into a <code></code>.part staging file and atomically renames it to the final path once the server signals transfer completion.</p>
+<dl class="section user"><dt>Typical usage</dt><dd><div class="fragment"><div class="line"><a class="code hl_class" href="class_file_receiver.html">FileReceiver</a> receiver;</div>
+<div class="line">std::string err;</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">if</span> (!receiver.<a class="code hl_function" href="class_file_receiver.html#a7a738dbc72bb92a41c743decbbd10631">start</a>(<span class="stringliteral">&quot;output/flightmanual.pdf&quot;</span>, err)) { ... }</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">while</span> (!receiver.<a class="code hl_function" href="class_file_receiver.html#a312d1b24124a76df533c2c2f594b63f1">isComplete</a>()) {</div>
+<div class="line">    <a class="code hl_class" href="classpacket.html">packet</a> pkt = ...; <span class="comment">// receive from PacketTransport</span></div>
+<div class="line">    <span class="keywordflow">if</span> (!receiver.<a class="code hl_function" href="class_file_receiver.html#a95db65d69f314f0c9cfa1e49aec80809">processPacket</a>(pkt, err)) { ... }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">if</span> (!receiver.<a class="code hl_function" href="class_file_receiver.html#a7398110dd30f8f687e6fe2f9401a1eb5">finalize</a>(err)) { ... }</div>
+<div class="ttc" id="aclass_file_receiver_html"><div class="ttname"><a href="class_file_receiver.html">FileReceiver</a></div><div class="ttdoc">Assembles a multi-packet file transfer into a local file.</div><div class="ttdef"><b>Definition</b> FileReceiver.hpp:46</div></div>
+<div class="ttc" id="aclass_file_receiver_html_a312d1b24124a76df533c2c2f594b63f1"><div class="ttname"><a href="class_file_receiver.html#a312d1b24124a76df533c2c2f594b63f1">FileReceiver::isComplete</a></div><div class="ttdeci">bool isComplete() const</div><div class="ttdoc">Returns whether the final packet of the transfer has been received.</div><div class="ttdef"><b>Definition</b> FileReceiver.cpp:188</div></div>
+<div class="ttc" id="aclass_file_receiver_html_a7398110dd30f8f687e6fe2f9401a1eb5"><div class="ttname"><a href="class_file_receiver.html#a7398110dd30f8f687e6fe2f9401a1eb5">FileReceiver::finalize</a></div><div class="ttdeci">bool finalize(std::string &amp;error)</div><div class="ttdoc">Flushes, closes, and renames the staging file to the final path.</div><div class="ttdef"><b>Definition</b> FileReceiver.cpp:155</div></div>
+<div class="ttc" id="aclass_file_receiver_html_a7a738dbc72bb92a41c743decbbd10631"><div class="ttname"><a href="class_file_receiver.html#a7a738dbc72bb92a41c743decbbd10631">FileReceiver::start</a></div><div class="ttdeci">bool start(const std::string &amp;outputPath, std::string &amp;error)</div><div class="ttdoc">Opens the staging file and resets receiver state for a new transfer.</div><div class="ttdef"><b>Definition</b> FileReceiver.cpp:59</div></div>
+<div class="ttc" id="aclass_file_receiver_html_a95db65d69f314f0c9cfa1e49aec80809"><div class="ttname"><a href="class_file_receiver.html#a95db65d69f314f0c9cfa1e49aec80809">FileReceiver::processPacket</a></div><div class="ttdeci">bool processPacket(packet &amp;pak, std::string &amp;error)</div><div class="ttdoc">Writes the payload of a single pkt_dat packet into the staging file.</div><div class="ttdef"><b>Definition</b> FileReceiver.cpp:100</div></div>
+<div class="ttc" id="aclasspacket_html"><div class="ttname"><a href="classpacket.html">packet</a></div><div class="ttdoc">A framed, serializable network packet with header, payload, and CRC.</div><div class="ttdef"><b>Definition</b> Packet.h:90</div></div>
+</div><!-- fragment --> </dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/StateMachine.hpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/StateMachine.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,8 +92,56 @@ $(function(){initNavTree('_state_machine_8hpp.html','',''); });
 </div><!--header-->
 <div class="contents">
 
+<p>Declaration of the <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> class.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &lt;string&gt;</code><br />
+<code>#include &quot;<a class="el" href="_packet_8h_source.html">../shared/Packet.h</a>&quot;</code><br />
+</div>
 <p><a href="_state_machine_8hpp_source.html">Go to the source code of this file.</a></p>
-</div><!-- contents -->
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:StateMachine" id="r_StateMachine"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="class_state_machine.html">StateMachine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-session state machine enforcing the aviation client protocol.  <a href="class_state_machine.html#details">More...</a><br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Declaration of the <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> class. </p>
+<p>Tracks the server-side session state for a single client connection and enforces request permissions by consulting <code>StatePermissions.csv</code>.</p>
+<dl class="section user"><dt>Valid states</dt><dd><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">State  </th><th class="markdownTableHeadNone">Meaning  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>STARTUP_AUTH</code>  </td><td class="markdownTableBodyNone">Initial state; awaiting successful authentication.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>PRE_FLIGHT</code>  </td><td class="markdownTableBodyNone">Authenticated; pre-departure operations permitted.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>ACTIVE_AIRSPACE</code>  </td><td class="markdownTableBodyNone">Taxi clearance granted; aircraft in active airspace.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>DATA_TRANSFER</code>  </td><td class="markdownTableBodyNone">Flight manual download in progress.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>EMERGENCY</code>  </td><td class="markdownTableBodyNone">Emergency declared; most requests suspended.  </td></tr>
+</table>
+</dd></dl>
+<dl class="section user"><dt>Key transition events</dt><dd><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Method  </th><th class="markdownTableHeadNone">Trigger  </th><th class="markdownTableHeadNone">Transition  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">onAuthSuccess()  </td><td class="markdownTableBodyNone">Successful login  </td><td class="markdownTableBodyNone">→ PRE_FLIGHT  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">onRequestHandled(taxi)  </td><td class="markdownTableBodyNone">Departure clearance  </td><td class="markdownTableBodyNone">→ ACTIVE_AIRSPACE  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">onRequestHandled(taxi)  </td><td class="markdownTableBodyNone">Arrival clearance  </td><td class="markdownTableBodyNone">→ PRE_FLIGHT  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">onRequestHandled(file)  </td><td class="markdownTableBodyNone">Manual download started  </td><td class="markdownTableBodyNone">→ DATA_TRANSFER  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">onDataTransferComplete()  </td><td class="markdownTableBodyNone">Manual download finished  </td><td class="markdownTableBodyNone">→ previousState  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">onEmergency()  </td><td class="markdownTableBodyNone">Emergency packet received  </td><td class="markdownTableBodyNone">→ EMERGENCY  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">onEmergencyResolved()  </td><td class="markdownTableBodyNone">Resolve request received  </td><td class="markdownTableBodyNone">→ previousState  </td></tr>
+</table>
+</dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

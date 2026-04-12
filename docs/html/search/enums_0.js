@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['flags_0',['Flags',['../class_packet.html#ab5501c780c2b0bd8b1d555196dab441a',1,'Packet']]]
+  ['direction_0',['Direction',['../class_logger.html#a999f0729bee64e0305a6b99c97bfad8a',1,'Logger::Direction'],['../class_logger.html#a999f0729bee64e0305a6b99c97bfad8a',1,'Logger::Direction']]]
 ];

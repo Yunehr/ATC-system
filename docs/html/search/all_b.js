@@ -1,11 +1,21 @@
 var searchData=
 [
-  ['packet_0',['Packet',['../class_packet.html',1,'Packet'],['../class_packet.html#aabcfb963c0d5bc0fa554668f92989622',1,'Packet::Packet()'],['../class_packet.html#a1bccd17920e93ff8218ff01f913affdd',1,'Packet::Packet(int type, unsigned int clientID, const std::vector&lt; char &gt; &amp;data, unsigned int flags=FLAG_NONE, unsigned int sequence=0)']]],
-  ['packet_20definition_1',['📦 Data Packet Definition',['../md__r_e_a_d_m_e.html#autotoc_md5',1,'']]],
-  ['packet_2ehpp_2',['Packet.hpp',['../_packet_8hpp.html',1,'']]],
-  ['packettransport_3',['PacketTransport',['../class_packet_transport.html',1,'']]],
-  ['packettransport_2ecpp_4',['PacketTransport.cpp',['../_packet_transport_8cpp.html',1,'']]],
-  ['packettransport_2ehpp_5',['PacketTransport.hpp',['../_packet_transport_8hpp.html',1,'']]],
-  ['payloadsize_6',['payloadSize',['../struct_packet_1_1_header.html#a1ed5526f2f73ceba3324ddc885bb8e13',1,'Packet::Header']]],
-  ['project_20overview_7',['✈️ Project Overview',['../md__r_e_a_d_m_e.html',1,'']]]
+  ['getbody_0',['getBody',['../class_request.html#a3361c40ca5535854ae4442bdcaf15c80',1,'Request']]],
+  ['getbsize_1',['getBsize',['../class_request.html#a9b739a4a6492b171081deec2a1849f65',1,'Request']]],
+  ['getbytesreceived_2',['getBytesReceived',['../class_file_receiver.html#a2e71d77bfdab9ee07489abf2e92b8603',1,'FileReceiver']]],
+  ['getclid_3',['getCLID',['../classpacket.html#a646ad9a8b73f633ed16294bb3d01840a',1,'packet']]],
+  ['getcrc_4',['GetCRC',['../classpacket.html#a116a7654e34bc8a25ab05027157c1254',1,'packet']]],
+  ['getdata_5',['getData',['../classpacket.html#a249cd8c35a8cd74e7f7c1a02e413d552',1,'packet']]],
+  ['getflightplan_6',['getFlightPlan',['../class_file_transfer_manager.html#a47228912138a5ad434f83a078441d35e',1,'FileTransferManager']]],
+  ['getmanualinfo_7',['getManualInfo',['../class_file_transfer_manager.html#aab5e54943769e23364a622d5028a3240',1,'FileTransferManager']]],
+  ['getpktype_8',['getPKType',['../classpacket.html#a126bab877ccdc15bcaaab1ede8482fe0',1,'packet']]],
+  ['getploadlength_9',['getPloadLength',['../classpacket.html#a50c382b6e66fd00fe5a885f267969703',1,'packet']]],
+  ['getstatename_10',['getStateName',['../class_state_machine.html#a2c55e188f285a54e735bbebb64844eb9',1,'StateMachine']]],
+  ['gettaxiclearance_11',['getTaxiClearance',['../class_file_transfer_manager.html#a979929151c3adbe49a09ea10c8703de2',1,'FileTransferManager']]],
+  ['gettflag_12',['getTFlag',['../classpacket.html#af1e0009b81bcf9f9805a932931cac107',1,'packet']]],
+  ['gettraffic_13',['getTraffic',['../class_file_transfer_manager.html#ad2218c67ee6dd93066c4b01e2435e309',1,'FileTransferManager']]],
+  ['gettype_14',['getType',['../class_request.html#ada96c275a38530e88e445fb571d70826',1,'Request']]],
+  ['getweather_15',['getWeather',['../class_weather_service.html#a82921513d09f1ef7ba079c8c8a626dfc',1,'WeatherService']]],
+  ['gtest_2dall_2ecc_16',['gtest-all.cc',['../gtest-all_8cc.html',1,'']]],
+  ['gtest_5fmain_2ecc_17',['gtest_main.cc',['../gtest__main_8cc.html',1,'']]]
 ];

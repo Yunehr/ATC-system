@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['clientengine_0',['ClientEngine',['../class_client_engine.html#a00a864bc935cad2402ad6739156c3c60',1,'ClientEngine']]],
-  ['connecttoserver_1',['connectToServer',['../class_client_engine.html#af7410367859e01cf60ba4be714ca4969',1,'ClientEngine']]]
+  ['_5f_5finit_5f_5f_0',['__init__',['../class_client_1_1_client_a_p_i.html#afe187bb74773ca0d2321269945a08fa6',1,'Client.ClientAPI.__init__()'],['../class_client_1_1_page.html#a560d63272a664ef21953cdc51d14ed3a',1,'Client.Page.__init__()'],['../class_client_1_1_top_bar.html#ae8801101c60b8ac69983ca4b26ac30f2',1,'Client.TopBar.__init__()'],['../class_client_1_1_log_panel.html#a32f0958180b99d81b3dc9b3ee3fb85e9',1,'Client.LogPanel.__init__()'],['../class_client_1_1_login_page.html#a219fe084ce4a80ed7e6589cc8c0e3e33',1,'Client.LoginPage.__init__()'],['../class_client_1_1_pre_flight_page.html#a6195ca71ce470e9a0e1010ad7a527003',1,'Client.PreFlightPage.__init__()'],['../class_client_1_1_active_airspace_page.html#af0f9d8189978db838304e55523898a2e',1,'Client.ActiveAirspacePage.__init__()'],['../class_client_1_1_p_d_f_viewer_page.html#a63ddda0731bdcb88b7eb09b93d0d0a6f',1,'Client.PDFViewerPage.__init__()'],['../class_client_1_1_app.html#ab885ec1407007350b26d1ac34b7bc24c',1,'Client.App.__init__()'],['../classpdf_viewer_1_1_p_d_f_viewer.html#ae824616700c224536e75560cea4a5914',1,'pdfViewer.PDFViewer.__init__()'],['../class_server___u_i_1_1_a_t_c_screen.html#a4e5f4ad0cc8a29587ce798e1dab969fa',1,'Server_UI.ATCScreen.__init__()']]],
+  ['_5fload_5fpdf_1',['_load_pdf',['../classpdf_viewer_1_1_p_d_f_viewer.html#aba65571158774fb080f5c4900981814f',1,'pdfViewer::PDFViewer']]],
+  ['_5fon_5fclose_2',['_on_close',['../class_client_1_1_app.html#a6c01ff1afee575cb2cd30c9a8714f21c',1,'Client::App']]]
 ];

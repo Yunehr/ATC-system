@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: shared/PacketTransport.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/shared/PacketTransport.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,10 +91,19 @@ $(function(){initNavTree('_packet_transport_8cpp.html','',''); });
   <div class="headertitle"><div class="title">PacketTransport.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Winsock send/receive helpers that frame <code>packet</code> objects over TCP.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_packet_transport_8hpp_source.html">PacketTransport.hpp</a>&quot;</code><br />
 <code>#include &lt;winsock2.h&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Winsock send/receive helpers that frame <code>packet</code> objects over TCP. </p>
+<p>Bridges the <code>packet</code> serialization layer and the raw Winsock socket API. All four functions guarantee that either the full requested byte count is transferred or <code>false</code> is returned — partial transfers are handled internally by the <code>sendAll</code> / <code>recvAll</code> loop pair.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md29"></a>
+Wire format assumed by <code>receivePacket</code> </h3>
+<div class="fragment"><div class="line">[ header (2 bytes) | payload (0–249 bytes) | CRC (4 bytes) ]</div>
+</div><!-- fragment --><p> The payload length is read from byte 1 of the header, matching the <code>packet::header</code> layout defined in <code><a class="el" href="_packet_8h.html" title="Defines the packet framing layer for all client-server communication.">packet.h</a></code>. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

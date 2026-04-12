@@ -1,7 +1,29 @@
 var searchData=
 [
-  ['getbody_0',['getBody',['../class_packet.html#aab6855ad866d21cfddf52e8b2d6aacfc',1,'Packet']]],
-  ['getbodyasstring_1',['getBodyAsString',['../class_packet.html#a46e9a4e02292bc5cbf6b12c05cb200bd',1,'Packet']]],
-  ['getheader_2',['getHeader',['../class_packet.html#ac1d56d8fa3b0a0d6af72d753d2f7197d',1,'Packet']]],
-  ['getweather_3',['getWeather',['../class_weather_service.html#a82921513d09f1ef7ba079c8c8a626dfc',1,'WeatherService']]]
+  ['a_20packet_0',['Test 3 — Request carried inside a packet',['../packettest_8cpp.html#autotoc_md25',1,'']]],
+  ['accent_5fblue_1',['ACCENT_BLUE',['../class_server___u_i_1_1_a_t_c_screen.html#a8df229f2b3c14d66e24c0e33d9ce31af',1,'Server_UI::ATCScreen']]],
+  ['accent_5fgreen_2',['ACCENT_GREEN',['../class_server___u_i_1_1_a_t_c_screen.html#ae4e66798608ab4415c4bf82301866bde',1,'Server_UI::ATCScreen']]],
+  ['accent_5forange_3',['ACCENT_ORANGE',['../class_server___u_i_1_1_a_t_c_screen.html#a66b3b49f1359ed3728c8a9440911fd5d',1,'Server_UI::ATCScreen']]],
+  ['active_5fairspace_4',['ACTIVE_AIRSPACE',['../class_state_machine.html#a9646161aa1fa21bd91fdd43892df68fdaff177c8ff32c6cf1ceb50080fc33e343',1,'StateMachine']]],
+  ['active_5fconnections_5',['active_connections',['../class_server___u_i_1_1_a_t_c_screen.html#a97b25c0f9c2d01d2b396493fe36612fe',1,'Server_UI::ATCScreen']]],
+  ['activeairspacepage_6',['ActiveAirspacePage',['../class_client_1_1_active_airspace_page.html',1,'Client']]],
+  ['add_7',['add',['../class_client_1_1_log_panel.html#a0bf71b38e7aeb0bf29cf210d141c0a60',1,'Client::LogPanel']]],
+  ['add_5fconnection_8',['add_connection',['../class_server___u_i_1_1_a_t_c_screen.html#a992eb464ce89d2a709c023580aba86e2',1,'Server_UI::ATCScreen']]],
+  ['add_5flog_9',['add_log',['../class_server___u_i_1_1_a_t_c_screen.html#ab9e36b1f76d4b882b8c9e9f4e75eb415',1,'Server_UI::ATCScreen']]],
+  ['aircraft_5flist_10',['aircraft_list',['../class_server___u_i_1_1_a_t_c_screen.html#a766d8c22453e0300dee899708eceb7b2',1,'Server_UI::ATCScreen']]],
+  ['animate_5floading_11',['animate_loading',['../class_client_1_1_p_d_f_viewer_page.html#a81e05bb3cb964ae22484e7603a4f9077',1,'Client.PDFViewerPage.animate_loading'],['../class_client_1_1_p_d_f_viewer_page.html#a2a5385de6d6d8bdde337ea485f57576f',1,'Client.PDFViewerPage.animate_loading(self)']]],
+  ['api_12',['api',['../class_client_1_1_app.html#ae9528b946fe7bd8702aa89da17dfbdff',1,'Client.App.api'],['../namespace_client.html#a411384d645bf1a77e3e308ca58b83141',1,'Client.api']]],
+  ['api_5fexe_13',['API_EXE',['../namespace_client.html#a71fb43692946c859c5ee65ea3fd7c698',1,'Client']]],
+  ['apirequest_14',['apiRequest',['../class_client_app.html#abc7fb28efef6f289984603a73440c245',1,'ClientApp']]],
+  ['app_15',['App',['../class_client_1_1_app.html',1,'Client']]],
+  ['app_16',['app',['../namespace_client.html#a7aa8ffbe0e4f4a15e8c2ff9165fab16b',1,'Client.app'],['../namespace_server___u_i.html#a697fd945b8d59c3e280926d62b6b767c',1,'Server_UI.app']]],
+  ['app_20ui_17',['Terminal 2 (Client) option 2 - App UI',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md17',1,'']]],
+  ['application_20client_18',['Running Application (Client)',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md15',1,'']]],
+  ['application_20server_19',['Running Application (Server)',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md13',1,'']]],
+  ['args_20',['args',['../namespace_client.html#aa21a7e556392a55aafda60198acbf702',1,'Client']]],
+  ['ask_5fflight_21',['ask_flight',['../class_client_1_1_pre_flight_page.html#a4dbe21e26bcc636ec52e483583bb859d',1,'Client::PreFlightPage']]],
+  ['ask_5fweather_22',['ask_weather',['../class_client_1_1_pre_flight_page.html#a418562f3e963ff2c3fc938aa5f67c2d7',1,'Client::PreFlightPage']]],
+  ['assumed_20by_20receivepacket_23',['Wire format assumed by &lt;code&gt;receivePacket&lt;/code&gt; ',['../_packet_transport_8cpp.html#autotoc_md29',1,'']]],
+  ['atcscreen_24',['ATCScreen',['../class_server___u_i_1_1_a_t_c_screen.html',1,'Server_UI']]],
+  ['authenticate_25',['authenticate',['../class_client_session.html#a069edd876c3bb6e4f0e741b091d83349',1,'ClientSession']]]
 ];

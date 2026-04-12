@@ -1,15 +1,11 @@
 var searchData=
 [
-  ['sendpacket_0',['sendPacket',['../class_packet_transport.html#a114053a24ef2eb79907dc759eef602b9',1,'PacketTransport']]],
-  ['sequence_1',['sequence',['../struct_packet_1_1_header.html#a228859532f98bb1d0900d803a775576e',1,'Packet::Header']]],
-  ['serialize_2',['serialize',['../class_packet.html#a026e2cbe0fbf798d8d4e655b8eedcc1a',1,'Packet']]],
-  ['serverengine_3',['ServerEngine',['../class_server_engine.html',1,'ServerEngine'],['../class_server_engine.html#a02bd1093c93180ca5e4bb8d14ed9addb',1,'ServerEngine::ServerEngine()']]],
-  ['serverengine_2ecpp_4',['ServerEngine.cpp',['../_server_engine_8cpp.html',1,'']]],
-  ['serverengine_2ehpp_5',['ServerEngine.hpp',['../_server_engine_8hpp.html',1,'']]],
-  ['stack_6',['🛠️ Tech Stack',['../md__r_e_a_d_m_e.html#autotoc_md2',1,'']]],
-  ['start_7',['start',['../class_server_engine.html#a37a4dc739e903f78f9e802347f8417d4',1,'ServerEngine']]],
-  ['state_20machine_8',['🚦Server State Machine',['../md__r_e_a_d_m_e.html#autotoc_md4',1,'']]],
-  ['statemachine_2ecpp_9',['StateMachine.cpp',['../_state_machine_8cpp.html',1,'']]],
-  ['statemachine_2ehpp_10',['StateMachine.hpp',['../_state_machine_8hpp.html',1,'']]],
-  ['stop_11',['stop',['../class_server_engine.html#a9e04117714d970e3c1216cf0950fff2c',1,'ServerEngine']]]
+  ['images_0',['images',['../classpdf_viewer_1_1_p_d_f_viewer.html#aaa169e27cf510064f43895867d97a5b5',1,'pdfViewer::PDFViewer']]],
+  ['implemented_1',['Large-file chunking (not yet implemented)',['../packettest_8cpp.html#autotoc_md22',1,'']]],
+  ['inner_2',['inner',['../classpdf_viewer_1_1_p_d_f_viewer.html#a1dd11562f41acfea51f4b251492281e9',1,'pdfViewer::PDFViewer']]],
+  ['inside_20a_20packet_3',['Test 3 — Request carried inside a packet',['../packettest_8cpp.html#autotoc_md25',1,'']]],
+  ['int_20040_4',['Test 1 — Serialization round-trip (REQ-INT-040)',['../_packet_testing_8cpp.html#autotoc_md26',1,'']]],
+  ['integrationtest_2ecpp_5',['IntegrationTest.cpp',['../_integration_test_8cpp.html',1,'']]],
+  ['integrity_20req_20sys_20030_6',['Test 2 — Data integrity (REQ-SYS-030)',['../_packet_testing_8cpp.html#autotoc_md27',1,'']]],
+  ['iscomplete_7',['isComplete',['../class_file_receiver.html#a312d1b24124a76df533c2c2f594b63f1',1,'FileReceiver']]]
 ];

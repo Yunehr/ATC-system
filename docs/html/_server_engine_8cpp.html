@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/ServerEngine.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/ServerEngine.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,11 +91,56 @@ $(function(){initNavTree('_server_engine_8cpp.html','',''); });
   <div class="headertitle"><div class="title">ServerEngine.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Implementation of the <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> class.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_server_engine_8hpp_source.html">ServerEngine.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_packet_transport_8hpp_source.html">../shared/PacketTransport.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_packet_8hpp_source.html">../shared/Packet.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_packet_8h_source.html">../shared/packet.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_request_8h_source.html">../shared/Request.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_weather_service_8hpp_source.html">WeatherService.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_file_transfer_manager_8hpp_source.html">FileTransferManager.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_client_session_8hpp_source.html">ClientSession.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_state_machine_8hpp_source.html">StateMachine.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_logger_8h_source.html">Logger.h</a>&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of the <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> class. </p>
+<p>Manages the TCP listen socket, accepts incoming client connections (one at a time, sequentially), and drives the per-client packet dispatch loop. Each client session owns its own <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> instance, so state is fully isolated between connections.</p>
+<dl class="section user"><dt>Structured stdout protocol</dt><dd>In addition to human-readable log lines, <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> writes machine- readable prefixed lines consumed by the Python ATCScreen dashboard:</dd></dl>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Prefix  </th><th class="markdownTableHeadNone">Meaning  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"STATE: &lt;name&gt;"</code>  </td><td class="markdownTableBodyNone">Server state changed; update UI indicator.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"TRANSFER START: total=&lt;N&gt;"</code>  </td><td class="markdownTableBodyNone">File transfer beginning; N total bytes.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"TRANSFER PROGRESS: current=&lt;C&gt; total=&lt;T&gt;"</code>  </td><td class="markdownTableBodyNone">Chunk sent.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"TRANSFER COMPLETE: current=&lt;C&gt; total=&lt;T&gt;"</code>  </td><td class="markdownTableBodyNone">Transfer finished.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"Client connected!"</code>  </td><td class="markdownTableBodyNone">New TCP connection accepted.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"Client disconnected."</code>  </td><td class="markdownTableBodyNone">TCP connection closed.  </td></tr>
+</table>
+<dl class="section user"><dt>Packet dispatch summary (handleClient)</dt><dd><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Packet type  </th><th class="markdownTableHeadNone">Handler  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>pkt_auth</code>  </td><td class="markdownTableBodyNone"><a class="el" href="class_client_session.html#a069edd876c3bb6e4f0e741b091d83349" title="Authenticates a pilot against the credentials in LoginAuth.csv.">ClientSession::authenticate()</a>; <a class="el" href="class_state_machine.html#a61cd8017087640d15741aae54f8e872e" title="Transitions to PRE_FLIGHT after successful authentication.">StateMachine::onAuthSuccess()</a>  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>pkt_emgcy</code>  </td><td class="markdownTableBodyNone"><a class="el" href="class_state_machine.html#a152685a284ed11391ad6b6d0e4305185" title="Saves current state and transitions to EMERGENCY.">StateMachine::onEmergency()</a>; sends acknowledgement.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>pkt_req</code>  </td><td class="markdownTableBodyNone">Decoded to <code>reqtyp</code> and dispatched to service handlers.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Other  </td><td class="markdownTableBodyNone">Sends <code>pkt_empty</code> error response.  </td></tr>
+</table>
+</dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

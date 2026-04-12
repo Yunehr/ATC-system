@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: client/main.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/client/main.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,17 +91,24 @@ $(function(){initNavTree('client_2main_8cpp.html','',''); });
   <div class="headertitle"><div class="title">main.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="_client_engine_8hpp_source.html">ClientEngine.hpp</a>&quot;</code><br />
-<code>#include &lt;winsock2.h&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
+
+<p>Entry point for the client API bridge process.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_client_app_8hpp_source.html">ClientApp.hpp</a>&quot;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
+<tr class="memdesc:a0ddf1224851353fc92bfbff6f499fa97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses optional connection arguments, constructs a <a class="el" href="class_client_app.html" title="Manages the Winsock connection and all aviation-domain request handlers.">ClientApp</a>, and runs the interactive command loop.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Entry point for the client API bridge process. </p>
+<p>This executable acts as a thin stdin/stdout bridge between the Python UI (clientUI.py) and the aviation backend server. The UI spawns this process as a child, writes newline-terminated command strings to its stdin, and reads response strings from its stdout.</p>
+<p>Command format (space-delimited, read from stdin): </p><div class="fragment"><div class="line">&lt;CMD&gt; [arg1] [arg2]</div>
+</div><!-- fragment --><p>Response format (newline-terminated, written to stdout): </p><div class="fragment"><div class="line">&lt;response <span class="keywordtype">string</span> from <a class="code hl_function" href="class_client_app.html#abc7fb28efef6f289984603a73440c245">ClientApp::apiRequest</a>&gt;</div>
+<div class="ttc" id="aclass_client_app_html_abc7fb28efef6f289984603a73440c245"><div class="ttname"><a href="class_client_app.html#abc7fb28efef6f289984603a73440c245">ClientApp::apiRequest</a></div><div class="ttdeci">std::string apiRequest(const std::string &amp;cmd, const std::string &amp;arg1, const std::string &amp;arg2)</div><div class="ttdoc">Dispatches a command string to the appropriate handler.</div><div class="ttdef"><b>Definition</b> ClientApp.cpp:208</div></div>
+</div><!-- fragment --> </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a0ddf1224851353fc92bfbff6f499fa97" name="a0ddf1224851353fc92bfbff6f499fa97"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0ddf1224851353fc92bfbff6f499fa97">&#9670;&#160;</a></span>main()</h2>
 
@@ -120,6 +127,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Parses optional connection arguments, constructs a <a class="el" href="class_client_app.html" title="Manages the Winsock connection and all aviation-domain request handlers.">ClientApp</a>, and runs the interactive command loop. </p>
+<dl class="section user"><dt>Argument handling</dt><dd><ul>
+<li><code class="param">argv</code>[1] : IPv4 address of the backend server. Defaults to <code>"127.0.0.1"</code> if not supplied.</li>
+<li><code class="param">argv</code>[2] : TCP port number (1–65535). Defaults to <code>54000</code> if not supplied or out of range. Out-of-range values parsed by <code>std::atoi</code> (including <code>0</code> and negatives) are silently ignored and the default is kept.</li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>Number of command-line arguments (including the program name). </td></tr>
+    <tr><td class="paramname">argv</td><td>Array of command-line argument strings. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>0</code> on normal exit. </dd></dl>
 
 </div>
 </div>

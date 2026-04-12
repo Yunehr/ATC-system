@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['packet_20definition_0',['📦 Data Packet Definition',['../md__r_e_a_d_m_e.html#autotoc_md5',1,'']]],
-  ['project_20overview_1',['✈️ Project Overview',['../md__r_e_a_d_m_e.html',1,'']]]
+  ['by_20receivepacket_0',['Wire format assumed by &lt;code&gt;receivePacket&lt;/code&gt; ',['../_packet_transport_8cpp.html#autotoc_md29',1,'']]]
 ];

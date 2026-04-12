@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['machine_0',['🚦Server State Machine',['../md__r_e_a_d_m_e.html#autotoc_md4',1,'']]],
-  ['magic_1',['magic',['../struct_packet_1_1_header.html#a5258d48604917d86f4d107c18377e620',1,'Packet::Header']]],
-  ['main_2',['main',['../client_2main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;main.cpp'],['../server_2main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;main.cpp']]],
-  ['main_2ecpp_3',['main.cpp',['../client_2main_8cpp.html',1,'(Global Namespace)'],['../server_2main_8cpp.html',1,'(Global Namespace)']]],
-  ['methodology_4',['📈 Development Methodology',['../md__r_e_a_d_m_e.html#autotoc_md3',1,'']]]
+  ['emergency_0',['EMERGENCY',['../class_state_machine.html#a9646161aa1fa21bd91fdd43892df68fda1d9e8d5522fd3de1bbc21723300efd30',1,'StateMachine']]],
+  ['emergency_5factive_1',['emergency_active',['../class_client_1_1_app.html#a848a04e93d3da326dba71ffd36c11071',1,'Client::App']]],
+  ['emergency_5fbuttons_2',['emergency_buttons',['../class_client_1_1_app.html#a1d3d32565a5935f7263b1e91f669011c',1,'Client::App']]],
+  ['emtpy_5fpktsize_3',['EMTPY_PKTSIZE',['../_packet_8h.html#ab358ffebf5d7a419e8a2e1442dc2fc62',1,'Packet.h']]],
+  ['error_4',['error',['../class_file_receiver_test.html#a7e3b2983bf322b5c755f5e1a91b9b832',1,'FileReceiverTest::error'],['../class_progress_test.html#a83f149c5984524404d58a165c17ae775',1,'ProgressTest::error']]],
+  ['error_5fvar_5',['error_var',['../class_client_1_1_login_page.html#aa9dbe11419bc57b1d4739a4be8ee9820',1,'Client::LoginPage']]],
+  ['executables_6',['Compile Executables',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md7',1,'']]],
+  ['expand_7',['expand',['../class_client_1_1_log_panel.html#a94eba9ad65308fdb49e005afc30e30be',1,'Client::LogPanel']]]
 ];

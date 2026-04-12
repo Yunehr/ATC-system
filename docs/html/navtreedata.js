@@ -25,29 +25,35 @@
 var NAVTREE =
 [
   [ "ATC project", "index.html", [
-    [ "✈️ Project Overview", "md__r_e_a_d_m_e.html", [
-      [ "Key Features", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
-      [ "🛠️ Tech Stack", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
-      [ "📈 Development Methodology", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
-      [ "🚦Server State Machine", "md__r_e_a_d_m_e.html#autotoc_md4", null ],
-      [ "📦 Data Packet Definition", "md__r_e_a_d_m_e.html#autotoc_md5", null ]
+    [ "Todo List", "todo.html", null ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ]
+      ] ]
     ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
+      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ]
+        [ "Enumerations", "functions_enum.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ]
+        [ "Functions", "globals_func.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
+        [ "Enumerator", "globals_eval.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -55,7 +61,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_client_engine_8cpp.html"
+"_client_8py.html",
+"class_server___u_i_1_1_a_t_c_screen.html#a2dea2049c708007fc49dd8d2aaf69e66",
+"packettest_8cpp.html#a840291bc02cba5474a4cb46a9b9566fe"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

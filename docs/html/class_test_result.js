@@ -1,0 +1,25 @@
+var class_test_result =
+[
+    [ "TestResult", "class_test_result.html#a5cf5dd6f416b7334ea601aab21a2fda5", null ],
+    [ "~TestResult", "class_test_result.html#a41f407680b725b75d7eadc3230bc3315", null ],
+    [ "elapsed_time", "class_test_result.html#a717e05e00d4af5cb809433e343ab63af", null ],
+    [ "Failed", "class_test_result.html#afacc37e8b43c8574e4101bc61723c769", null ],
+    [ "GetTestPartResult", "class_test_result.html#a765c1e734ac08115757b343d57226bba", null ],
+    [ "GetTestProperty", "class_test_result.html#a6c2f478dbce36b57d18bedded46d70af", null ],
+    [ "HasFatalFailure", "class_test_result.html#a30e00d4076ae07fb5ad7b623d9dc1fe4", null ],
+    [ "HasNonfatalFailure", "class_test_result.html#a510564fa67b485ed4589a259f2a032d6", null ],
+    [ "Passed", "class_test_result.html#acf7e6e72f05a0545c48ea48e7f8851df", null ],
+    [ "Skipped", "class_test_result.html#a4c9e954e0f8c1386206f2e6208c45244", null ],
+    [ "start_timestamp", "class_test_result.html#adb268289775c56570cfa4bbd4d233ec9", null ],
+    [ "test_property_count", "class_test_result.html#afe4523257bbea8bc63b0950b702790be", null ],
+    [ "total_part_count", "class_test_result.html#a6174aa4019dcda7c34d776b5741c9032", null ],
+    [ "internal::DefaultGlobalTestPartResultReporter", "class_test_result.html#abae39633da9932847b41cb80efd62115", null ],
+    [ "internal::ExecDeathTest", "class_test_result.html#adf5553cae6aea6f8648d47e299237e34", null ],
+    [ "internal::FuchsiaDeathTest", "class_test_result.html#af29d5921f68031cdfba0b28cf4b3b559", null ],
+    [ "internal::TestResultAccessor", "class_test_result.html#ae762da04e74a0d3b0daded3c5bd4a8e8", null ],
+    [ "internal::UnitTestImpl", "class_test_result.html#acc0a5e7573fd6ae7ad1878613bb86853", null ],
+    [ "internal::WindowsDeathTest", "class_test_result.html#a6aeedc04a0590fcc1b3c5f687dbb0f9f", null ],
+    [ "TestInfo", "class_test_result.html#a4c49c2cdb6c328e6b709b4542f23de3c", null ],
+    [ "TestSuite", "class_test_result.html#ab9aaba231fd11196425e75caf709bfc6", null ],
+    [ "UnitTest", "class_test_result.html#a832b4d233efee1a32feb0f4190b30d39", null ]
+];

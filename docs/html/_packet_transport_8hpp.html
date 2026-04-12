@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: shared/PacketTransport.hpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/shared/PacketTransport.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,7 +91,10 @@ $(function(){initNavTree('_packet_transport_8hpp.html','',''); });
   <div class="headertitle"><div class="title">PacketTransport.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="_packet_8hpp_source.html">Packet.hpp</a>&quot;</code><br />
+
+<p>Static transport layer for sending and receiving <code>packet</code> objects over TCP.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_packet_8h_source.html">packet.h</a>&quot;</code><br />
 </div>
 <p><a href="_packet_transport_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -99,7 +102,14 @@ $(function(){initNavTree('_packet_transport_8hpp.html','',''); });
 Classes</h2></td></tr>
 <tr class="memitem:PacketTransport" id="r_PacketTransport"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="class_packet_transport.html">PacketTransport</a></td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Static transport layer for sending and receiving <code>packet</code> objects over TCP. </p>
+<p>Abstracts the Winsock <code>send()</code> / <code>recv()</code> calls behind a reliable all-or-nothing interface. Callers work entirely in terms of <code>packet</code> objects and never interact with the raw socket API directly.</p>
+<dl class="section note"><dt>Note</dt><dd>All methods are static — <code><a class="el" href="class_packet_transport.html">PacketTransport</a></code> is a utility class and is not intended to be instantiated.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="_packet_transport_8cpp.html" title="Winsock send/receive helpers that frame packet objects over TCP.">PacketTransport.cpp</a> for implementation details. </dd>
+<dd>
+<a class="el" href="_packet_8h.html" title="Defines the packet framing layer for all client-server communication.">packet.h</a> for wire format and <code><a class="el" href="classpacket.html" title="A framed, serializable network packet with header, payload, and CRC.">packet</a></code> internals. </dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

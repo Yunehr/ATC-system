@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['weatherservice_0',['WeatherService',['../class_weather_service.html',1,'']]]
+  ['request_0',['Request',['../class_request.html',1,'']]]
 ];

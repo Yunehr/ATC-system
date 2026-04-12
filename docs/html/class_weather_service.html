@@ -92,13 +92,21 @@ $(function(){initNavTree('class_weather_service.html','','class_weather_service-
 </div><!--header-->
 <div class="contents">
 
+<p>Static utility class for airport weather data lookups.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_weather_service_8hpp_source.html">WeatherService.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a82921513d09f1ef7ba079c8c8a626dfc" id="r_a82921513d09f1ef7ba079c8c8a626dfc"><td class="memItemLeft">static std::string&#160;</td><td class="memItemRight"><a class="el" href="#a82921513d09f1ef7ba079c8c8a626dfc">getWeather</a> (const std::string &amp;location)</td></tr>
+<tr class="memdesc:a82921513d09f1ef7ba079c8c8a626dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Looks up weather conditions for the specified airport.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Static utility class for airport weather data lookups. </p>
+<p>Reads weather conditions from <code>weather.csv</code>, a two-column CSV mapping ICAO airport codes to weather condition strings. The file is located using the standard two-path probe (<code></code>../data/ then <code>data/</code>).</p>
+<p>Called by ServerEngine::handleClient() in response to <code>req_weather</code> requests. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a82921513d09f1ef7ba079c8c8a626dfc" name="a82921513d09f1ef7ba079c8c8a626dfc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a82921513d09f1ef7ba079c8c8a626dfc">&#9670;&#160;</a></span>getWeather()</h2>
 
@@ -122,11 +130,38 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Looks up weather conditions for the specified airport. </p>
+<p>Looks up weather conditions for the specified airport in <code>weather.csv</code>.</p>
+<p>Performs a case-sensitive linear search of <code>weather.csv</code> for a row whose <code>AirportID</code> column matches <code class="param">location</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">location</td><td>ICAO airport code or location identifier (e.g. <code>"YYZ"</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>"&lt;AirportID&gt;: &lt;conditions&gt;"</code> on success, or one of:<ul>
+<li><code>"weather.csv not found"</code> if the file could not be opened.</li>
+<li><code>"No weather found for: &lt;location&gt;"</code> if no matching row exists.</li>
+</ul>
+</dd></dl>
+<p>Performs a linear search of the CSV for a row whose <code>AirportID</code> column matches <code class="param">location</code> (case-sensitive). The header row is skipped.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">location</td><td>ICAO airport code or location identifier to look up (e.g. <code>"YYZ"</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>"&lt;AirportID&gt;: &lt;conditions&gt;"</code> on success, or one of:<ul>
+<li><code>"weather.csv not found"</code> if the file could not be opened.</li>
+<li><code>"No weather found for: &lt;location&gt;"</code> if no matching row exists. </li>
+</ul>
+</dd></dl>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>server/<a class="el" href="_weather_service_8hpp_source.html">WeatherService.hpp</a></li>
-<li>server/<a class="el" href="_weather_service_8cpp.html">WeatherService.cpp</a></li>
+<li>E:/Git/pr4j----ATC-system/server/<a class="el" href="_weather_service_8hpp_source.html">WeatherService.hpp</a></li>
+<li>E:/Git/pr4j----ATC-system/server/<a class="el" href="_weather_service_8cpp.html">WeatherService.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

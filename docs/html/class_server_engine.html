@@ -92,17 +92,37 @@ $(function(){initNavTree('class_server_engine.html','','class_server_engine-memb
 </div><!--header-->
 <div class="contents">
 
+<p>Manages the TCP listen socket and per-client packet dispatch loop.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_server_engine_8hpp_source.html">ServerEngine.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a02bd1093c93180ca5e4bb8d14ed9addb" id="r_a02bd1093c93180ca5e4bb8d14ed9addb"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a02bd1093c93180ca5e4bb8d14ed9addb">ServerEngine</a> ()</td></tr>
+<tr class="memdesc:a02bd1093c93180ca5e4bb8d14ed9addb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> with an invalid listen socket and stopped state.  <br /></td></tr>
 <tr class="memitem:a68b6437ab37a4c518dcce1621483120f" id="r_a68b6437ab37a4c518dcce1621483120f"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a68b6437ab37a4c518dcce1621483120f">~ServerEngine</a> ()</td></tr>
+<tr class="memdesc:a68b6437ab37a4c518dcce1621483120f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor — calls <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a> to ensure the listen socket is closed.  <br /></td></tr>
 <tr class="memitem:a37a4dc739e903f78f9e802347f8417d4" id="r_a37a4dc739e903f78f9e802347f8417d4"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a37a4dc739e903f78f9e802347f8417d4">start</a> (unsigned short port)</td></tr>
+<tr class="memdesc:a37a4dc739e903f78f9e802347f8417d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds a TCP listen socket to the given port and begins listening.  <br /></td></tr>
 <tr class="memitem:ac10d1cf750a879d31a85c0c5a6c7fc65" id="r_ac10d1cf750a879d31a85c0c5a6c7fc65"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac10d1cf750a879d31a85c0c5a6c7fc65">run</a> ()</td></tr>
+<tr class="memdesc:ac10d1cf750a879d31a85c0c5a6c7fc65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blocks in the accept loop, handling one client connection at a time.  <br /></td></tr>
 <tr class="memitem:a9e04117714d970e3c1216cf0950fff2c" id="r_a9e04117714d970e3c1216cf0950fff2c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9e04117714d970e3c1216cf0950fff2c">stop</a> ()</td></tr>
+<tr class="memdesc:a9e04117714d970e3c1216cf0950fff2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets running to <code>false</code> and closes the listen socket.  <br /></td></tr>
+<tr class="memitem:a5fb6c74ca7a404c15133244efa674d8a" id="r_a5fb6c74ca7a404c15133244efa674d8a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5fb6c74ca7a404c15133244efa674d8a">sendFlightManual</a> (SOCKET clientSock, unsigned char clientId)</td></tr>
+<tr class="memdesc:a5fb6c74ca7a404c15133244efa674d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Streams the flight manual PDF to the client in fixed-size chunks.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Manages the TCP listen socket and per-client packet dispatch loop. </p>
+<p>Responsibilities:</p><ul>
+<li>Creating, binding, and listening on the server TCP socket (<a class="el" href="#a37a4dc739e903f78f9e802347f8417d4" title="Binds a TCP listen socket to the given port and begins listening.">start()</a>).</li>
+<li>Accepting client connections sequentially in a blocking loop (<a class="el" href="#ac10d1cf750a879d31a85c0c5a6c7fc65" title="Blocks in the accept loop, handling one client connection at a time.">run()</a>).</li>
+<li>Dispatching incoming packets to authentication, request, and emergency handlers within handleClient().</li>
+<li>Streaming the flight manual PDF to a client in fixed-size chunks (<a class="el" href="#a5fb6c74ca7a404c15133244efa674d8a" title="Streams the flight manual PDF to the client in fixed-size chunks.">sendFlightManual()</a>).</li>
+<li>Cleanly closing the listen socket on <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a> or destruction.</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>Winsock initialisation (WSAStartup / WSACleanup) is the caller's responsibility and must be performed before constructing this object. </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a02bd1093c93180ca5e4bb8d14ed9addb" name="a02bd1093c93180ca5e4bb8d14ed9addb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a02bd1093c93180ca5e4bb8d14ed9addb">&#9670;&#160;</a></span>ServerEngine()</h2>
 
@@ -117,6 +137,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Constructs a <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> with an invalid listen socket and stopped state. </p>
+<p>The socket is not opened until <a class="el" href="#a37a4dc739e903f78f9e802347f8417d4" title="Binds a TCP listen socket to the given port and begins listening.">start()</a> is called. </p>
 
 </div>
 </div>
@@ -134,6 +157,9 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Destructor — calls <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a> to ensure the listen socket is closed. </p>
+<p>Destructor — calls <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a> to close the listen socket. </p>
 
 </div>
 </div>
@@ -153,6 +179,68 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Blocks in the accept loop, handling one client connection at a time. </p>
+<p>Blocks in the accept loop, handling one client at a time.</p>
+<p>For each accepted connection, calls handleClient() (blocking until the client disconnects), then closes the client socket before accepting the next one. Failed accept() calls are logged and skipped rather than treated as fatal. Exits when running is set to <code>false</code> by <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a>.</p>
+<p>Calls accept() in a loop. For each accepted connection, calls handleClient() (which blocks until the client disconnects), then closes the client socket before accepting the next connection.</p>
+<p>Invalid accept() results are logged and skipped rather than aborting the loop. The loop exits when running is set to <code>false</code> by <a class="el" href="#a9e04117714d970e3c1216cf0950fff2c" title="Sets running to false and closes the listen socket.">stop()</a>. </p>
+
+</div>
+</div>
+<a id="a5fb6c74ca7a404c15133244efa674d8a" name="a5fb6c74ca7a404c15133244efa674d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fb6c74ca7a404c15133244efa674d8a">&#9670;&#160;</a></span>sendFlightManual()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ServerEngine::sendFlightManual </td>
+          <td>(</td>
+          <td class="paramtype">SOCKET</td>          <td class="paramname"><span class="paramname"><em>clientSock</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char</td>          <td class="paramname"><span class="paramname"><em>clientId</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Streams the flight manual PDF to the client in fixed-size chunks. </p>
+<p>Each <code>pkt_dat</code> payload is prefixed with a 4-byte little-endian write offset, matching the layout expected by <a class="el" href="class_file_receiver.html#a95db65d69f314f0c9cfa1e49aec80809" title="Writes the payload of a single pkt_dat packet into the staging file.">FileReceiver::processPacket()</a> on the client side. All chunks except the last carry <code>PKT_TRNSMT_INCOMP</code>; the final chunk carries <code>PKT_TRNSMT_COMP</code>.</p>
+<p>Emits <code>"TRANSFER START:"</code>, <code>"TRANSFER PROGRESS:"</code>, and <code>"TRANSFER COMPLETE:"</code> lines to stdout for the ATCScreen dashboard.</p>
+<p>If the file opens but contains zero bytes, a single zero-length <code>pkt_dat</code> packet with <code>PKT_TRNSMT_COMP</code> is sent so the client can exit its receive loop cleanly.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clientSock</td><td>The connected client socket to write chunks to. </td></tr>
+    <tr><td class="paramname">clientId</td><td><a class="el" href="namespace_client.html">Client</a> ID stamped into every outgoing packet header. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if all chunks were sent successfully. </dd>
+<dd>
+<code>false</code> if the file could not be opened or any send failed.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This method is public to facilitate unit testing; it is normally called only from handleClient().</dd></dl>
+<dl class="section user"><dt>Chunk payload layout</dt><dd>Each <code>pkt_dat</code> packet payload contains: <div class="fragment"><div class="line">[ 4 bytes: uint32_t write offset ] [ N bytes: file data ]</div>
+</div><!-- fragment --> This matches the layout expected by <a class="el" href="class_file_receiver.html#a95db65d69f314f0c9cfa1e49aec80809" title="Writes the payload of a single pkt_dat packet into the staging file.">FileReceiver::processPacket()</a> on the client side.</dd></dl>
+<dl class="section user"><dt>Transmission flags</dt><dd><ul>
+<li>All chunks except the last carry <code>PKT_TRNSMT_INCOMP</code>.</li>
+<li>The final chunk (detected via <code>src.peek()</code> == EOF) carries <code>PKT_TRNSMT_COMP</code>.</li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Progress reporting</dt><dd>Emits <code>"TRANSFER START:"</code>, <code>"TRANSFER PROGRESS:"</code>, and <code>"TRANSFER COMPLETE:"</code> lines to stdout for the ATCScreen dashboard.</dd></dl>
+<dl class="section user"><dt>Edge case — empty file</dt><dd>If the file opens successfully but contains zero bytes, a single zero-length <code>pkt_dat</code> packet with <code>PKT_TRNSMT_COMP</code> is sent so the client can exit its receive loop cleanly.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clientSock</td><td>The connected client socket to write chunks to. </td></tr>
+    <tr><td class="paramname">clientId</td><td><a class="el" href="namespace_client.html">Client</a> ID stamped into every outgoing packet header. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if all chunks were sent successfully. </dd>
+<dd>
+<code>false</code> if the file could not be opened or any send failed. </dd></dl>
+
 </div>
 </div>
 <a id="a37a4dc739e903f78f9e802347f8417d4" name="a37a4dc739e903f78f9e802347f8417d4"></a>
@@ -169,6 +257,30 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Binds a TCP listen socket to the given port and begins listening. </p>
+<p>Creates an <code>AF_INET/<code>SOCK_STREAM</code> socket</code>, binds it to <code>INADDR_ANY</code> on <code class="param">port</code>, and calls listen(). Emits <code>"STATE: STARTUP/AUTH"</code> to stdout on success so the ATCScreen dashboard can initialise its state indicator.</p>
+<p>On any failure the socket is closed and reset to <code>INVALID_SOCKET</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">port</td><td>TCP port to listen on (e.g. <code>8080</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the socket is bound and listening. </dd>
+<dd>
+<code>false</code> if socket(), bind(), or listen() failed.</dd></dl>
+<p>Creates an <code>AF_INET/<code>SOCK_STREAM</code> socket</code>, binds it to <code>INADDR_ANY</code> on <code class="param">port</code>, and calls listen(). Sets running to <code>true</code> and emits <code>"STATE: STARTUP/AUTH"</code> to stdout on success.</p>
+<p>On any failure the socket is closed and reset to <code>INVALID_SOCKET</code> before returning <code>false</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">port</td><td>TCP port to listen on (e.g. <code>8080</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if the socket is bound and listening successfully. </dd>
+<dd>
+<code>false</code> if socket(), bind(), or listen() failed. </dd></dl>
 
 </div>
 </div>
@@ -187,11 +299,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Sets running to <code>false</code> and closes the listen socket. </p>
+<p>Safe to call multiple times — the <code>INVALID_SOCKET</code> guard prevents double-close. Also called automatically by the destructor.</p>
+<p>Safe to call multiple times — the <code>INVALID_SOCKET</code> guard prevents double-close. </p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>server/<a class="el" href="_server_engine_8hpp_source.html">ServerEngine.hpp</a></li>
-<li>server/<a class="el" href="_server_engine_8cpp.html">ServerEngine.cpp</a></li>
+<li>E:/Git/pr4j----ATC-system/server/<a class="el" href="_server_engine_8hpp_source.html">ServerEngine.hpp</a></li>
+<li>E:/Git/pr4j----ATC-system/server/<a class="el" href="_server_engine_8cpp.html">ServerEngine.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

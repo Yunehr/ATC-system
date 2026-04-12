@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/WeatherService.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/WeatherService.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,9 +91,19 @@ $(function(){initNavTree('_weather_service_8cpp.html','',''); });
   <div class="headertitle"><div class="title">WeatherService.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Implementation of the <a class="el" href="class_weather_service.html" title="Static utility class for airport weather data lookups.">WeatherService</a> class.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_weather_service_8hpp_source.html">WeatherService.hpp</a>&quot;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of the <a class="el" href="class_weather_service.html" title="Static utility class for airport weather data lookups.">WeatherService</a> class. </p>
+<p>Provides weather data lookups against <code>weather.csv</code>, a two-column CSV mapping ICAO airport codes to weather condition strings.</p>
+<dl class="section user"><dt>weather.csv format</dt><dd><div class="fragment"><div class="line">AirportID, Conditions</div>
+<div class="line">YYZ, Clear skies, visibility 10 SM, wind 270 at 12 kt</div>
+</div><!-- fragment --> </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">

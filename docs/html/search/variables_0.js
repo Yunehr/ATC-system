@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['checksum_0',['checksum',['../struct_packet_1_1_tail.html#adfd271321be160706279149fd4e51868',1,'Packet::Tail']]],
-  ['clientid_1',['clientID',['../struct_packet_1_1_header.html#a7d492cbdee5badad3a1cf7a93bc146e1',1,'Packet::Header']]]
+  ['_5faction_5fbuttons_0',['_action_buttons',['../class_client_1_1_pre_flight_page.html#a37ba3d9b3db8c231f36cc64b1812db03',1,'Client.PreFlightPage._action_buttons'],['../class_client_1_1_active_airspace_page.html#a5658818e90b1497320d2170b4da95c1d',1,'Client.ActiveAirspacePage._action_buttons']]],
+  ['_5fon_5fclose_1',['_on_close',['../class_client_1_1_app.html#a802ac1e7830a2307c5e9fa247eef7410',1,'Client::App']]]
 ];

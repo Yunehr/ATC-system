@@ -1,15 +1,7 @@
 var searchData=
 [
-  ['features_0',['Key Features',['../md__r_e_a_d_m_e.html#autotoc_md1',1,'']]],
-  ['file_5fchunk_1',['FILE_CHUNK',['../class_packet.html#af7f61786057f92d9cecc27015bdcfe78ab17463c2197db4ec5dc51507c47b77f9',1,'Packet']]],
-  ['file_5fcomplete_2',['FILE_COMPLETE',['../class_packet.html#af7f61786057f92d9cecc27015bdcfe78a7bab7a1e5db773aa294d695c34beaa0e',1,'Packet']]],
-  ['file_5frequest_3',['FILE_REQUEST',['../class_packet.html#af7f61786057f92d9cecc27015bdcfe78a0fcf8e04630558153936130acfe19694',1,'Packet']]],
-  ['filereceiver_2ecpp_4',['FileReceiver.cpp',['../_file_receiver_8cpp.html',1,'']]],
-  ['filereceiver_2ehpp_5',['FileReceiver.hpp',['../_file_receiver_8hpp.html',1,'']]],
-  ['filetransfermanager_2ecpp_6',['FileTransferManager.cpp',['../_file_transfer_manager_8cpp.html',1,'']]],
-  ['filetransfermanager_2ehpp_7',['FileTransferManager.hpp',['../_file_transfer_manager_8hpp.html',1,'']]],
-  ['flag_5fmore_8',['FLAG_MORE',['../class_packet.html#ab5501c780c2b0bd8b1d555196dab441aabac4a878089fe0aaedd81cb8006bd2fb',1,'Packet']]],
-  ['flag_5fnone_9',['FLAG_NONE',['../class_packet.html#ab5501c780c2b0bd8b1d555196dab441aa02f0c7bdc35623b1fadc9184b48f592b',1,'Packet']]],
-  ['flags_10',['Flags',['../class_packet.html#ab5501c780c2b0bd8b1d555196dab441a',1,'Packet']]],
-  ['flags_11',['flags',['../struct_packet_1_1_header.html#a83079ff21c6037a4e012d5a1372649d0',1,'Packet::Header']]]
+  ['_5f_5finit_5f_5f_0',['__init__',['../class_client_1_1_client_a_p_i.html#afe187bb74773ca0d2321269945a08fa6',1,'Client.ClientAPI.__init__()'],['../class_client_1_1_page.html#a560d63272a664ef21953cdc51d14ed3a',1,'Client.Page.__init__()'],['../class_client_1_1_top_bar.html#ae8801101c60b8ac69983ca4b26ac30f2',1,'Client.TopBar.__init__()'],['../class_client_1_1_log_panel.html#a32f0958180b99d81b3dc9b3ee3fb85e9',1,'Client.LogPanel.__init__()'],['../class_client_1_1_login_page.html#a219fe084ce4a80ed7e6589cc8c0e3e33',1,'Client.LoginPage.__init__()'],['../class_client_1_1_pre_flight_page.html#a6195ca71ce470e9a0e1010ad7a527003',1,'Client.PreFlightPage.__init__()'],['../class_client_1_1_active_airspace_page.html#af0f9d8189978db838304e55523898a2e',1,'Client.ActiveAirspacePage.__init__()'],['../class_client_1_1_p_d_f_viewer_page.html#a63ddda0731bdcb88b7eb09b93d0d0a6f',1,'Client.PDFViewerPage.__init__()'],['../class_client_1_1_app.html#ab885ec1407007350b26d1ac34b7bc24c',1,'Client.App.__init__()'],['../classpdf_viewer_1_1_p_d_f_viewer.html#ae824616700c224536e75560cea4a5914',1,'pdfViewer.PDFViewer.__init__()'],['../class_server___u_i_1_1_a_t_c_screen.html#a4e5f4ad0cc8a29587ce798e1dab969fa',1,'Server_UI.ATCScreen.__init__()']]],
+  ['_5faction_5fbuttons_1',['_action_buttons',['../class_client_1_1_pre_flight_page.html#a37ba3d9b3db8c231f36cc64b1812db03',1,'Client.PreFlightPage._action_buttons'],['../class_client_1_1_active_airspace_page.html#a5658818e90b1497320d2170b4da95c1d',1,'Client.ActiveAirspacePage._action_buttons']]],
+  ['_5fload_5fpdf_2',['_load_pdf',['../classpdf_viewer_1_1_p_d_f_viewer.html#aba65571158774fb080f5c4900981814f',1,'pdfViewer::PDFViewer']]],
+  ['_5fon_5fclose_3',['_on_close',['../class_client_1_1_app.html#a802ac1e7830a2307c5e9fa247eef7410',1,'Client.App._on_close'],['../class_client_1_1_app.html#a6c01ff1afee575cb2cd30c9a8714f21c',1,'Client.App._on_close(self)']]]
 ];
