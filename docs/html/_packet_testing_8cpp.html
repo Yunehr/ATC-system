@@ -99,6 +99,7 @@ $(function(){initNavTree('_packet_testing_8cpp.html','',''); });
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4" id="r_ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
+<tr class="memdesc:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entry point for the packet-layer QA test suite.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="ae66f6b31b5ad750f1fe042a706a4e3d4" name="ae66f6b31b5ad750f1fe042a706a4e3d4"></a>
@@ -115,6 +116,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Entry point for the packet-layer QA test suite. </p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md26"></a>
+Test 1 — Serialization round-trip (REQ-INT-040)</h3>
+<p>Populates a <code>packet</code> with the payload <code>"ATC_READY"</code> using type <code>pkt_dat</code> and client ID 1, serializes it to a wire buffer, then reconstructs a receive-side <code>packet</code> from that buffer. Asserts that both packets produce identical CRC values.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md27"></a>
+Test 2 — Data integrity (REQ-SYS-030)</h3>
+<p>Asserts that the reconstructed packet's payload length matches the original <code>dataSize</code> and that the payload content is byte-for-byte equal to the original string.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md28"></a>
+Test 3 — Corruption detection</h3>
+<p>Flips all bits in the first payload byte of the wire buffer (offset 2, immediately after the 2-byte header) and constructs a <code>corruptedPkt</code> from it. Verifies that the corrupted packet's CRC differs from the original, confirming that single-byte corruption is detectable.</p>
+<dl class="section note"><dt>Note</dt><dd>Buffer offset 2 targets the first payload byte because the <code>header</code> struct occupies exactly 2 bytes (bitfield byte + length byte). If the header layout changes, this offset must be updated accordingly.</dd>
+<dd>
+The corruption test does not use <code>assert</code> — a CRC mismatch is the <em>expected</em> outcome, not a failure condition. The <code>if</code> ensures the pass message is only printed when the mismatch is confirmed.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Always returns 0. Terminates via <code>assert()</code> if any integrity check fails. </dd></dl>
 
 </div>
 </div>

@@ -92,20 +92,37 @@ $(function(){initNavTree('class_request.html','','class_request-members'); });
 </div><!--header-->
 <div class="contents">
 
+<p>An application-layer command consisting of a type byte and a body payload.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_request_8h_source.html">Request.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a2fa37d01f40ff05e87367e20286b9e" id="r_a9a2fa37d01f40ff05e87367e20286b9e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a9a2fa37d01f40ff05e87367e20286b9e">Request</a> (uint8_t t, int32_t bodsize, char *bod)</td></tr>
+<tr class="memdesc:a9a2fa37d01f40ff05e87367e20286b9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit-side constructor. Copies <code class="param">bod</code> into an internal buffer.  <br /></td></tr>
 <tr class="memitem:a217d252d97f8ac246ee242d64842fa81" id="r_a217d252d97f8ac246ee242d64842fa81"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a217d252d97f8ac246ee242d64842fa81">Request</a> (char *raw, int32_t size)</td></tr>
+<tr class="memdesc:a217d252d97f8ac246ee242d64842fa81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive-side constructor. Deserializes a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> from a raw buffer.  <br /></td></tr>
 <tr class="memitem:a4d57c725686701f773eb3630630a7ea2" id="r_a4d57c725686701f773eb3630630a7ea2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4d57c725686701f773eb3630630a7ea2">~Request</a> ()</td></tr>
+<tr class="memdesc:a4d57c725686701f773eb3630630a7ea2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. Frees the body buffer.  <br /></td></tr>
 <tr class="memitem:a9177708be9f0ff477e5d7cc60ab4d96f" id="r_a9177708be9f0ff477e5d7cc60ab4d96f"><td class="memItemLeft"><a class="el" href="class_request.html">Request</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9177708be9f0ff477e5d7cc60ab4d96f">operator=</a> (const <a class="el" href="class_request.html">Request</a> &amp;other)</td></tr>
+<tr class="memdesc:a9177708be9f0ff477e5d7cc60ab4d96f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep copy assignment operator.  <br /></td></tr>
 <tr class="memitem:a8a02762a3720f0e491cbfda0a87550ed" id="r_a8a02762a3720f0e491cbfda0a87550ed"><td class="memItemLeft">char *&#160;</td><td class="memItemRight"><a class="el" href="#a8a02762a3720f0e491cbfda0a87550ed">serializeRequest</a> (int32_t *finalsize)</td></tr>
+<tr class="memdesc:a8a02762a3720f0e491cbfda0a87550ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes this <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> into a flat byte buffer.  <br /></td></tr>
 <tr class="memitem:ada96c275a38530e88e445fb571d70826" id="r_ada96c275a38530e88e445fb571d70826"><td class="memItemLeft">uint8_t&#160;</td><td class="memItemRight"><a class="el" href="#ada96c275a38530e88e445fb571d70826">getType</a> ()</td></tr>
+<tr class="memdesc:ada96c275a38530e88e445fb571d70826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the command type. See <code><a class="el" href="_packet_8h.html#ae5c62162c4f7ee81ea2412dfad0dfc42" title="Server state machine command type, carried inside a pkt_req packet.">REQTYPE</a></code> for valid values.  <br /></td></tr>
 <tr class="memitem:a9b739a4a6492b171081deec2a1849f65" id="r_a9b739a4a6492b171081deec2a1849f65"><td class="memItemLeft">int32_t&#160;</td><td class="memItemRight"><a class="el" href="#a9b739a4a6492b171081deec2a1849f65">getBsize</a> ()</td></tr>
+<tr class="memdesc:a9b739a4a6492b171081deec2a1849f65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bytes in the body payload.  <br /></td></tr>
 <tr class="memitem:a3361c40ca5535854ae4442bdcaf15c80" id="r_a3361c40ca5535854ae4442bdcaf15c80"><td class="memItemLeft">char *&#160;</td><td class="memItemRight"><a class="el" href="#a3361c40ca5535854ae4442bdcaf15c80">getBody</a> ()</td></tr>
+<tr class="memdesc:a3361c40ca5535854ae4442bdcaf15c80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the internal body buffer.  <br /></td></tr>
 </table>
-<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>An application-layer command consisting of a type byte and a body payload. </p>
+<p>Owns its body buffer and manages its lifetime through RAII. Supports both the transmit path (construct from type + raw data → serialize) and the receive path (construct from a flat byte buffer → inspect fields).</p>
+<dl class="section warning"><dt>Warning</dt><dd><code><a class="el" href="#a8a02762a3720f0e491cbfda0a87550ed" title="Serializes this Request into a flat byte buffer.">serializeRequest()</a></code> allocates a new buffer on every call. The caller is responsible for <code>delete</code>[]ing the returned pointer.</dd>
+<dd>
+There is no copy constructor defined. If a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> is copied by value (e.g. passed to a handler by value), the default shallow copy will cause a double-free. Pass by reference or pointer, or add a copy constructor matching <code>operator=</code>. </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9a2fa37d01f40ff05e87367e20286b9e" name="a9a2fa37d01f40ff05e87367e20286b9e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a2fa37d01f40ff05e87367e20286b9e">&#9670;&#160;</a></span>Request() <span class="overload">[1/2]</span></h2>
 
@@ -138,6 +155,17 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Transmit-side constructor. Copies <code class="param">bod</code> into an internal buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t</td><td>Command type; should be a value from <code><a class="el" href="_packet_8h.html#ae5c62162c4f7ee81ea2412dfad0dfc42" title="Server state machine command type, carried inside a pkt_req packet.">REQTYPE</a></code>. </td></tr>
+    <tr><td class="paramname">bodsize</td><td>Number of bytes to copy from <code class="param">bod</code>. </td></tr>
+    <tr><td class="paramname">bod</td><td>Pointer to the source payload data.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd><code class="param">bodsize</code> must accurately reflect the number of valid bytes at <code class="param">bod</code>. No bounds checking is performed. </dd></dl>
+
 </div>
 </div>
 <a id="a217d252d97f8ac246ee242d64842fa81" name="a217d252d97f8ac246ee242d64842fa81"></a>
@@ -167,6 +195,17 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Receive-side constructor. Deserializes a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> from a raw buffer. </p>
+<p>Reads the type from byte 0, then copies the remaining <code class="param">size</code> - 1 bytes into the body buffer. Matches the layout produced by <code><a class="el" href="#a8a02762a3720f0e491cbfda0a87550ed" title="Serializes this Request into a flat byte buffer.">serializeRequest()</a></code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">raw</td><td>Pointer to a serialized request buffer in the format <code></code>[type (1 byte) | body (size-1 bytes)]. </td></tr>
+    <tr><td class="paramname">size</td><td>Total number of bytes in <code class="param">raw</code>, including the type byte.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd><code class="param">raw</code> must be at least <code class="param">size</code> bytes long. No bounds checking is performed. </dd></dl>
+
 </div>
 </div>
 <a id="a4d57c725686701f773eb3630630a7ea2" name="a4d57c725686701f773eb3630630a7ea2"></a>
@@ -191,6 +230,9 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Destructor. Frees the body buffer. </p>
+<p>Essential during large multi-packet transfers where many <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> objects may be created and destroyed in rapid succession. </p>
 
 </div>
 </div>
@@ -218,6 +260,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns a pointer to the internal body buffer. </p>
+<dl class="section warning"><dt>Warning</dt><dd>The returned pointer is not null-terminated unless the original payload included a null byte. Do not pass directly to functions expecting a C-string unless you are certain the content is null-terminated. </dd></dl>
+
 </div>
 </div>
 <a id="a9b739a4a6492b171081deec2a1849f65" name="a9b739a4a6492b171081deec2a1849f65"></a>
@@ -242,6 +287,8 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the number of bytes in the body payload. </p>
 
 </div>
 </div>
@@ -268,6 +315,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns the command type. See <code><a class="el" href="_packet_8h.html#ae5c62162c4f7ee81ea2412dfad0dfc42" title="Server state machine command type, carried inside a pkt_req packet.">REQTYPE</a></code> for valid values. </p>
+
 </div>
 </div>
 <a id="a9177708be9f0ff477e5d7cc60ab4d96f" name="a9177708be9f0ff477e5d7cc60ab4d96f"></a>
@@ -293,6 +342,16 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Deep copy assignment operator. </p>
+<p>Frees the existing body buffer, then allocates a new one and copies the source body into it. Required for safely passing <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> objects into handler functions or containers that use assignment.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>The source <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> to copy from. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code>. </dd></dl>
+
 </div>
 </div>
 <a id="a8a02762a3720f0e491cbfda0a87550ed" name="a8a02762a3720f0e491cbfda0a87550ed"></a>
@@ -317,6 +376,17 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Serializes this <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> into a flat byte buffer. </p>
+<p>Allocates a new buffer of <code>1</code> + bodysize bytes, writes the type byte at index 0, then copies the body. The resulting layout matches what the receive-side constructor <code><a class="el" href="#a217d252d97f8ac246ee242d64842fa81" title="Receive-side constructor. Deserializes a Request from a raw buffer.">Request(char*, int32_t)</a></code> expects.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">finalsize</td><td>Set to the total number of bytes in the returned buffer (<code>1</code> + bodysize). May be <code>nullptr</code> if the size is not needed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to a heap-allocated serialized buffer. The caller is responsible for calling <code>delete</code>[] on this pointer.</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>Failing to <code>delete</code>[] the returned pointer is a memory leak. </dd></dl>
 
 </div>
 </div>

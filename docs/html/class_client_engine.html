@@ -230,16 +230,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sends a typed data request to the server and returns the response. </p>
-<p>Serialises <code class="param">data</code> into a <a class="el" href="class_request.html">Request</a> of the given <code class="param">type</code>, wraps it in a <code>pkt_req</code> packet, and transmits it via <a class="el" href="class_packet_transport.html">PacketTransport</a>. The response packet is CRC-verified before its payload is returned.</p>
+<p>Serialises <code class="param">data</code> into a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> of the given <code class="param">type</code>, wraps it in a <code>pkt_req</code> packet, and transmits it via <a class="el" href="class_packet_transport.html">PacketTransport</a>. The response packet is CRC-verified before its payload is returned.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Payload to include in the request (may be empty). </td></tr>
-    <tr><td class="paramname">type</td><td><a class="el" href="class_request.html">Request</a> type enumeration value (e.g. <code>req_weather</code>, <code>req_fplan</code>). </td></tr>
+    <tr><td class="paramname">type</td><td><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> type enumeration value (e.g. <code>req_weather</code>, <code>req_fplan</code>). </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The server's response payload string, or one of: <code>"Failed to send request"</code>, <code>"Failed to receive response"</code>, <code>"CRC Checksum Failed"</code>, <code>"Received incomplete response"</code>, <code>"Unexpected response type"</code>.</dd></dl>
-<p>Serialises <code class="param">data</code> into a <a class="el" href="class_request.html">Request</a> of the given <code class="param">type</code>, wraps it in a <code>pkt_req</code> packet, and transmits it via <a class="el" href="class_packet_transport.html">PacketTransport</a>. The response packet is then CRC-verified and its payload is returned as a string.</p>
+<p>Serialises <code class="param">data</code> into a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> of the given <code class="param">type</code>, wraps it in a <code>pkt_req</code> packet, and transmits it via <a class="el" href="class_packet_transport.html">PacketTransport</a>. The response packet is then CRC-verified and its payload is returned as a string.</p>
 <p>Error handling (each condition returns a descriptive string):</p><ul>
 <li>Send failure → <code>"Failed to send request"</code> </li>
 <li>Receive failure → <code>"Failed to receive response"</code> </li>
@@ -353,7 +353,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sends a raw typed packet to the server and returns the response. </p>
-<p>Unlike <a class="el" href="#a9caff135ac0f19b80a1a4160d00f5494" title="Sends a typed data request to the server and returns the response.">dataRequest()</a>, the payload is placed directly into the packet without wrapping it in a <a class="el" href="class_request.html">Request</a> struct. The response packet type must match <code class="param">PKtype</code> for the payload to be returned.</p>
+<p>Unlike <a class="el" href="#a9caff135ac0f19b80a1a4160d00f5494" title="Sends a typed data request to the server and returns the response.">dataRequest()</a>, the payload is placed directly into the packet without wrapping it in a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> struct. The response packet type must match <code class="param">PKtype</code> for the payload to be returned.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">data</td><td>Payload bytes to include in the outgoing packet (may be empty). </td></tr>
@@ -362,7 +362,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The server's response payload string, or one of: <code>"Failed to send request"</code>, <code>"Failed to receive response"</code>, <code>"CRC Checksum Failed"</code>, <code>"Received incomplete response"</code>, <code>"Unexpected response type"</code>.</dd></dl>
-<p>Unlike <a class="el" href="#a9caff135ac0f19b80a1a4160d00f5494" title="Sends a typed data request to the server and returns the response.">dataRequest()</a>, the payload is placed directly into the packet without first wrapping it in a <a class="el" href="class_request.html">Request</a> struct. The response packet type must match <code class="param">PKType</code> for the payload to be returned; any other type is treated as an error.</p>
+<p>Unlike <a class="el" href="#a9caff135ac0f19b80a1a4160d00f5494" title="Sends a typed data request to the server and returns the response.">dataRequest()</a>, the payload is placed directly into the packet without first wrapping it in a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> struct. The response packet type must match <code class="param">PKType</code> for the payload to be returned; any other type is treated as an error.</p>
 <p>Error handling (each condition returns a descriptive string):</p><ul>
 <li>Send failure → <code>"Failed to send request"</code> </li>
 <li>Receive failure → <code>"Failed to receive response"</code> </li>

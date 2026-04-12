@@ -94,7 +94,7 @@ $(function(){initNavTree('systemtests_8cpp.html','',''); });
 
 <p>System-level and usability tests for the ATC system.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="gtest_8h_source.html">gtest/gtest.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;gtest/gtest.h&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
@@ -126,7 +126,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a2dd465723698eed4b905d95ff861b249"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that a deliberately corrupted wire byte causes a CRC mismatch on the receiver side, confirming the corruption-detection path works.  <br /></td></tr>
 <tr id="func-members-1" class="groupHeader"><td colspan="2"><div class="groupHeader">System Tests — Request Encode / Decode (Client → Server Data Flow)</div></td></tr>
 <tr class="memitem:a26d3b4a68ec712782cbea4ceb884ff0d" id="r_a26d3b4a68ec712782cbea4ceb884ff0d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a26d3b4a68ec712782cbea4ceb884ff0d">TEST</a> (System_RequestFlow, Request_EncodeDecode_PreservesTypeAndBody)</td></tr>
-<tr class="memdesc:a26d3b4a68ec712782cbea4ceb884ff0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that a <a class="el" href="class_request.html">Request</a> encoded by the client (type byte + body) and wrapped in a packet is correctly decoded on the server side.  <br /></td></tr>
+<tr class="memdesc:a26d3b4a68ec712782cbea4ceb884ff0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> encoded by the client (type byte + body) and wrapped in a packet is correctly decoded on the server side.  <br /></td></tr>
 <tr class="memitem:a4cb1a4fccc102ebae80e08de7ed0b4a4" id="r_a4cb1a4fccc102ebae80e08de7ed0b4a4"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4cb1a4fccc102ebae80e08de7ed0b4a4">TEST</a> (System_RequestFlow, AllRequestTypes_SurviveFullRoundTrip)</td></tr>
 <tr class="memdesc:a4cb1a4fccc102ebae80e08de7ed0b4a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that all six request types survive the full encode → wire → decode cycle with their type identifier intact.  <br /></td></tr>
 <tr class="memitem:acb3c63a39aaa6fb6aeb8b86afb73c999" id="r_acb3c63a39aaa6fb6aeb8b86afb73c999"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#acb3c63a39aaa6fb6aeb8b86afb73c999">TEST</a> (System_RequestFlow, EmptyBody_RoundTrip_IsSafe)</td></tr>
@@ -499,8 +499,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Verifies that a <a class="el" href="class_request.html">Request</a> encoded by the client (type byte + body) and wrapped in a packet is correctly decoded on the server side. </p>
-<p>Full path: <a class="el" href="class_request.html#a8a02762a3720f0e491cbfda0a87550ed">Request::serializeRequest</a> → <a class="el" href="classpacket.html#a48011d2f1bb26dd10fad8659e33e0c3d">packet::PopulPacket</a> → Serialize → <a class="el" href="classpacket.html">packet(wire)</a> → <a class="el" href="class_request.html">Request(data, length)</a> </p>
+<p>Verifies that a <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> encoded by the client (type byte + body) and wrapped in a packet is correctly decoded on the server side. </p>
+<p>Full path: <a class="el" href="class_request.html#a8a02762a3720f0e491cbfda0a87550ed" title="Serializes this Request into a flat byte buffer.">Request::serializeRequest</a> → <a class="el" href="classpacket.html#a48011d2f1bb26dd10fad8659e33e0c3d" title="Populates the packet with a payload, truncating if necessary.">packet::PopulPacket</a> → Serialize → <a class="el" href="classpacket.html" title="A framed, serializable network packet with header, payload, and CRC.">packet(wire)</a> → <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request(data, length)</a> </p>
 
 </div>
 </div>

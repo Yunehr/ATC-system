@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['anonymousenum_0',['AnonymousEnum',['../googletest-printers-test_8cc.html#a7a5ee9fe858568a85d80af1312aefb8b',1,'googletest-printers-test.cc']]]
+  ['direction_0',['Direction',['../class_logger.html#a999f0729bee64e0305a6b99c97bfad8a',1,'Logger::Direction'],['../class_logger.html#a999f0729bee64e0305a6b99c97bfad8a',1,'Logger::Direction']]]
 ];

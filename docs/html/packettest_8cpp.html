@@ -91,6 +91,9 @@ $(function(){initNavTree('packettest_8cpp.html','',''); });
   <div class="headertitle"><div class="title">packettest.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Manual usage and smoke tests for the <code>packet</code> and <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> classes.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="_packet_8h_source.html">Packet.h</a>&quot;</code><br />
@@ -99,8 +102,25 @@ $(function(){initNavTree('packettest_8cpp.html','',''); });
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe" id="r_a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
+<tr class="memdesc:a840291bc02cba5474a4cb46a9b9566fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smoke-tests <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> and <code>packet</code> construction, serialization, and reconstruction without a live socket.  <br /></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Manual usage and smoke tests for the <code>packet</code> and <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> classes. </p>
+<dl class="section author"><dt>Author</dt><dd>Sebastian Solorzano</dd></dl>
+<p>This file demonstrates and validates the core send/receive pipeline without a real network socket. In production, the only difference would be replacing the direct buffer hand-off with a <code>send()</code> / <code>recv()</code> pair over a TCP socket. TCP guarantees delivery integrity, so no additional corruption checks are needed at this layer beyond the CRC.</p>
+<p>Three scenarios are exercised:</p><ol type="1">
+<li>Basic <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> construction and serialization.</li>
+<li>Raw payload wrapped in a <code>packet</code> and reconstructed on the receive side.</li>
+<li>A serialized <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> carried inside a <code>pkt_req</code> packet, then unwrapped.</li>
+</ol>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md21"></a>
+Compile</h3>
+<div class="fragment"><div class="line">g++ packettest.cpp Packet.h <a class="code hl_class" href="class_request.html">Request</a>.h -o &lt;name&gt;</div>
+<div class="ttc" id="aclass_request_html"><div class="ttname"><a href="class_request.html">Request</a></div><div class="ttdoc">An application-layer command consisting of a type byte and a body payload.</div><div class="ttdef"><b>Definition</b> Request.h:53</div></div>
+</div><!-- fragment --><h3 class="doxsection"><a class="anchor" id="autotoc_md22"></a>
+Large-file chunking (not yet implemented)</h3>
+<p>The commented-out pseudocode at the bottom of <code><a class="el" href="#a840291bc02cba5474a4cb46a9b9566fe" title="Smoke-tests Request and packet construction, serialization, and reconstruction without a live socket.">main()</a></code> sketches a chunked send loop for payloads larger than <code>MAX_PKTSIZE</code>. A recommended extension would be sending a leading <code>pkt_dat</code> packet containing the filename and total file size so the receiver can track transfer progress. </p>
+</div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a840291bc02cba5474a4cb46a9b9566fe" name="a840291bc02cba5474a4cb46a9b9566fe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a840291bc02cba5474a4cb46a9b9566fe">&#9670;&#160;</a></span>main()</h2>
 
@@ -115,6 +135,21 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Smoke-tests <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> and <code>packet</code> construction, serialization, and reconstruction without a live socket. </p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md23"></a>
+Test 1 — Request round-trip</h3>
+<p>Constructs a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> with an arbitrary type and body, serializes it, and prints the fields to confirm the values survive serialization.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md24"></a>
+Test 2 — Packet round-trip (raw payload)</h3>
+<p>Wraps a plain string in a <code>packet</code> using <code>pkt_emgcy</code> (chosen to exercise negative/high enum values). Serializes to a wire buffer, reconstructs a receive-side <code>packet</code> from that buffer, and prints all header fields plus the payload to verify round-trip fidelity.</p>
+<h3 class="doxsection"><a class="anchor" id="autotoc_md25"></a>
+Test 3 — Request carried inside a packet</h3>
+<p>Serializes a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code>, stuffs it into a <code>pkt_req</code> packet, serializes the packet, reconstructs both the packet and the inner <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> on the receive side, and prints all fields. This is the canonical pattern for real client messages.</p>
+<dl class="section note"><dt>Note</dt><dd>In real use, replace the direct buffer hand-off between <code>Serialize()</code> and the receiving <code>packet</code> constructor with <code>send()</code> / <code>recv()</code>. TCP ensures the bytes arrive intact, so no extra integrity step is needed beyond confirming the <code>transmit_flag</code>.</dd>
+<dd>
+After receiving, read the packet's type flag with <code>getPKType()</code> and branch on the <code><a class="el" href="_packet_8h.html#a0e922352dd9a9e552ff326c001c71bf9" title="Networking-layer envelope type, used to route a packet to the correct handler.">PKTYPE</a></code> value — a few <code>if</code> statements are sufficient to dispatch to the correct handler.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Always returns 0. </dd></dl>
 
 </div>
 </div>

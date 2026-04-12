@@ -100,6 +100,7 @@ $(function(){initNavTree('_integration_test_8cpp.html','',''); });
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae66f6b31b5ad750f1fe042a706a4e3d4" id="r_ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a> ()</td></tr>
+<tr class="memdesc:ae66f6b31b5ad750f1fe042a706a4e3d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entry point for the integration QA test suite.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="ae66f6b31b5ad750f1fe042a706a4e3d4" name="ae66f6b31b5ad750f1fe042a706a4e3d4"></a>
@@ -116,6 +117,19 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Entry point for the integration QA test suite. </p>
+<p>Executes a sequential integration test covering the following stages:</p>
+<ol type="1">
+<li><b>Weather <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> Creation</b> (REQ-SVR-040): Constructs a <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> object of type <code>req_weather</code> with a mock METAR-style payload (<code>"CYKF_CLEAR_15C"</code>).</li>
+<li><b>Packet Population</b> (REQ-SYS-020): Serializes the request and wraps it inside a <code>packet</code> using <code>PopulPacket()</code>, assigning sequence ID 1 and type <code>pkt_req</code>.</li>
+<li><b>Transport Serialization</b> (REQ-COM-010): Calls <code>Serialize()</code> on the transmit packet to produce a flat byte buffer suitable for wire transport.</li>
+<li><b>Receive and Rebuild</b> (REQ-INT-040): Reconstructs a <code>packet</code> from the raw wire buffer and verifies CRC integrity against the original packet.</li>
+<li><b>Payload Extraction</b>: Extracts the <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> from the received packet's body using payload length metadata.</li>
+<li><b>Data Validation</b> (REQ-SYS-030): Asserts that the reconstructed request matches the original in both type and body content.</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>Heap memory allocated by <code>serializeRequest()</code> is explicitly freed before return. Memory allocated by <code>Serialize()</code> is not freed here — verify ownership semantics in <code>packet</code> if this becomes a concern.</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 on success. Terminates via <code>assert()</code> failure if any check fails. </dd></dl>
 
 </div>
 </div>

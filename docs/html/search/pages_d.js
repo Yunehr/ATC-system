@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['json_20report_0',['Generating a JSON Report',['../md__e_1_2_git_2pr4j----_a_t_c-system_2external_2googletest-1_817_80_2docs_2advanced.html#autotoc_md76',1,'']]]
+  ['machine_0',['🚦Server State Machine',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md4',1,'']]],
+  ['methodology_1',['📈 Development Methodology',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md3',1,'']]]
 ];

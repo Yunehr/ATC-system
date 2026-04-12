@@ -94,7 +94,7 @@ $(function(){initNavTree('clienttests_8cpp.html','',''); });
 
 <p>Google Test suite for client-side ATC system components.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="gtest_8h_source.html">gtest/gtest.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;gtest/gtest.h&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
 <code>#include &quot;<a class="el" href="_file_receiver_8hpp_source.html">../client/FileReceiver.hpp</a>&quot;</code><br />
@@ -132,13 +132,13 @@ Functions</h2></td></tr>
 <tr class="memdesc:aab5b870fb334fba566b2cb2e584b2460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that finalize() returns false when the transfer is not yet complete (example: no COMP-flagged packet has been received). @req REQ-CLT-060.  <br /></td></tr>
 <tr id="func-members-3" class="groupHeader"><td colspan="2"><div class="groupHeader">REQ-CLT-070 / REQ-USE-050 — Network Failure &amp; Plain-English Errors</div></td></tr>
 <tr class="memitem:a35e5b22bccda8a08c2f1d6650f5a3f38" id="r_a35e5b22bccda8a08c2f1d6650f5a3f38"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a35e5b22bccda8a08c2f1d6650f5a3f38">TEST</a> (ClientNetworkTest, Handles_Socket_Disconnect_Gracefully)</td></tr>
-<tr class="memdesc:a35e5b22bccda8a08c2f1d6650f5a3f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that <a class="el" href="class_packet_transport.html#a35e3654cce0a78d7f11f2affc76e8c61">PacketTransport::receivePacket()</a> returns false when given an invalid socket, and that the UI-facing error string satisfies the plain-English requirement. @req REQ-CLT-070 @req REQ-USE-050.  <br /></td></tr>
+<tr class="memdesc:a35e5b22bccda8a08c2f1d6650f5a3f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that <a class="el" href="class_packet_transport.html#a35e3654cce0a78d7f11f2affc76e8c61" title="Receives one complete packet from sock and reconstructs it.">PacketTransport::receivePacket()</a> returns false when given an invalid socket, and that the UI-facing error string satisfies the plain-English requirement. @req REQ-CLT-070 @req REQ-USE-050.  <br /></td></tr>
 <tr id="func-members-4" class="groupHeader"><td colspan="2"><div class="groupHeader">REQ-CLT-010 — Login Packet Uses pkt_auth With Correct Payload</div></td></tr>
 <tr class="memitem:ad12635398a7b91b737e3f4d0a6b302e5" id="r_ad12635398a7b91b737e3f4d0a6b302e5"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ad12635398a7b91b737e3f4d0a6b302e5">TEST</a> (Requirement_CLT_010, Login_Packet_HasAuthType_AndCredentialPayload)</td></tr>
 <tr class="memdesc:ad12635398a7b91b737e3f4d0a6b302e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that the login packet is typed pkt_auth and its payload carries credentials in "username,password" format. @req REQ-CLT-010.  <br /></td></tr>
 <tr id="func-members-5" class="groupHeader"><td colspan="2"><div class="groupHeader">REQ-CLT-020 — Flight Manual Request Encodes req_file in Packet Body</div></td></tr>
 <tr class="memitem:af152415213d2fe59d9b34701d819b8e4" id="r_af152415213d2fe59d9b34701d819b8e4"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af152415213d2fe59d9b34701d819b8e4">TEST</a> (Requirement_CLT_020, FileRequest_Packet_HasCorrectRequestType)</td></tr>
-<tr class="memdesc:af152415213d2fe59d9b34701d819b8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that the flight manual download request wraps req_file as the first byte of a pkt_req packet body (the <a class="el" href="class_request.html">Request</a> layer encoding). @req REQ-CLT-020.  <br /></td></tr>
+<tr class="memdesc:af152415213d2fe59d9b34701d819b8e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that the flight manual download request wraps req_file as the first byte of a pkt_req packet body (the <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> layer encoding). @req REQ-CLT-020.  <br /></td></tr>
 <tr class="memitem:afca5c5e04bd67795844b89109a426fa6" id="r_afca5c5e04bd67795844b89109a426fa6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#afca5c5e04bd67795844b89109a426fa6">TEST</a> (Requirement_CLT_020, FileRequest_OuterPacket_HasReqType)</td></tr>
 <tr class="memdesc:afca5c5e04bd67795844b89109a426fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verifies that the outer packet wrapping the file request uses pkt_req. @req REQ-CLT-020.  <br /></td></tr>
 <tr id="func-members-6" class="groupHeader"><td colspan="2"><div class="groupHeader">REQ-CLT-030 — Emergency Command Uses pkt_emgcy Packet Type</div></td></tr>
@@ -203,7 +203,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Verifies that <a class="el" href="class_packet_transport.html#a35e3654cce0a78d7f11f2affc76e8c61">PacketTransport::receivePacket()</a> returns false when given an invalid socket, and that the UI-facing error string satisfies the plain-English requirement. @req REQ-CLT-070 @req REQ-USE-050. </p>
+<p>Verifies that <a class="el" href="class_packet_transport.html#a35e3654cce0a78d7f11f2affc76e8c61" title="Receives one complete packet from sock and reconstructs it.">PacketTransport::receivePacket()</a> returns false when given an invalid socket, and that the UI-facing error string satisfies the plain-English requirement. @req REQ-CLT-070 @req REQ-USE-050. </p>
 
 </div>
 </div>
@@ -272,7 +272,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Verifies that the flight manual download request wraps req_file as the first byte of a pkt_req packet body (the <a class="el" href="class_request.html">Request</a> layer encoding). @req REQ-CLT-020. </p>
+<p>Verifies that the flight manual download request wraps req_file as the first byte of a pkt_req packet body (the <a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> layer encoding). @req REQ-CLT-020. </p>
 
 </div>
 </div>

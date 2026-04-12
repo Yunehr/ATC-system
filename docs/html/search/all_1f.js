@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['z_0',['z',['../classfoo_1_1_unprintable_in_foo.html#a3dc8c8e90906bb6f3376474d545e488c',1,'foo::UnprintableInFoo']]]
+  ['🚦server_20state_20machine_0',['🚦Server State Machine',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md4',1,'']]]
 ];

@@ -91,6 +91,9 @@ $(function(){initNavTree('_packet_8h.html','',''); });
   <div class="headertitle"><div class="title">Packet.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Defines the packet framing layer for all client-server communication.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
 </div>
@@ -99,18 +102,25 @@ $(function(){initNavTree('_packet_8h.html','',''); });
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:packet" id="r_packet"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="classpacket.html">packet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A framed, serializable network packet with header, payload, and CRC.  <a href="classpacket.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ab358ffebf5d7a419e8a2e1442dc2fc62" id="r_ab358ffebf5d7a419e8a2e1442dc2fc62"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ab358ffebf5d7a419e8a2e1442dc2fc62">EMTPY_PKTSIZE</a>&#160;&#160;&#160;6</td></tr>
+<tr class="memdesc:ab358ffebf5d7a419e8a2e1442dc2fc62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size in bytes of a packet containing no payload (header + CRC).  <br /></td></tr>
 <tr class="memitem:a9f073c3aff690a92c6906f78a3616d97" id="r_a9f073c3aff690a92c6906f78a3616d97"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a9f073c3aff690a92c6906f78a3616d97">MAX_PKTSIZE</a>&#160;&#160;&#160;250</td></tr>
+<tr class="memdesc:a9f073c3aff690a92c6906f78a3616d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum total packet size in bytes, including header and payload.  <br /></td></tr>
 <tr class="memitem:ad28da7593b48a3f7170bbfe207cf028a" id="r_ad28da7593b48a3f7170bbfe207cf028a"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ad28da7593b48a3f7170bbfe207cf028a">PKT_TRNSMT_COMP</a>&#160;&#160;&#160;0X0</td></tr>
+<tr class="memdesc:ad28da7593b48a3f7170bbfe207cf028a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit flag value indicating the full payload fit in one packet.  <br /></td></tr>
 <tr class="memitem:a3a656a764600a54bf522a0fbc316314d" id="r_a3a656a764600a54bf522a0fbc316314d"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a3a656a764600a54bf522a0fbc316314d">PKT_TRNSMT_INCOMP</a>&#160;&#160;&#160;0x1</td></tr>
+<tr class="memdesc:a3a656a764600a54bf522a0fbc316314d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit flag value indicating the payload was truncated and more packets follow.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a0e922352dd9a9e552ff326c001c71bf9" id="r_a0e922352dd9a9e552ff326c001c71bf9"><td class="memItemLeft">typedef enum <a class="el" href="#a183de4cd6bf0fe92a19f45567b49f3ab">pkTyFl</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0e922352dd9a9e552ff326c001c71bf9">PKTYPE</a></td></tr>
+<tr class="memdesc:a0e922352dd9a9e552ff326c001c71bf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Networking-layer envelope type, used to route a packet to the correct handler.  <br /></td></tr>
 <tr class="memitem:ae5c62162c4f7ee81ea2412dfad0dfc42" id="r_ae5c62162c4f7ee81ea2412dfad0dfc42"><td class="memItemLeft">typedef enum <a class="el" href="#a9d6fdd852512e055cee04e50dd4d793c">reqtyp</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae5c62162c4f7ee81ea2412dfad0dfc42">REQTYPE</a></td></tr>
+<tr class="memdesc:ae5c62162c4f7ee81ea2412dfad0dfc42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Server state machine command type, carried inside a <code>pkt_req</code> packet.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -123,6 +133,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#a183de4cd6bf0fe92a19f45567b49f3abad070badc64a006e00fef8b41b62d011e">pkt_emgcy</a> = 0x04
 <br />
  }</td></tr>
+<tr class="memdesc:a183de4cd6bf0fe92a19f45567b49f3ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Networking-layer envelope type, used to route a packet to the correct handler.  <a href="#a183de4cd6bf0fe92a19f45567b49f3ab">More...</a><br /></td></tr>
 <tr class="memitem:a9d6fdd852512e055cee04e50dd4d793c" id="r_a9d6fdd852512e055cee04e50dd4d793c"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a9d6fdd852512e055cee04e50dd4d793c">reqtyp</a> { <br />
 &#160;&#160;<a class="el" href="#a9d6fdd852512e055cee04e50dd4d793ca5ccfe12cfc09948d47f172a4565bbdec">req_weather</a> = 0
 , <a class="el" href="#a9d6fdd852512e055cee04e50dd4d793ca4c113387b19fbb630c544eaf38f2abda">req_telemetry</a> = 1
@@ -135,8 +146,18 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a9d6fdd852512e055cee04e50dd4d793cac9b07d7ca70505164aabe53c34c4a972">req_test</a> = 100
 <br />
  }</td></tr>
+<tr class="memdesc:a9d6fdd852512e055cee04e50dd4d793c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Server state machine command type, carried inside a <code>pkt_req</code> packet.  <a href="#a9d6fdd852512e055cee04e50dd4d793c">More...</a><br /></td></tr>
 </table>
-<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Defines the packet framing layer for all client-server communication. </p>
+<p>A packet is the lowest-level transmission unit in the system. It wraps any payload (requests, file data, auth, emergency signals) in a fixed header and a 4-byte CRC tail, producing a flat byte buffer suitable for wire transport.</p>
+<p>Packet layout on the wire: </p><div class="fragment"><div class="line">[ header (2 bytes) | payload (0–249 bytes) | CRC (4 bytes) ]</div>
+</div><!-- fragment --><p>Requirements covered:</p><ul>
+<li>REQ-SYS-020: Packet population and payload wrapping</li>
+<li>REQ-COM-010: Serialization for transport</li>
+<li>REQ-INT-040: Receiving and rebuilding from raw bytes </li>
+</ul>
+</div><a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="ab358ffebf5d7a419e8a2e1442dc2fc62" name="ab358ffebf5d7a419e8a2e1442dc2fc62"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab358ffebf5d7a419e8a2e1442dc2fc62">&#9670;&#160;</a></span>EMTPY_PKTSIZE</h2>
 
@@ -148,6 +169,8 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Size in bytes of a packet containing no payload (header + CRC). </p>
 
 </div>
 </div>
@@ -163,6 +186,8 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Maximum total packet size in bytes, including header and payload. </p>
+
 </div>
 </div>
 <a id="ad28da7593b48a3f7170bbfe207cf028a" name="ad28da7593b48a3f7170bbfe207cf028a"></a>
@@ -177,6 +202,8 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Transmit flag value indicating the full payload fit in one packet. </p>
+
 </div>
 </div>
 <a id="a3a656a764600a54bf522a0fbc316314d" name="a3a656a764600a54bf522a0fbc316314d"></a>
@@ -190,6 +217,8 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Transmit flag value indicating the payload was truncated and more packets follow. </p>
 
 </div>
 </div>
@@ -206,6 +235,9 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Networking-layer envelope type, used to route a packet to the correct handler. </p>
+<p>This is the outer classification of a packet — it tells the networking layer <em>what kind of data</em> is inside, before any parsing of the body occurs. </p>
+
 </div>
 </div>
 <a id="ae5c62162c4f7ee81ea2412dfad0dfc42" name="ae5c62162c4f7ee81ea2412dfad0dfc42"></a>
@@ -219,6 +251,9 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Server state machine command type, carried inside a <code>pkt_req</code> packet. </p>
+<p>Once the networking layer confirms a packet is of type <code>pkt_req</code>, the server state machine reads this value from the unwrapped <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> to decide which action to execute. </p>
 
 </div>
 </div>
@@ -234,12 +269,20 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Networking-layer envelope type, used to route a packet to the correct handler. </p>
+<p>This is the outer classification of a packet — it tells the networking layer <em>what kind of data</em> is inside, before any parsing of the body occurs. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba292a1af1c3f14bb793ec56d3e0c53a9b" name="a183de4cd6bf0fe92a19f45567b49f3aba292a1af1c3f14bb793ec56d3e0c53a9b"></a>pkt_empty&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba2b3393051618525d37a13049961520ba" name="a183de4cd6bf0fe92a19f45567b49f3aba2b3393051618525d37a13049961520ba"></a>pkt_req&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba0120ca48486a34eb3d5aac87d17463ef" name="a183de4cd6bf0fe92a19f45567b49f3aba0120ca48486a34eb3d5aac87d17463ef"></a>pkt_dat&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba4c340e0dabcb99e758ef9c0ede97919b" name="a183de4cd6bf0fe92a19f45567b49f3aba4c340e0dabcb99e758ef9c0ede97919b"></a>pkt_auth&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3abad070badc64a006e00fef8b41b62d011e" name="a183de4cd6bf0fe92a19f45567b49f3abad070badc64a006e00fef8b41b62d011e"></a>pkt_emgcy&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba292a1af1c3f14bb793ec56d3e0c53a9b" name="a183de4cd6bf0fe92a19f45567b49f3aba292a1af1c3f14bb793ec56d3e0c53a9b"></a>pkt_empty&#160;</td><td class="fielddoc"><p>No payload; used for initialisation or keep-alive. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba2b3393051618525d37a13049961520ba" name="a183de4cd6bf0fe92a19f45567b49f3aba2b3393051618525d37a13049961520ba"></a>pkt_req&#160;</td><td class="fielddoc"><p>Payload is a serialized <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> object. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba0120ca48486a34eb3d5aac87d17463ef" name="a183de4cd6bf0fe92a19f45567b49f3aba0120ca48486a34eb3d5aac87d17463ef"></a>pkt_dat&#160;</td><td class="fielddoc"><p>Payload is raw file data (e.g. 1 MB FlightManual.pdf chunk). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3aba4c340e0dabcb99e758ef9c0ede97919b" name="a183de4cd6bf0fe92a19f45567b49f3aba4c340e0dabcb99e758ef9c0ede97919b"></a>pkt_auth&#160;</td><td class="fielddoc"><p>Payload is an authentication attempt. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a183de4cd6bf0fe92a19f45567b49f3abad070badc64a006e00fef8b41b62d011e" name="a183de4cd6bf0fe92a19f45567b49f3abad070badc64a006e00fef8b41b62d011e"></a>pkt_emgcy&#160;</td><td class="fielddoc"><p>Priority packet: emergency state change signal. </p>
+</td></tr>
 </table>
 
 </div>
@@ -255,15 +298,26 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Server state machine command type, carried inside a <code>pkt_req</code> packet. </p>
+<p>Once the networking layer confirms a packet is of type <code>pkt_req</code>, the server state machine reads this value from the unwrapped <code><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a></code> to decide which action to execute. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca5ccfe12cfc09948d47f172a4565bbdec" name="a9d6fdd852512e055cee04e50dd4d793ca5ccfe12cfc09948d47f172a4565bbdec"></a>req_weather&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca4c113387b19fbb630c544eaf38f2abda" name="a9d6fdd852512e055cee04e50dd4d793ca4c113387b19fbb630c544eaf38f2abda"></a>req_telemetry&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca" name="a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca"></a>req_file&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972" name="a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972"></a>req_taxi&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca097c5fc757321496af988c44f12c8559" name="a9d6fdd852512e055cee04e50dd4d793ca097c5fc757321496af988c44f12c8559"></a>req_fplan&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca7a3de295b793cddc96024727b10d1b17" name="a9d6fdd852512e055cee04e50dd4d793ca7a3de295b793cddc96024727b10d1b17"></a>req_traffic&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca21ec8e8d32d9fb11c34556f8772754ab" name="a9d6fdd852512e055cee04e50dd4d793ca21ec8e8d32d9fb11c34556f8772754ab"></a>req_resolve&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793cac9b07d7ca70505164aabe53c34c4a972" name="a9d6fdd852512e055cee04e50dd4d793cac9b07d7ca70505164aabe53c34c4a972"></a>req_test&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca5ccfe12cfc09948d47f172a4565bbdec" name="a9d6fdd852512e055cee04e50dd4d793ca5ccfe12cfc09948d47f172a4565bbdec"></a>req_weather&#160;</td><td class="fielddoc"><p>Fetch current weather data from <code>weather.csv</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca4c113387b19fbb630c544eaf38f2abda" name="a9d6fdd852512e055cee04e50dd4d793ca4c113387b19fbb630c544eaf38f2abda"></a>req_telemetry&#160;</td><td class="fielddoc"><p>Log a telemetry entry to <code>TrafficLog.csv</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca" name="a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca"></a>req_file&#160;</td><td class="fielddoc"><p>Initiate a 1 MB <code>FlightManual.pdf</code> stream. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972" name="a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972"></a>req_taxi&#160;</td><td class="fielddoc"><p><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> runway clearance from ATC. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca097c5fc757321496af988c44f12c8559" name="a9d6fdd852512e055cee04e50dd4d793ca097c5fc757321496af988c44f12c8559"></a>req_fplan&#160;</td><td class="fielddoc"><p>Fetch flight plan data from <code>Flight_plan.csv</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca7a3de295b793cddc96024727b10d1b17" name="a9d6fdd852512e055cee04e50dd4d793ca7a3de295b793cddc96024727b10d1b17"></a>req_traffic&#160;</td><td class="fielddoc"><p><a class="el" href="class_request.html" title="An application-layer command consisting of a type byte and a body payload.">Request</a> current traffic information. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793ca21ec8e8d32d9fb11c34556f8772754ab" name="a9d6fdd852512e055cee04e50dd4d793ca21ec8e8d32d9fb11c34556f8772754ab"></a>req_resolve&#160;</td><td class="fielddoc"><p>Resolve or clear an active emergency state. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a9d6fdd852512e055cee04e50dd4d793cac9b07d7ca70505164aabe53c34c4a972" name="a9d6fdd852512e055cee04e50dd4d793cac9b07d7ca70505164aabe53c34c4a972"></a>req_test&#160;</td><td class="fielddoc"><p>Reserved for testing and integration QA. </p>
+</td></tr>
 </table>
 
 </div>

@@ -97,7 +97,9 @@ $(function(){initNavTree('class_packet_transport.html','','class_packet_transpor
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a57dacf62c9377dae835223a98744e150" id="r_a57dacf62c9377dae835223a98744e150"><td class="memItemLeft">static bool&#160;</td><td class="memItemRight"><a class="el" href="#a57dacf62c9377dae835223a98744e150">sendPacket</a> (int sock, <a class="el" href="classpacket.html">packet</a> &amp;pak)</td></tr>
+<tr class="memdesc:a57dacf62c9377dae835223a98744e150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes <code class="param">pak</code> and sends all bytes over <code class="param">sock</code>.  <br /></td></tr>
 <tr class="memitem:a35e3654cce0a78d7f11f2affc76e8c61" id="r_a35e3654cce0a78d7f11f2affc76e8c61"><td class="memItemLeft">static bool&#160;</td><td class="memItemRight"><a class="el" href="#a35e3654cce0a78d7f11f2affc76e8c61">receivePacket</a> (int sock, <a class="el" href="classpacket.html">packet</a> &amp;outpak)</td></tr>
+<tr class="memdesc:a35e3654cce0a78d7f11f2affc76e8c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives one complete packet from <code class="param">sock</code> and reconstructs it.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a35e3654cce0a78d7f11f2affc76e8c61" name="a35e3654cce0a78d7f11f2affc76e8c61"></a>
@@ -127,6 +129,35 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Receives one complete packet from <code class="param">sock</code> and reconstructs it. </p>
+<p>Receives exactly one packet from a TCP socket into <code class="param">outpak</code>.</p>
+<p>Performs a two-phase read: first the fixed-size header to determine payload length, then the remaining body and CRC tail. The result is written into <code class="param">outpak</code> via deep copy.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sock</td><td>Connected TCP socket descriptor. </td></tr>
+    <tr><td class="paramname">outpak</td><td>Output parameter set to the received packet on success. Left unchanged on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> on success; <code>false</code> if either read phase fails. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>recvAll()</dd></dl>
+<p>Uses a two-phase read to avoid buffering the entire stream:</p><ol type="1">
+<li>Read the fixed 2-byte header to determine payload length.</li>
+<li>Allocate a full-packet buffer, copy the header in, then read the remaining body and CRC tail directly into it.</li>
+</ol>
+<p>The completed buffer is passed to the <code><a class="el" href="classpacket.html" title="A framed, serializable network packet with header, payload, and CRC.">packet(char*)</a></code> constructor and the result is assigned to <code class="param">outpak</code> via <code>operator=</code>, which performs a deep copy. The temporary buffer is freed before returning.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sock</td><td>Connected Winsock socket descriptor. </td></tr>
+    <tr><td class="paramname">outpak</td><td>Output parameter populated with the received packet on success. Unchanged on failure. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if a complete, well-formed packet was received; <code>false</code> if either <code>recvAll()</code> call fails (socket closed, connection reset, or other Winsock error).</dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>The header size is hardcoded as 2 bytes to match the current <code>packet::header</code> bitfield layout. If that struct changes, this value must be updated to match. Consider exposing a <code>packet::HEADER_SIZE</code> constant to keep them in sync.</dd>
+<dd>
+Payload length is read directly from the raw header byte with no validation against <code>MAX_PKTSIZE</code>. A malformed or malicious header could cause an oversized allocation. </dd></dl>
+
 </div>
 </div>
 <a id="a57dacf62c9377dae835223a98744e150" name="a57dacf62c9377dae835223a98744e150"></a>
@@ -155,6 +186,27 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Serializes <code class="param">pak</code> and sends all bytes over <code class="param">sock</code>. </p>
+<p>Serializes a packet and sends all bytes over a TCP socket.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sock</td><td>Connected TCP socket descriptor. </td></tr>
+    <tr><td class="paramname">pak</td><td>Packet to serialize and transmit. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> on success; <code>false</code> if serialization fails or the socket write is interrupted or closed. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>sendAll()</dd></dl>
+<p>Calls <code><a class="el" href="classpacket.html#add1252376136b6a6a40fe29ccffa74e0" title="Serializes the packet into a flat wire buffer.">packet::Serialize()</a></code> to obtain the wire buffer, then delegates to <code>sendAll()</code> to guarantee the full buffer is transmitted.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sock</td><td>Connected Winsock socket descriptor. </td></tr>
+    <tr><td class="paramname">pak</td><td>The packet to serialize and send. The internal <code>txbuff</code> remains owned by <code class="param">pak</code> — do not free it externally. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><code>true</code> if all bytes were sent successfully; <code>false</code> if serialization produced a null or zero-length buffer, or if the underlying <code>send()</code> call failed. </dd></dl>
 
 </div>
 </div>
