@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/FileTransferManager.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/FileTransferManager.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,7 +91,34 @@ $(function(){initNavTree('_file_transfer_manager_8cpp.html','',''); });
   <div class="headertitle"><div class="title">FileTransferManager.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+
+<p>Implementation of the <a class="el" href="class_file_transfer_manager.html" title="Static utility class for server-side data file access.">FileTransferManager</a> class.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_file_transfer_manager_8hpp_source.html">FileTransferManager.hpp</a>&quot;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;iomanip&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of the <a class="el" href="class_file_transfer_manager.html" title="Static utility class for server-side data file access.">FileTransferManager</a> class. </p>
+<p>Provides server-side data access for flight plans, air traffic, taxi clearances, telemetry logging, and flight manual availability checks. All data files are located using a two-path probe (<code></code>../data/ then <code>data/</code>) consistent with the rest of the server codebase.</p>
+<dl class="section user"><dt>Data files used</dt><dd><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">File  </th><th class="markdownTableHeadNone">Access  </th><th class="markdownTableHeadNone">Purpose  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>Flight_Plan.csv</code>  </td><td class="markdownTableBodyNone">Read  </td><td class="markdownTableBodyNone">Flight plan lookup by flight ID  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>Traffic_Positions.csv</code>  </td><td class="markdownTableBodyNone">Read  </td><td class="markdownTableBodyNone">Air traffic lookup by flight ID  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>StatePermissions.csv</code>  </td><td class="markdownTableBodyNone">Read  </td><td class="markdownTableBodyNone">Taxi/landing clearance policy  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>SystemTrafficLog.csv</code>  </td><td class="markdownTableBodyNone">Read+Append  </td><td class="markdownTableBodyNone">Telemetry logging  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>FlightManual.pdf</code>  </td><td class="markdownTableBodyNone">Read (binary)  </td><td class="markdownTableBodyNone">Manual availability check  </td></tr>
+</table>
+</dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

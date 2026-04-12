@@ -1,6 +1,8 @@
 var files_dup =
 [
     [ "client", "dir_db3a54907829b36871118d03417739cd.html", "dir_db3a54907829b36871118d03417739cd" ],
+    [ "external", "dir_397d9aeee4af8edecac90968d93b57df.html", "dir_397d9aeee4af8edecac90968d93b57df" ],
     [ "server", "dir_41e1742e44e2de38b3bc91f993fed282.html", "dir_41e1742e44e2de38b3bc91f993fed282" ],
-    [ "shared", "dir_9982052f7ce695d12571567315b2fafa.html", "dir_9982052f7ce695d12571567315b2fafa" ]
+    [ "shared", "dir_9982052f7ce695d12571567315b2fafa.html", "dir_9982052f7ce695d12571567315b2fafa" ],
+    [ "tests", "dir_59425e443f801f1f2fd8bbe4959a3ccf.html", "dir_59425e443f801f1f2fd8bbe4959a3ccf" ]
 ];

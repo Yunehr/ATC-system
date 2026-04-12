@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/StateMachine.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/StateMachine.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,7 +91,41 @@ $(function(){initNavTree('_state_machine_8cpp.html','',''); });
   <div class="headertitle"><div class="title">StateMachine.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+
+<p>Implementation of the <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> class.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_state_machine_8hpp_source.html">StateMachine.hpp</a>&quot;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of the <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> class. </p>
+<p>Tracks the server-side session state for a single client connection and enforces command permissions by consulting <code>StatePermissions.csv</code>.</p>
+<dl class="section user"><dt>State transition diagram</dt><dd><div class="fragment"><div class="line">            ┌─────────────────┐</div>
+<div class="line">       ┌───►│  STARTUP/AUTH   │◄──────────────────────┐</div>
+<div class="line">       │    └────────┬────────┘                       │</div>
+<div class="line">       │             │ onAuthSuccess()                │</div>
+<div class="line">       │             ▼                                │</div>
+<div class="line">       │    ┌─────────────────┐   <a class="code hl_enumvalue" href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca">req_file</a>            │</div>
+<div class="line">       │    │   PRE_FLIGHT    │──────────────►┐       │</div>
+<div class="line">       │    └────────┬────────┘               │       │</div>
+<div class="line">       │   <a class="code hl_enumvalue" href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972">req_taxi</a>  │ <a class="code hl_enumvalue" href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972">req_taxi</a>               │       │</div>
+<div class="line">       │   (arrival) │ (departure)            │       │</div>
+<div class="line">       │             ▼                        │       │</div>
+<div class="line">       │    ┌─────────────────┐   <a class="code hl_enumvalue" href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca">req_file</a>   │       │</div>
+<div class="line">       │    │ ACTIVE_AIRSPACE │──────────────►│       │</div>
+<div class="line">       │    └────────┬────────┘               │       │</div>
+<div class="line">resolve│   emergency │                        ▼       │</div>
+<div class="line">       │             ▼              ┌──────────────────┤</div>
+<div class="line">       │    ┌─────────────────┐     │  DATA_TRANSFER  │</div>
+<div class="line">       └────│    EMERGENCY    │     └─────────────────►┘</div>
+<div class="line">            └─────────────────┘   onDataTransferComplete()</div>
+<div class="ttc" id="a_packet_8h_html_a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972"><div class="ttname"><a href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793ca770d77e43b869863bf596764f7f8b972">req_taxi</a></div><div class="ttdeci">@ req_taxi</div><div class="ttdef"><b>Definition</b> Packet.h:26</div></div>
+<div class="ttc" id="a_packet_8h_html_a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca"><div class="ttname"><a href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793cae7a61e802d0ad5e650ea248b802955ca">req_file</a></div><div class="ttdeci">@ req_file</div><div class="ttdef"><b>Definition</b> Packet.h:25</div></div>
+</div><!-- fragment --></dd></dl>
+<dl class="section user"><dt>StatePermissions.csv format</dt><dd>Two-column CSV (with a header row) mapping state names to a hyphen-delimited list of permitted command strings: <div class="fragment"><div class="line">StateName, Commands</div>
+<div class="line">PRE_FLIGHT, WEATHER_REQUEST-FLIGHT_PLAN_REQUEST-TAXI_REQUEST-FILE_REQUEST</div>
+</div><!-- fragment --> </dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

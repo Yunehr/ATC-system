@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: client/ClientEngine.hpp Source File</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/client/ClientEngine.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,31 +91,50 @@ $(function(){initNavTree('_client_engine_8hpp_source.html','',''); });
   <div class="headertitle"><div class="title">ClientEngine.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="_client_engine_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;winsock2.h&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="foldopen" id="foldopen00005" data-start="{" data-end="};">
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="class_client_engine.html">    5</a></span><span class="keyword">class </span><a class="code hl_function" href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine</a> {</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <a class="code hl_function" href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine</a>();</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <a class="code hl_function" href="class_client_engine.html#a809fdfdbbed212176d884f4ed0f12765">~ClientEngine</a>();</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_client_engine.html#af7410367859e01cf60ba4be714ca4969">connectToServer</a>(<span class="keyword">const</span> std::string&amp; ip, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> port);</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_client_engine.html#a942c423a3b29bbcd8f096ed0a7d5db57">disconnect</a>();</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    std::string <a class="code hl_function" href="class_client_engine.html#a2a3b31f540f08f47b4ef668ffa873a33">requestWeather</a>(<span class="keyword">const</span> std::string&amp; location);</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    SOCKET sock;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> clientID;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+<a href="_client_engine_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;winsock2.h&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="_packet_8h.html">../shared/Packet.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span></div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="class_client_engine.html">   37</a></span><span class="keyword">class </span><a class="code hl_function" href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_function" href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_function" href="class_client_engine.html#a809fdfdbbed212176d884f4ed0f12765">~ClientEngine</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// Connection management</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_client_engine.html#af7410367859e01cf60ba4be714ca4969">connectToServer</a>(<span class="keyword">const</span> std::string&amp; ip, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> port);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_client_engine.html#a942c423a3b29bbcd8f096ed0a7d5db57">disconnect</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// Request methods</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>     </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::string <a class="code hl_function" href="class_client_engine.html#a9caff135ac0f19b80a1a4160d00f5494">dataRequest</a>(<span class="keyword">const</span> std::string&amp; data, <a class="code hl_enumeration" href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793c">reqtyp</a> type);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    std::string <a class="code hl_function" href="class_client_engine.html#a4ad215a7a3eeeaad126248a6b2819186">pkRequest</a>(<span class="keyword">const</span> std::string&amp;data, <a class="code hl_enumeration" href="_packet_8h.html#a183de4cd6bf0fe92a19f45567b49f3ab">pkTyFl</a> PKtype);    </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::string <a class="code hl_function" href="class_client_engine.html#afd700ca414712d46bc6888152908e3cb">downloadFlightManual</a>(<span class="keyword">const</span> std::string&amp; outputPath);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    SOCKET sock;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> clientID;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
 </div>
-<div class="ttc" id="aclass_client_engine_html_a00a864bc935cad2402ad6739156c3c60"><div class="ttname"><a href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine::ClientEngine</a></div><div class="ttdeci">ClientEngine()</div><div class="ttdoc">Construct a new Client Engine object. Initializes the socket to an invalid state and sets a default c...</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:17</div></div>
-<div class="ttc" id="aclass_client_engine_html_a2a3b31f540f08f47b4ef668ffa873a33"><div class="ttname"><a href="class_client_engine.html#a2a3b31f540f08f47b4ef668ffa873a33">ClientEngine::requestWeather</a></div><div class="ttdeci">std::string requestWeather(const std::string &amp;location)</div><div class="ttdoc">Sends a weather data request to the server and awaits a response.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:77</div></div>
-<div class="ttc" id="aclass_client_engine_html_a809fdfdbbed212176d884f4ed0f12765"><div class="ttname"><a href="class_client_engine.html#a809fdfdbbed212176d884f4ed0f12765">ClientEngine::~ClientEngine</a></div><div class="ttdeci">~ClientEngine()</div><div class="ttdoc">Destroy the Client Engine object. Ensures the connection is closed before the object is destroyed.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:23</div></div>
-<div class="ttc" id="aclass_client_engine_html_a942c423a3b29bbcd8f096ed0a7d5db57"><div class="ttname"><a href="class_client_engine.html#a942c423a3b29bbcd8f096ed0a7d5db57">ClientEngine::disconnect</a></div><div class="ttdeci">void disconnect()</div><div class="ttdoc">Gracefully closes the active socket connection.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:62</div></div>
-<div class="ttc" id="aclass_client_engine_html_af7410367859e01cf60ba4be714ca4969"><div class="ttname"><a href="class_client_engine.html#af7410367859e01cf60ba4be714ca4969">ClientEngine::connectToServer</a></div><div class="ttdeci">bool connectToServer(const std::string &amp;ip, unsigned short port)</div><div class="ttdoc">Establishes a TCP connection to the specified server.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:35</div></div>
+<div class="ttc" id="a_packet_8h_html"><div class="ttname"><a href="_packet_8h.html">Packet.h</a></div></div>
+<div class="ttc" id="a_packet_8h_html_a183de4cd6bf0fe92a19f45567b49f3ab"><div class="ttname"><a href="_packet_8h.html#a183de4cd6bf0fe92a19f45567b49f3ab">pkTyFl</a></div><div class="ttdeci">pkTyFl</div><div class="ttdef"><b>Definition</b> Packet.h:12</div></div>
+<div class="ttc" id="a_packet_8h_html_a9d6fdd852512e055cee04e50dd4d793c"><div class="ttname"><a href="_packet_8h.html#a9d6fdd852512e055cee04e50dd4d793c">reqtyp</a></div><div class="ttdeci">reqtyp</div><div class="ttdef"><b>Definition</b> Packet.h:22</div></div>
+<div class="ttc" id="aclass_client_engine_html_a00a864bc935cad2402ad6739156c3c60"><div class="ttname"><a href="class_client_engine.html#a00a864bc935cad2402ad6739156c3c60">ClientEngine::ClientEngine</a></div><div class="ttdeci">ClientEngine()</div><div class="ttdoc">Constructs a ClientEngine with an invalid socket and a default client ID.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:34</div></div>
+<div class="ttc" id="aclass_client_engine_html_a4ad215a7a3eeeaad126248a6b2819186"><div class="ttname"><a href="class_client_engine.html#a4ad215a7a3eeeaad126248a6b2819186">ClientEngine::pkRequest</a></div><div class="ttdeci">std::string pkRequest(const std::string &amp;data, pkTyFl PKtype)</div><div class="ttdoc">Sends a raw typed packet to the server and returns the response.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:180</div></div>
+<div class="ttc" id="aclass_client_engine_html_a809fdfdbbed212176d884f4ed0f12765"><div class="ttname"><a href="class_client_engine.html#a809fdfdbbed212176d884f4ed0f12765">ClientEngine::~ClientEngine</a></div><div class="ttdeci">~ClientEngine()</div><div class="ttdoc">Destructor — calls disconnect() to ensure the socket is closed.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:39</div></div>
+<div class="ttc" id="aclass_client_engine_html_a942c423a3b29bbcd8f096ed0a7d5db57"><div class="ttname"><a href="class_client_engine.html#a942c423a3b29bbcd8f096ed0a7d5db57">ClientEngine::disconnect</a></div><div class="ttdeci">void disconnect()</div><div class="ttdoc">Gracefully closes the active socket connection.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:89</div></div>
+<div class="ttc" id="aclass_client_engine_html_a9caff135ac0f19b80a1a4160d00f5494"><div class="ttname"><a href="class_client_engine.html#a9caff135ac0f19b80a1a4160d00f5494">ClientEngine::dataRequest</a></div><div class="ttdeci">std::string dataRequest(const std::string &amp;data, reqtyp type)</div><div class="ttdoc">Sends a typed data request to the server and returns the response.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:118</div></div>
+<div class="ttc" id="aclass_client_engine_html_af7410367859e01cf60ba4be714ca4969"><div class="ttname"><a href="class_client_engine.html#af7410367859e01cf60ba4be714ca4969">ClientEngine::connectToServer</a></div><div class="ttdeci">bool connectToServer(const std::string &amp;ip, unsigned short port)</div><div class="ttdoc">Opens a TCP connection to the specified server.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:60</div></div>
+<div class="ttc" id="aclass_client_engine_html_afd700ca414712d46bc6888152908e3cb"><div class="ttname"><a href="class_client_engine.html#afd700ca414712d46bc6888152908e3cb">ClientEngine::downloadFlightManual</a></div><div class="ttdeci">std::string downloadFlightManual(const std::string &amp;outputPath)</div><div class="ttdoc">Downloads the flight manual from the server and writes it to disk.</div><div class="ttdef"><b>Definition</b> ClientEngine.cpp:250</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

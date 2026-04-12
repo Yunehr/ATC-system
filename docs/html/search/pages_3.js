@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['machine_0',['🚦Server State Machine',['../md__r_e_a_d_m_e.html#autotoc_md4',1,'']]],
-  ['methodology_1',['📈 Development Methodology',['../md__r_e_a_d_m_e.html#autotoc_md3',1,'']]]
+  ['8_20text_20output_0',['Suppressing UTF-8 Text Output',['../md__e_1_2_git_2pr4j----_a_t_c-system_2external_2googletest-1_817_80_2docs_2advanced.html#autotoc_md74',1,'']]]
 ];

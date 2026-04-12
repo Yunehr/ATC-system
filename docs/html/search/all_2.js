@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['data_20packet_20definition_0',['📦 Data Packet Definition',['../md__r_e_a_d_m_e.html#autotoc_md5',1,'']]],
-  ['definition_1',['📦 Data Packet Definition',['../md__r_e_a_d_m_e.html#autotoc_md5',1,'']]],
-  ['deserialize_2',['deserialize',['../class_packet.html#ae502d4f79ef1e0efcdb0dc4cef3379d3',1,'Packet']]],
-  ['development_20methodology_3',['📈 Development Methodology',['../md__r_e_a_d_m_e.html#autotoc_md3',1,'']]],
-  ['disconnect_4',['disconnect',['../class_client_engine.html#a942c423a3b29bbcd8f096ed0a7d5db57',1,'ClientEngine']]]
+  ['2_20app_20ui_0',['Terminal 2 (Client) option 2 - App UI',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md437',1,'']]],
+  ['2_20client_20option_201_20cmd_20line_1',['Terminal 2 (Client) option 1 - CMD line',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md436',1,'']]],
+  ['2_20client_20option_202_20app_20ui_2',['Terminal 2 (Client) option 2 - App UI',['../E:/Git/pr4j----ATC-system/README.md#autotoc_md437',1,'']]]
 ];

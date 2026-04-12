@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: server/ServerEngine.hpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/server/ServerEngine.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,6 +91,9 @@ $(function(){initNavTree('_server_engine_8hpp.html','',''); });
   <div class="headertitle"><div class="title">ServerEngine.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Declaration of the <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> class.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;winsock2.h&gt;</code><br />
 </div>
 <p><a href="_server_engine_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -98,8 +101,29 @@ $(function(){initNavTree('_server_engine_8hpp.html','',''); });
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:ServerEngine" id="r_ServerEngine"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="class_server_engine.html">ServerEngine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Manages the TCP listen socket and per-client packet dispatch loop.  <a href="class_server_engine.html#details">More...</a><br /></td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Declaration of the <a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> class. </p>
+<p><a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> owns the TCP listen socket and drives the full server lifecycle: binding, accepting, per-client packet dispatch, and shutdown. Each accepted connection is handled synchronously (one client at a time) by handleClient(), which owns its own <a class="el" href="class_state_machine.html" title="Per-session state machine enforcing the aviation client protocol.">StateMachine</a> instance for fully isolated session state.</p>
+<dl class="section user"><dt>Structured stdout protocol</dt><dd><a class="el" href="class_server_engine.html" title="Manages the TCP listen socket and per-client packet dispatch loop.">ServerEngine</a> writes machine-readable prefixed lines to stdout that are consumed by the Python ATCScreen dashboard:</dd></dl>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Prefix  </th><th class="markdownTableHeadNone">Purpose  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"STATE: &lt;name&gt;"</code>  </td><td class="markdownTableBodyNone">Server state transition.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"TRANSFER START: total=&lt;N&gt;"</code>  </td><td class="markdownTableBodyNone">File transfer starting.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"TRANSFER PROGRESS: current=&lt;C&gt; total=&lt;T&gt;"</code>  </td><td class="markdownTableBodyNone">Chunk sent.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"TRANSFER COMPLETE: current=&lt;C&gt; total=&lt;T&gt;"</code>  </td><td class="markdownTableBodyNone">Transfer finished.  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>"Client connected!"</code>  </td><td class="markdownTableBodyNone">New connection accepted.  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>"Client disconnected."</code>  </td><td class="markdownTableBodyNone">Connection closed.  </td></tr>
+</table>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

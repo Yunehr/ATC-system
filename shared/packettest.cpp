@@ -1,25 +1,72 @@
-//sebastian solorzano -- atc tower pr4j -- packet test
-// testing / usage for the packet, basically 
-
-//how to run: g++ packettest.cpp Packet.h Request.h -o <name>
+/**
+ * @file packettest.cpp
+ * @brief Manual usage and smoke tests for the @c packet and @c Request classes.
+ * @author Sebastian Solorzano
+ * @details
+ * This file demonstrates and validates the core send/receive pipeline without
+ * a real network socket. In production, the only difference would be replacing
+ * the direct buffer hand-off with a @c send() / @c recv() pair over a TCP socket.
+ * TCP guarantees delivery integrity, so no additional corruption checks are
+ * needed at this layer beyond the CRC.
+ *
+ * Three scenarios are exercised:
+ *  -# Basic @c Request construction and serialization.
+ *  -# Raw payload wrapped in a @c packet and reconstructed on the receive side.
+ *  -# A serialized @c Request carried inside a @c pkt_req packet, then unwrapped.
+ *
+ * ### Compile
+ * @code
+ * g++ packettest.cpp Packet.h Request.h -o <name>
+ * @endcode
+ *
+ * ### Large-file chunking (not yet implemented)
+ * The commented-out pseudocode at the bottom of @c main() sketches a chunked
+ * send loop for payloads larger than @c MAX_PKTSIZE. A recommended extension
+ * would be sending a leading @c pkt_dat packet containing the filename and
+ * total file size so the receiver can track transfer progress.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "Packet.h"
 #include "Request.h"
 
-//okay I couldn't actually be bothered to do individual unit testing because ughh
-//but anyways this shows usage and functionality of the packet.
-//only difference in actual use would be send()ing serialpck and recv()ing it into recvp.
-//you don't actually have to check that everything's okay on that front
-//because the whole point of TCP is that it makes sure its all okay for you
-
-//lastly I don't *think* making functions to send and recieve is my job (or at least for the moment) so I made no such functions
-//basically after you recieve your packet just read the flags you get and decide what to do from there. a few ifs should be sufficient, prob
-
+/**
+ * @brief Smoke-tests @c Request and @c packet construction, serialization,
+ *        and reconstruction without a live socket.
+ *
+ * ### Test 1 — Request round-trip
+ * Constructs a @c Request with an arbitrary type and body, serializes it, and
+ * prints the fields to confirm the values survive serialization.
+ *
+ * ### Test 2 — Packet round-trip (raw payload)
+ * Wraps a plain string in a @c packet using @c pkt_emgcy (chosen to exercise
+ * negative/high enum values). Serializes to a wire buffer, reconstructs a
+ * receive-side @c packet from that buffer, and prints all header fields plus
+ * the payload to verify round-trip fidelity.
+ *
+ * ### Test 3 — Request carried inside a packet
+ * Serializes a @c Request, stuffs it into a @c pkt_req packet, serializes the
+ * packet, reconstructs both the packet and the inner @c Request on the receive
+ * side, and prints all fields. This is the canonical pattern for real client
+ * messages.
+ *
+ * @note In real use, replace the direct buffer hand-off between @c Serialize()
+ *       and the receiving @c packet constructor with @c send() / @c recv().
+ *       TCP ensures the bytes arrive intact, so no extra integrity step is
+ *       needed beyond confirming the @c transmit_flag.
+ *
+ * @note After receiving, read the packet's type flag with @c getPKType() and
+ *       branch on the @c PKTYPE value — a few @c if statements are sufficient
+ *       to dispatch to the correct handler.
+ *
+ * @return Always returns 0.
+ */
 int main(void) {
 
-
+    // -------------------------------------------------------------------------
+    // Test 1: Request construction and serialization
+    // -------------------------------------------------------------------------
     printf("proof that request works:\n");
 
     char hel[] = "hes nskdfs d fs";
@@ -27,7 +74,11 @@ int main(void) {
     int placeholder;
     printf("q: %d,%d,%s\nraw:%s\n", q.getType(), q.getBsize(), q.getBody(), q.serializeRequest(&placeholder));
 
-
+    // -------------------------------------------------------------------------
+    // Test 2: Packet round-trip with a raw string payload
+    // pkt_emgcy was deliberately chosen to verify that high enum values
+    // serialize and reconstruct without sign/truncation issues.
+    // ------------------------------------------------------------------------
     printf("proof that packet works:\n");
 
     packet sendp = packet();
@@ -48,7 +99,10 @@ int main(void) {
     int size = recvp.getPloadLength();
     printf("transmssion flag: %d\nclient id: %d\npacket type: %d\ndata: %s\nsize: %d\n", flag, id, type, dat, size);
 
-
+    // -------------------------------------------------------------------------
+    // Test 3: Request serialized and carried inside a pkt_req packet
+    // This mirrors the pattern used by every real client command.
+    // -------------------------------------------------------------------------
     printf("proof that send request through packet:\n");
 
     packet reqpktsend = packet();
@@ -77,24 +131,24 @@ int main(void) {
     printf("request type: %d\nrequest body: %s\n", rrr.getType(), rrr.getBody());
 
 
+    // -------------------------------------------------------------------------
+    // TODO: Large-file chunked send (not yet implemented)
+    //
+    // Sketch of a chunked send loop for payloads > MAX_PKTSIZE:
+    //
+    //   packet big = packet();
+    //   // char bigbuf[REALLY_BIG] = ...; or load via ifstream, etc.
+    //
+    //   int sent = big.PopulPacket(bigbuf, totalSize, id, pkt_dat);
+    //   while (sent < totalSize) {
+    //       char* wire = big.Serialize(&wireSize);
+    //       send(sockfd, wire, wireSize, 0);
+    //       sent += big.PopulPacket(bigbuf + sent, totalSize - sent, id, pkt_dat);
+    //   }
+    //
+    // Recommended: send a leading pkt_dat packet first, containing the filename
+    // and total byte count, so the receiver can track how much has arrived.
+    // -------------------------------------------------------------------------
 
-
-    //okay so i'm not actually writing the function for this (at least for the moment),
-    //but here's an idea of how it could be done?
-    /*
-    packet big = packet();
-    char big[really_big] = <whatever>; or ifstream x = however these work; or whatever else
-
-    int size1 = sendp.PopulPacket(big, ...);
-    while(size1 < sizeof(big)){
-    serialize
-    send(serial)
-
-    size1 += sendp.populpacket(big +size1, ...);
-    }
-    */
-    //i'm fairly certain this would work.
-    //it might also be a good idea to send a dat packet first, with the filename and total size,
-    //so the recieving end can calculate how much of the file they've recieved
-
+    return 0;
 }

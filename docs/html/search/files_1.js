@@ -1,7 +1,14 @@
 var searchData=
 [
-  ['filereceiver_2ecpp_0',['FileReceiver.cpp',['../_file_receiver_8cpp.html',1,'']]],
-  ['filereceiver_2ehpp_1',['FileReceiver.hpp',['../_file_receiver_8hpp.html',1,'']]],
-  ['filetransfermanager_2ecpp_2',['FileTransferManager.cpp',['../_file_transfer_manager_8cpp.html',1,'']]],
-  ['filetransfermanager_2ehpp_3',['FileTransferManager.hpp',['../_file_transfer_manager_8hpp.html',1,'']]]
+  ['client_2epy_0',['Client.py',['../_client_8py.html',1,'']]],
+  ['clientapi_2ecpp_1',['clientAPI.cpp',['../client_a_p_i_8cpp.html',1,'']]],
+  ['clientapp_2ecpp_2',['ClientApp.cpp',['../_client_app_8cpp.html',1,'']]],
+  ['clientapp_2ehpp_3',['ClientApp.hpp',['../_client_app_8hpp.html',1,'']]],
+  ['clientengine_2ecpp_4',['ClientEngine.cpp',['../_client_engine_8cpp.html',1,'']]],
+  ['clientengine_2ehpp_5',['ClientEngine.hpp',['../_client_engine_8hpp.html',1,'']]],
+  ['clientsession_2ecpp_6',['ClientSession.cpp',['../_client_session_8cpp.html',1,'']]],
+  ['clientsession_2ehpp_7',['ClientSession.hpp',['../_client_session_8hpp.html',1,'']]],
+  ['clienttests_2ecpp_8',['clienttests.cpp',['../clienttests_8cpp.html',1,'']]],
+  ['community_5fcreated_5fdocumentation_2emd_9',['community_created_documentation.md',['../community__created__documentation_8md.html',1,'']]],
+  ['contributing_2emd_10',['CONTRIBUTING.md',['../_c_o_n_t_r_i_b_u_t_i_n_g_8md.html',1,'']]]
 ];

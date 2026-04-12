@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: client/ClientEngine.hpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/client/ClientEngine.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,16 +91,35 @@ $(function(){initNavTree('_client_engine_8hpp.html','',''); });
   <div class="headertitle"><div class="title">ClientEngine.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Declaration of the <a class="el" href="class_client_engine.html" title="Low-level TCP socket wrapper and packet-protocol implementation.">ClientEngine</a> class.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;winsock2.h&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &quot;<a class="el" href="_packet_8h_source.html">../shared/Packet.h</a>&quot;</code><br />
 </div>
 <p><a href="_client_engine_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:ClientEngine" id="r_ClientEngine"><td class="memItemLeft">class &#160;</td><td class="memItemRight"><a class="el" href="class_client_engine.html">ClientEngine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low-level TCP socket wrapper and packet-protocol implementation.  <a href="class_client_engine.html#details">More...</a><br /></td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Declaration of the <a class="el" href="class_client_engine.html" title="Low-level TCP socket wrapper and packet-protocol implementation.">ClientEngine</a> class. </p>
+<p><a class="el" href="class_client_engine.html" title="Low-level TCP socket wrapper and packet-protocol implementation.">ClientEngine</a> is the low-level networking layer of the aviation client. It owns the Winsock TCP socket and implements three request patterns that map directly onto the shared packet protocol:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Method  </th><th class="markdownTableHeadNone">Outgoing packet  </th><th class="markdownTableHeadNone">Use case  </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">dataRequest()  </td><td class="markdownTableBodyNone"><code>pkt_req</code> + <a class="el" href="class_request.html">Request</a>  </td><td class="markdownTableBodyNone">Weather, flight plan, telemetry  </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">pkRequest()  </td><td class="markdownTableBodyNone">Raw typed packet  </td><td class="markdownTableBodyNone">Auth, emergency, resolve  </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">downloadFlightManual()  </td><td class="markdownTableBodyNone"><code>pkt_req</code> + req_file  </td><td class="markdownTableBodyNone">Multi-packet file transfer  </td></tr>
+</table>
+<p>All methods perform CRC verification on received packets and return human-readable error strings on failure, which are forwarded to the Python UI via the stdout bridge in main.cpp. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

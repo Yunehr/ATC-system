@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ATC project: client/FileReceiver.cpp File Reference</title>
+<title>ATC project: E:/Git/pr4j----ATC-system/client/FileReceiver.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -91,7 +91,17 @@ $(function(){initNavTree('_file_receiver_8cpp.html','',''); });
   <div class="headertitle"><div class="title">FileReceiver.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-</div><!-- contents -->
+
+<p>Implementation of the <a class="el" href="class_file_receiver.html" title="Assembles a multi-packet file transfer into a local file.">FileReceiver</a> class.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_file_receiver_8hpp_source.html">FileReceiver.hpp</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+</div><a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implementation of the <a class="el" href="class_file_receiver.html" title="Assembles a multi-packet file transfer into a local file.">FileReceiver</a> class. </p>
+<p>Manages the write-side of the multi-packet file transfer protocol used to download the flight manual. Each packet carries a 4-byte little-endian write offset followed by file data, allowing out-of-order delivery. The file is first assembled into a <code></code>.part staging file and atomically renamed to its final path once the server signals transfer completion. </p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>
