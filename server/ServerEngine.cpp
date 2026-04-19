@@ -255,7 +255,11 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
     uint32_t currentOffset = 0;
     bool sentAnyChunk = false;
 
+    int pktcount = 0; // For logging purposes, counts how many chunks have been sent since the last log
+    int logInterval = 100; // Log every 100 chunks to avoid excessive logging for large files
+
     while (true) {
+
         src.read(fileBuffer, chunkSize);
         std::streamsize bytesRead = src.gcount();
         if (bytesRead <= 0) {
@@ -275,9 +279,12 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
             return false;
         }
 
-        std::cout << "TRANSFER PROGRESS: current=" << (long long)(currentOffset + (uint32_t)bytesRead)
+        pktcount++;
+        if (pktcount == logInterval) {
+            std::cout << "TRANSFER PROGRESS: current=" << (long long)(currentOffset + (uint32_t)bytesRead)
                   << " total=" << (long long)totalBytes << std::endl;
-
+            pktcount = 0; // Reset packet count every time the log interval is reached
+        }
         sentAnyChunk = true;
         currentOffset += (uint32_t)bytesRead;
     }

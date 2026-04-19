@@ -325,16 +325,23 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
         return "Flight Manual downloaded to " + outputPath;
     }
 
+    int pktcount = 1; // For logging purposes, counts the first packet as chunk 1
+    int logInterval = 100; // Log every 100 packets to avoid excessive logging for large files
+
     // Receive remaining chunks until the transfer is complete
     while (true) {
+        pktcount++;
+
         packet rxPkt;
         if (!PacketTransport::receivePacket((int)sock, rxPkt)) {
             std::cout << "\n";
             return "Transfer interrupted while receiving flight manual";
         }
 
-        Logger::logPacket(rxPkt, Logger::Direction::RX,
-            "Flight manual chunk, " + std::to_string(receiver.getBytesReceived()) + " bytes received so far");
+        if (pktcount == logInterval) { // Log progress every logInterval packets
+            Logger::logPacket(rxPkt, Logger::Direction::RX,
+             "Flight manual chunk, " + std::to_string(receiver.getBytesReceived()) + " bytes received so far");
+        }
 
         if (rxPkt.calcCRC() != rxPkt.GetCRC()) {
             std::cout << "\n";
@@ -346,12 +353,17 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
             return err;
         }
 
-        std::cout << "\rDownloading Flight Manual: "
+        if (pktcount == logInterval) { // Print progress every logInterval packets
+            std::cout << "\rDownloading Flight Manual: "
                   << (receiver.getBytesReceived() / 1024) << " KB received..." << std::flush;
+        }
 
         if (receiver.isComplete()) {
             break;
         }
+
+        if (pktcount == logInterval) { pktcount = 0; } // Reset packet count every time the log interval is reached
+        
     }
 
     std::cout << "\n";
