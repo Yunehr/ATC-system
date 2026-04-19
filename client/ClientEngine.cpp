@@ -326,7 +326,7 @@ std::string ClientEngine::downloadFlightManual(const std::string& outputPath) {
     }
 
     int pktcount = 1; // For logging purposes, counts the first packet as chunk 1
-    int logInterval = 1000; // Log every 1000 packets to avoid excessive logging for large files
+    int logInterval = 100; // Log every 100 packets to avoid excessive logging for large files
 
     // Receive remaining chunks until the transfer is complete
     while (true) {

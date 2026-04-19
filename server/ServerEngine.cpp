@@ -256,7 +256,7 @@ bool ServerEngine::sendFlightManual(SOCKET clientSock, unsigned char clientId) {
     bool sentAnyChunk = false;
 
     int pktcount = 0; // For logging purposes, counts how many chunks have been sent since the last log
-    int logInterval = 1000; // Log every 1000 chunks to avoid excessive logging for large files
+    int logInterval = 100; // Log every 100 chunks to avoid excessive logging for large files
 
     while (true) {
 
